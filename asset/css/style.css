@@ -2040,6 +2040,52 @@ nav ul {
     border-color: #abb8ca;
     text-decoration: none;
   }
+  body #wrap {
+    padding-bottom: unset;
+  }
+}
+@media screen {
+  footer {
+    background: #232e58;
+    color: #abb8ca;
+    padding: 2rem;
+    margin-top: 48px;
+  }
+  footer a {
+    border-bottom: none;
+  }
+  footer li {
+    float: left;
+    list-style-type: none;
+    margin-right: 0.75rem;
+  }
+  footer li a {
+    text-decoration: none;
+    color: #abb8ca;
+  }
+  footer li a:hover {
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 0.1875rem solid #abb8ca;
+  }
+  footer .logos {
+    text-align: right;
+  }
+  footer .logos .logo1,
+footer .logos .logo2 {
+    display: inline-block;
+  }
+  footer .logos .logo2 .hosted {
+    display: block;
+    text-align: left;
+  }
+  footer .logos .ub-logo {
+    height: 50px;
+  }
+  footer .logos .uni-logo {
+    height: 50px;
+    margin-right: 20px;
+  }
 }
 @media screen and (max-width: 640px) {
   /* @group ----- Containers ----- */
