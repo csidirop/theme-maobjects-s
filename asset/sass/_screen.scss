@@ -1,14 +1,17 @@
+@use "sass:color";
+@use "base";
+
 * {
     box-sizing: border-box;
 }
 
 html {
-    font: #{$base-font-size}/#{$base-line-height} "Crimson Text", serif;
-    color: $dark-gray;
+    font: #{base.$base-font-size}/#{base.$base-line-height} "Crimson Text", serif;
+    color: base.$dark-gray;
 }
 
 a {
-    color: $red;
+    color: base.$red;
     text-decoration: underline;
 
     &:hover {
@@ -16,7 +19,7 @@ a {
     }
 
     &:focus {
-        outline: 1px solid $red;
+        outline: 1px solid base.$red;
     }
 }
 
@@ -26,21 +29,21 @@ h1, h2, h3, h4, h5, h6 {
 
 h1 {
     text-align: center;
-    font-size: 2 * $base-font-size;
-    margin-bottom: $spacing-l;
-    line-height: 2 * $base-line-height;
+    font-size: 2 * base.$base-font-size;
+    margin-bottom: base.$spacing-l;
+    line-height: 2 * base.$base-line-height;
     font-weight: normal;
 }
 
 h2 {
-    font-size: 1.5 * $base-font-size;
-    margin-bottom: $spacing-l;
-    line-height: 2 * $base-line-height;
+    font-size: 1.5 * base.$base-font-size;
+    margin-bottom: base.$spacing-l;
+    line-height: 2 * base.$base-line-height;
     font-weight: normal;
 }
 
 p {
-    margin: $spacing-l 0;
+    margin: base.$spacing-l 0;
 }
 
 img {
@@ -61,12 +64,12 @@ img {
 #wrap {
     max-width: 1100px;
     margin: auto;
-    padding: 0 $spacing-l;
+    padding: 0 base.$spacing-l;
     position: relative;
 }
 
 #wrap {
-    padding-bottom: 2 * $spacing-l;
+    padding-bottom: 2 * base.$spacing-l;
 }
 
 /* @end */
@@ -74,26 +77,26 @@ img {
 /* @group ----- Tables ----- */
 
 table {
-    margin: (2 * $spacing-l) auto;
+    margin: (2 * base.$spacing-l) auto;
     border-collapse: collapse;
-    border-top: 1px solid $gray;
-    border-bottom: 1px solid $gray;
+    border-top: 1px solid base.$gray;
+    border-bottom: 1px solid base.$gray;
 }
 
 th, td {
-    padding: $spacing-m;
+    padding: base.$spacing-m;
     vertical-align: top;
 }
 
 th {
-    border-bottom: 3px solid $gray;
-    padding-bottom: $spacing-m - 3px;
+    border-bottom: 3px solid base.$gray;
+    padding-bottom: base.$spacing-m - 3px;
     text-align: left;
 }
 
 td {
-    border-bottom: 1px solid $gray;
-    padding-bottom: $spacing-m - 1px;
+    border-bottom: 1px solid base.$gray;
+    padding-bottom: base.$spacing-m - 1px;
 }
 
 /* @end */
@@ -123,39 +126,39 @@ select {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    border: 1px solid $gray;
+    border: 1px solid base.$gray;
     border-radius: 2px;
-    font-size: $base-font-size;
-    line-height: $base-line-height;
-    color: $dark-gray;
-    height: 1.5 * $spacing-l;
+    font-size: base.$base-font-size;
+    line-height: base.$base-line-height;
+    color: base.$dark-gray;
+    height: 1.5 * base.$spacing-l;
     background: #fff url('../../../../application/asset/img/select-arrow.svg') no-repeat;
-    background-position: right (.25 * $spacing-l) center;
-    background-size: .3175 * $base-font-size;
-    padding: $spacing-s $spacing-l $spacing-s $spacing-s;
+    background-position: right (.25 * base.$spacing-l) center;
+    background-size: .3175 * base.$base-font-size;
+    padding: base.$spacing-s base.$spacing-l base.$spacing-s base.$spacing-s;
     
     option {
-      margin: 0 $spacing-m;
+      margin: 0 base.$spacing-m;
     }
 }
 
 button,
 .button,
 input[type="submit"] {
-    background-color: $gray;
-    color: $dark-gray;
+    background-color: base.$gray;
+    color: base.$dark-gray;
     border: 0;
     cursor: pointer;
-    padding: $spacing-s;
-    min-height: 1.5 * $spacing-l;
-    min-width: 1.5 * $spacing-l;
-    line-height: $base-line-height;
+    padding: base.$spacing-s;
+    min-height: 1.5 * base.$spacing-l;
+    min-width: 1.5 * base.$spacing-l;
+    line-height: base.$base-line-height;
     text-align: center;
 
     &:disabled,
     &.inactive {
         background-color: #fff;
-        box-shadow: 0 0 0 1px $gray inset;
+        box-shadow: 0 0 0 1px base.$gray inset;
         cursor: default;
     }
 }
@@ -173,7 +176,7 @@ button:-moz-focusring,
 [type="button"]:-moz-focusring,
 [type="reset"]:-moz-focusring,
 [type="submit"]:-moz-focusring {
-  outline: 1px solid $red;
+  outline: 1px solid base.$red;
 }
 
 input[type="text"],
@@ -183,18 +186,18 @@ input[type="url"],
 input[type="number"],
 input[type="date"],
 input[type="datetime-local"] {
-    border: 1px solid $gray;
-    padding: $spacing-s - 1px;
-    height: 1.5 * $base-line-height;
+    border: 1px solid base.$gray;
+    padding: base.$spacing-s - 1px;
+    height: 1.5 * base.$base-line-height;
 }
 
 textarea {
-    border: 1px solid $gray;
-    padding: $spacing-s - 1px;
+    border: 1px solid base.$gray;
+    padding: base.$spacing-s - 1px;
 }
 
 .field {
-    margin-bottom: $spacing-l;
+    margin-bottom: base.$spacing-l;
     display: flex;
     flex-wrap: wrap;
     width: 100%;
@@ -202,13 +205,13 @@ textarea {
 
 .field .field-meta {
     width: 25%;
-    padding-right: $spacing-l;
+    padding-right: base.$spacing-l;
     text-align: right;
-    line-height: 1.5 * $base-line-height;
+    line-height: 1.5 * base.$base-line-height;
 }
 
 .field-description {
-    margin-bottom: $spacing-s;
+    margin-bottom: base.$spacing-s;
 }
 
 .required.field .field-meta:after {
@@ -221,36 +224,36 @@ textarea {
 
 .field .inputs {
     width: 75%;
-    padding-left: $spacing-l;
+    padding-left: base.$spacing-l;
 }
 
 .field .collapsible {
-    font-size: .75 * $base-font-size;
+    font-size: .75 * base.$base-font-size;
     clear: both;
-    line-height: .75 * $base-line-height;
+    line-height: .75 * base.$base-line-height;
 }
 
 .field .inputs ~ *,
 form input[type="submit"] {
-    margin-left: calc(25% + #{$spacing-l});
-    margin-top: $spacing-m;
+    margin-left: calc(25% + #{base.$spacing-l});
+    margin-top: base.$spacing-m;
 }
 
 #advanced-search .value:not(:first-child) {
-    margin-top: $spacing-s;
+    margin-top: base.$spacing-s;
 }
 
 #advanced-search {
-    padding: $spacing-l 0;
+    padding: base.$spacing-l 0;
 }
 
 #advanced-search input[type="text"] {
-    height: 1.5 * $base-line-height;
+    height: 1.5 * base.$base-line-height;
 }
 
 #advanced-search input[type="submit"] {
-    font-size: 1.25 * $base-font-size;
-    padding: $spacing-m;
+    font-size: 1.25 * base.$base-font-size;
+    padding: base.$spacing-m;
 }
 
 #advanced-search .multi-value div.value:only-of-type .remove-value {
@@ -265,9 +268,9 @@ form input[type="submit"] {
 #advanced-search .remove-value {
     text-indent: -9999px;
     position: relative;
-    width: 1.5 * $spacing-l;
-    height: 1.5 * $spacing-l;
-    margin-left: $spacing-s;
+    width: 1.5 * base.$spacing-l;
+    height: 1.5 * base.$spacing-l;
+    margin-left: base.$spacing-s;
 
     &:before {
         text-indent: 0;
@@ -276,12 +279,12 @@ form input[type="submit"] {
         left: 0;
         right: 0;
         bottom: 0;
-        line-height: 1.5 * $base-line-height;
+        line-height: 1.5 * base.$base-line-height;
     }
 }
 
 .search-entry:not(:first-child) {
-    margin-top: $spacing-m;
+    margin-top: base.$spacing-m;
 }
 
 /* @end */
@@ -294,8 +297,8 @@ nav ul {
 }
 
 .item-pagination.navigation {
-    border-top: 1px solid $gray;
-    padding-top: $spacing-m - 1px;
+    border-top: 1px solid base.$gray;
+    padding-top: base.$spacing-m - 1px;
     display: flex;
     justify-content: space-between;
 }
@@ -306,32 +309,32 @@ nav ul {
 
 .secondary-nav ul {
     margin: 0 0 -1px;
-    border-bottom: 1px solid $gray;
+    border-bottom: 1px solid base.$gray;
     padding-bottom: -1px;
 }
 
 .secondary-nav.navigation li {
     display: inline-block;
     margin-right: .5em;
-    padding-bottom: $spacing-m;
+    padding-bottom: base.$spacing-m;
 
     &.active a {
-        color: $red;
+        color: base.$red;
     }
 }
 
 .secondary-nav a {
-    color: $dark-gray;
+    color: base.$dark-gray;
 }
 
 #skipnav {
   position: fixed;
-  top: $spacing-l;
+  top: base.$spacing-l;
   left: 50%;
-  border: 1px solid $gray;
+  border: 1px solid base.$gray;
   transform: translateX(-50%);
   z-index: -5;
-  padding: $spacing-s;
+  padding: base.$spacing-s;
   background-color: #fff;
   opacity: 0;
   
@@ -350,7 +353,7 @@ nav ul {
     top: 0;
     left: -9999px;
     background-color: #fff;
-    padding: $spacing-s;
+    padding: base.$spacing-s;
     display: inline-block;
 
     &:focus {
@@ -366,10 +369,10 @@ header nav .navigation {
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-    border-top: 1px solid $gray;
-    border-bottom: 1px solid $gray;
+    border-top: 1px solid base.$gray;
+    border-bottom: 1px solid base.$gray;
     padding: 0;
-    margin: $spacing-l 0;
+    margin: base.$spacing-l 0;
 }
 
 header nav li {
@@ -378,14 +381,14 @@ header nav li {
 }
 
 header nav a {
-    font-size: .875 * $base-font-size;
+    font-size: .875 * base.$base-font-size;
 }
 
 .site-title {
-    font-size: 1.5 * $base-font-size;
+    font-size: 1.5 * base.$base-font-size;
     text-transform: uppercase;
     letter-spacing: .125em;
-    margin: (2 * $spacing-l) 0 0;
+    margin: (2 * base.$spacing-l) 0 0;
     display: block;
     text-align: center;
 
@@ -395,7 +398,7 @@ header nav a {
 }
 
 .site-title img {
-    max-height: (3 * $spacing-l);
+    max-height: (3 * base.$spacing-l);
     max-width: 100%;
 }
 
@@ -415,22 +418,22 @@ header nav a {
 
 #search-container {
     position: absolute;
-    top: -(2 * $spacing-l);
-    right: $spacing-l;
+    top: -(2 * base.$spacing-l);
+    right: base.$spacing-l;
 }
 
 #search-container input[type="text"],
 #search-container button {
     border: 0;
-    border-bottom: 1px solid $gray;
+    border-bottom: 1px solid base.$gray;
     background-color: #fff;
-    height: 1.5 * $base-line-height;
+    height: 1.5 * base.$base-line-height;
     display: inline-block;
-    line-height: $base-line-height;
-    padding: $spacing-s;
+    line-height: base.$base-line-height;
+    padding: base.$spacing-s;
     vertical-align: bottom;
     background-color: #fff;
-    color: $dark-gray;
+    color: base.$dark-gray;
 }
 
 #search-container input[type="text"]:focus {
@@ -440,18 +443,18 @@ header nav a {
 
 #search-form {
     display: flex;
-    padding: $spacing-s $spacing-m $spacing-m;
+    padding: base.$spacing-s base.$spacing-m base.$spacing-m;
     box-shadow: 0 0 0 1px #dedede inset;
     background: #fff;
 }
 
 #search-form.closed {
-    width: 1.5 * $base-line-height;
-    height: 1.75 * $base-line-height;
+    width: 1.5 * base.$base-line-height;
+    height: 1.75 * base.$base-line-height;
 }
 
 #search-form.open {
-    right: 1.5 * $base-line-height;
+    right: 1.5 * base.$base-line-height;
     position: absolute;
 }
 
@@ -459,7 +462,7 @@ header nav a {
     bottom: 0;
     position: absolute;
     border-bottom: 0;
-    color: darken($gray, 15%);
+    color: color.adjust(base.$gray, $lightness: -15%);
     padding: 0;
 }
 
@@ -467,10 +470,10 @@ header nav a {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 1.5 * $base-line-height;
-    height: 1.5 * $base-line-height;
+    width: 1.5 * base.$base-line-height;
+    height: 1.5 * base.$base-line-height;
     right: 0;
-    border: 1px solid $gray;
+    border: 1px solid base.$gray;
     border-top: 0;
 
     &:after {
@@ -482,7 +485,7 @@ header nav a {
 }
 
 #search-form.open ~ .search-toggle {
-    top: $spacing-s;
+    top: base.$spacing-s;
     right: 0;
 
     &:after {
@@ -499,7 +502,7 @@ header nav a {
 }
 
 #search-form button {
-    width: 1.5 * $base-line-height;
+    width: 1.5 * base.$base-line-height;
     overflow: hidden;
     text-indent: -9999px;
     position: relative;
@@ -509,10 +512,10 @@ header nav a {
         font-family: "Font Awesome 5 Free";
         font-weight: 900;
         position: absolute;
-        top: $spacing-s;
+        top: base.$spacing-s;
         right: 0;
         text-indent: 0;
-        width: 1.5 * $base-line-height;
+        width: 1.5 * base.$base-line-height;
         text-align: center;
         cursor: pointer;
     }
@@ -527,19 +530,19 @@ header nav a {
     background-color: #fff;
     position: absolute;
     top: 100%;
-    padding: $spacing-m;
+    padding: base.$spacing-m;
     right: 0;
     left: 0;
-    border: 1px solid $gray;
+    border: 1px solid base.$gray;
     border-top: 0;
 }
 
 #advanced-form fieldset {
-    margin-bottom: $spacing-m;
+    margin-bottom: base.$spacing-m;
 }
 
 #advanced-form fieldset input {
-    margin-right: $spacing-s;
+    margin-right: base.$spacing-s;
 }
 
 #advanced-form p {
@@ -552,9 +555,9 @@ header nav a {
 
 #content .blocks > h2:first-of-type {
     text-align: center;
-    font-size: 2 * $base-font-size;
-    margin-bottom: $spacing-l;
-    line-height: 2 * $base-line-height;
+    font-size: 2 * base.$base-font-size;
+    margin-bottom: base.$spacing-l;
+    line-height: 2 * base.$base-line-height;
     font-weight: normal;
 }
 
@@ -583,7 +586,7 @@ header nav ul {
     height: 100%;
     position: relative;
     display: inline-block;
-    padding: $spacing-s $spacing-m;
+    padding: base.$spacing-s base.$spacing-m;
     margin: 0 0 -1px 0;
     border: 1px solid transparent;
 }
@@ -591,11 +594,11 @@ header nav ul {
 /* focus/open states of first descendant link within a top level 
     navigation item */
 .open {
-    border-bottom: 3px solid $gray;
+    border-bottom: 3px solid base.$gray;
 }
 
 .nav-item.open > a {
-    padding: $spacing-s $spacing-m ($spacing-s - 3px);
+    padding: base.$spacing-s base.$spacing-m (base.$spacing-s - 3px);
 }
 
 /* open state of first descendant link within a top level 
@@ -609,7 +612,7 @@ header nav ul {
 }
 
 header nav > ul > li > .sub-nav-toggle {
-    margin-left: -$spacing-m;
+    margin-left: -(base.$spacing-m);
     position: relative;
     z-index: 1;
 }
@@ -619,7 +622,7 @@ header nav > ul > li > .sub-nav-toggle {
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
     display: inline-block;
-    width: $spacing-l;
+    width: base.$spacing-l;
 }
 
 .nav-menu > .nav-item > [aria-expanded="true"]:after {
@@ -645,7 +648,7 @@ a.parent:after {
     &.first {
         max-width: 100%;
         margin: 0 auto;
-        padding: 0 $spacing-m;
+        padding: 0 base.$spacing-m;
     }
 }
 
@@ -655,7 +658,7 @@ a.parent:after {
 
 .first.open.sub-nav ul ul ul {
     display: block;
-    padding-left: $spacing-l;
+    padding-left: base.$spacing-l;
 }
 
 @media screen and (min-width: 1100px) {
@@ -676,7 +679,7 @@ a.parent:after {
 }
 
 .sub-nav-group .sub-nav-group {
-    margin-right: $spacing-l;
+    margin-right: base.$spacing-l;
 }
 
 /* list of items within sub-navigation panel */
@@ -696,20 +699,20 @@ a.parent:after {
     border: 0;
 
     li {
-        padding: $spacing-s;
+        padding: base.$spacing-s;
     }
 
     li a:not(.parent) {
-        padding-left: $spacing-l;
-        text-indent: -$spacing-l;
+        padding-left: base.$spacing-l;
+        text-indent: -(base.$spacing-l);
         display: inline-block;
     }
 
     li a:not(.parent):before {
         content: "\25C6";
         display: inline-block;
-        width: $spacing-l;
-        margin-right: (-.5 * $spacing-s);
+        width: base.$spacing-l;
+        margin-right: (-.5 * base.$spacing-s);
         text-indent: 0;
     }
 }
@@ -723,7 +726,7 @@ a.parent:after {
     display: block;
     list-style-type: none;
     margin: 0;
-    padding: $spacing-m;
+    padding: base.$spacing-m;
     position: relative;
 }    
 
@@ -732,14 +735,14 @@ a.parent:after {
 /* @group ----- Footer ----- */
 
 footer {
-    margin-top: (2 * $spacing-l);
+    margin-top: (2 * base.$spacing-l);
     clear: both;
 }
 
 #bottom-nav li {
     display: inline-block;
     margin-right: 1em;
-    font-size: .875 * $base-font-size;
+    font-size: .875 * base.$base-font-size;
 }
 
 /* @end */
@@ -754,8 +757,8 @@ footer {
     width: 100%;
 
     & > * {
-        margin-bottom: $spacing-m;
-        margin-right: $spacing-l;
+        margin-bottom: base.$spacing-m;
+        margin-right: base.$spacing-l;
     }
 
     & + .resource-list {
@@ -768,7 +771,7 @@ footer {
 }
 
 .sorting > * {
-    margin-bottom: $spacing-m;
+    margin-bottom: base.$spacing-m;
 }
 
 .sorting select {
@@ -787,13 +790,13 @@ footer {
 
 .pagination form,
 .pagination .next.button {
-    margin-right: $spacing-m;
+    margin-right: base.$spacing-m;
 }
 
 
 .pagination .button {
-    line-height: 1.5 * $spacing-l;
-    padding: 0 $spacing-m;
+    line-height: 1.5 * base.$spacing-l;
+    padding: 0 base.$spacing-m;
     text-align: center;
 }
 
@@ -802,17 +805,17 @@ footer {
 }
 
 .pagination .row-count {
-    line-height: 1.5 * $spacing-l;
+    line-height: 1.5 * base.$spacing-l;
 }
 
 [name="page"] {
-    width: (3 * $spacing-l);
+    width: (3 * base.$spacing-l);
     text-align: center;
-    margin-right: $spacing-s;
+    margin-right: base.$spacing-s;
 }
 
 .layout-toggle button {
-    width: 1.5 * $spacing-l;
+    width: 1.5 * base.$spacing-l;
 }
 
 .o-icon-grid:before {
@@ -831,17 +834,17 @@ footer {
     padding-left: 0;
     list-style: none;
     width: 100%; 
-    border-top: 1px solid $gray;
+    border-top: 1px solid base.$gray;
 
     .resource-link img {
         float: right;
-        margin-left: $spacing-l;
+        margin-left: base.$spacing-l;
         vertical-align: bottom;
     }
 
     .resource {
-        border-bottom: 1px solid $gray;
-        padding: $spacing-l 0;
+        border-bottom: 1px solid base.$gray;
+        padding: base.$spacing-l 0;
         overflow: hidden;
     }
 }
@@ -853,9 +856,9 @@ footer {
     clear: both;
 
     .resource {
-        padding: $spacing-l;
+        padding: base.$spacing-l;
         width: 25%;
-        font-size: .875 * $base-font-size;
+        font-size: .875 * base.$base-font-size;
         border-bottom: 0;
     }
 
@@ -878,7 +881,7 @@ footer {
 
     .resource-link img {
         display: block;
-        margin: 0 0 $spacing-m;
+        margin: 0 0 base.$spacing-m;
         float: none;
     }
 }
@@ -897,8 +900,8 @@ footer {
 }
 
 .browse .resource h4 {
-    font-size: $base-font-size;
-    line-height: $base-line-height;
+    font-size: base.$base-font-size;
+    line-height: base.$base-line-height;
     margin-bottom: 0;
 }
 
@@ -920,13 +923,13 @@ footer {
 
 .search-filters {
     text-align: center;
-    margin: 0 0 $spacing-l;
+    margin: 0 0 base.$spacing-l;
 
     .filter {
         display: inline-block;
-        border: 1px solid $gray;
-        padding: $spacing-s - 1px;
-        font-size: 1.25 * $base-font-size;
+        border: 1px solid base.$gray;
+        padding: base.$spacing-s - 1px;
+        font-size: 1.25 * base.$base-font-size;
         margin: 0 .5em;
     }
 
@@ -940,7 +943,7 @@ footer {
 /* @group ----- Show ----- */
 
 #itemfiles {
-    margin-bottom: $spacing-l;
+    margin-bottom: base.$spacing-l;
     height: 0;
     padding-bottom: 50vh;
 
@@ -958,13 +961,13 @@ footer {
 }
 
 .media.show .media-render.video {
-    margin-bottom: $spacing-l;
+    margin-bottom: base.$spacing-l;
     text-align: center;
     background-color: #000;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    padding-bottom: 2.25 * $spacing-l;
+    padding-bottom: 2.25 * base.$spacing-l;
 
     video {
         width: auto;
@@ -1014,7 +1017,7 @@ footer {
 .media-render a.lg-icon {
     font-family: lg !important;
     speak: never;
-    font-size: 1.5 * $base-font-size;
+    font-size: 1.5 * base.$base-font-size;
     font-style: normal;
     font-weight: 400;
     font-variant: normal;
@@ -1022,12 +1025,12 @@ footer {
     line-height: 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    height: 2 * $spacing-l;
-    width: 2 * $spacing-l;
+    height: 2 * base.$spacing-l;
+    width: 2 * base.$spacing-l;
     display: inline-block;
     color: #fff;
     opacity: .5;
-    margin-top: $spacing-m;
+    margin-top: base.$spacing-m;
     text-align: center;
 }
 
@@ -1067,18 +1070,18 @@ footer {
     width: 100%;
 
     dl {
-        margin-top: $spacing-m;
+        margin-top: base.$spacing-m;
     }
 
     .property {
-        margin-bottom: $spacing-m;
+        margin-bottom: base.$spacing-m;
     }
 }
 
 .property,
 .media-list  {
     display: flex;
-    margin-bottom: $spacing-l;
+    margin-bottom: base.$spacing-l;
     flex-wrap: wrap;
     justify-content: flex-end;
     clear: both;
@@ -1091,18 +1094,18 @@ footer {
     color: #000;
     margin: 0;
     text-align: right;
-    padding: 0 0 0 $spacing-l;
-    font-size: 1.25 * $base-font-size;
+    padding: 0 0 0 base.$spacing-l;
+    font-size: 1.25 * base.$base-font-size;
 }
 
 .resource.show dl dl dt {
-    font-size: $base-font-size !important;
-    line-height: $base-line-height;
+    font-size: base.$base-font-size !important;
+    line-height: base.$base-line-height;
 }
 
 .property .field-term {
     display: block;
-    font-size: $base-font-size;
+    font-size: base.$base-font-size;
 }
 
 .resource-metadata {
@@ -1113,20 +1116,20 @@ footer {
     width: 100%;
     display: flex;
     flex-wrap: wrap;
-    border-left: 1px solid $gray;
-    margin: $spacing-l 0;
+    border-left: 1px solid base.$gray;
+    margin: base.$spacing-l 0;
 }
 
 .resource.show dt ~ dd,
 .media-list dt ~ .resource-link {
     width: 75%;
-    padding: 0 $spacing-l;
+    padding: 0 base.$spacing-l;
     margin-left: 0;
 }
 
 .resource.show .property dl dt,
 .resource.show .property dl dd {
-    margin-bottom: $spacing-m;
+    margin-bottom: base.$spacing-m;
 
     &:last-of-type {
         margin-bottom: 0;
@@ -1140,9 +1143,9 @@ footer {
 .resource-metadata .value:not(:last-child),
 .media-list dt ~ .resource-link:not(:last-child),
 #linked-resources .linked-resource {
-    padding-bottom: $spacing-s;
-    margin-bottom: $spacing-s;
-    border-bottom: 1px solid $gray;
+    padding-bottom: base.$spacing-s;
+    margin-bottom: base.$spacing-s;
+    border-bottom: 1px solid base.$gray;
 }
 
 .resource-metadata dt ~ .value:last-child,
@@ -1151,7 +1154,7 @@ footer {
 }
 
 .property .value:not(:last-child) {
-    margin-bottom: $spacing-m;
+    margin-bottom: base.$spacing-m;
 }
 
 .property .value > *:first-child {
@@ -1159,16 +1162,16 @@ footer {
 }
 
 .property .value img {
-    height: 1.5 * $base-line-height;
+    height: 1.5 * base.$base-line-height;
     display: inline-block;
     vertical-align: middle;
 }
 
 .property .value .language {
     display: inline-block;
-    padding: 0 $spacing-s;
-    border: 1px solid $gray;
-    margin-right: $spacing-s;
+    padding: 0 base.$spacing-s;
+    border: 1px solid base.$gray;
+    margin-right: base.$spacing-s;
     align-self: flex-start;
 }
 
@@ -1184,15 +1187,15 @@ footer {
 
 .property .value.resource .expand,
 .property .value.resource .collapse {
-    line-height: 1.5 * $base-line-height;
+    line-height: 1.5 * base.$base-line-height;
 }
 
 .property .value:not(:last-child) .resource-link {
-    margin-bottom: $spacing-m;
+    margin-bottom: base.$spacing-m;
 }
 
 .property .value-content:not(:only-child) {
-    margin-right: $spacing-s;
+    margin-right: base.$spacing-s;
 }
 
 .resource.show .resource-metadata .resource-link {
@@ -1202,7 +1205,7 @@ footer {
 
 .resource-metadata .resource-link img,
 .results .resource-link img {
-    margin-right: $spacing-s;
+    margin-right: base.$spacing-s;
 }
 
 #linked-resources {
@@ -1216,7 +1219,7 @@ footer {
 .linked-header,
 .linked-footer {
     width: 100%;
-    margin-bottom: $spacing-l;
+    margin-bottom: base.$spacing-l;
     display: flex;
     justify-content: flex-end;
 }
@@ -1230,10 +1233,10 @@ footer {
 }
 
 #linked-filter h4 {
-    font-size: $base-font-size;
+    font-size: base.$base-font-size;
     width: auto;
     padding: 0;
-    margin-right: $spacing-s;
+    margin-right: base.$spacing-s;
     text-align: left;
 }
 
@@ -1249,11 +1252,11 @@ footer {
 #linked-resources caption {
     text-align: left;
     font-weight: bold;
-    margin: $spacing-s $spacing-m;
+    margin: base.$spacing-s base.$spacing-m;
 }
 
 #linked-resources > h4 {
-    padding: $spacing-s $spacing-l;
+    padding: base.$spacing-s base.$spacing-l;
 }
 
 #item-linked .pagination {
@@ -1264,10 +1267,10 @@ footer {
 .resource.show .resource-link img,
 #item-linked .resource-link img,
 .results .resource-link img {
-    height: 1.5 * $spacing-l;
+    height: 1.5 * base.$spacing-l;
     width: auto;
     display: block;
-    margin-right: $spacing-s;
+    margin-right: base.$spacing-s;
 }
 
 #linked-resources .resource-link,
@@ -1281,8 +1284,8 @@ footer {
 /* @group ----- Home ----- */
 
 #home #featured {
-    margin: 0 0 (2 * $spacing-l);
-    background-color: $gray;
+    margin: 0 0 (2 * base.$spacing-l);
+    background-color: base.$gray;
 }
 
 #home #featured .slick-list .image {
@@ -1300,17 +1303,17 @@ footer {
 
 #featured .featured-meta {
     position: absolute;
-    bottom: $spacing-l;
+    bottom: base.$spacing-l;
     left: 0;
     right: 0;
-    padding: $spacing-m $spacing-l (.75 * $spacing-l);
+    padding: base.$spacing-m base.$spacing-l (.75 * base.$spacing-l);
     background-color: rgba(0,0,0,.8);
     color: #fff;
 }
 
 #featured .featured-meta h3 {
-    font-size: 1.75 * $base-font-size;
-    line-height: 1.75 * $base-line-height;
+    font-size: 1.75 * base.$base-font-size;
+    line-height: 1.75 * base.$base-line-height;
     margin: 0;
     font-weight: normal;
 }
@@ -1324,7 +1327,7 @@ footer {
 }
 
 #featured .featured-meta p {
-    font-size: .875 * $base-font-size;
+    font-size: .875 * base.$base-font-size;
     margin: 0
 }
 
@@ -1341,10 +1344,10 @@ footer {
 }
 
 #featured .slick-dots button {
-    background-color: $gray;
-    width: .75 * $base-font-size;
-    height: .75 * $base-font-size;
-    border-radius: $base-font-size;
+    background-color: base.$gray;
+    width: .75 * base.$base-font-size;
+    height: .75 * base.$base-font-size;
+    border-radius: base.$base-font-size;
     text-indent: -9999px;
     border: 0;
     cursor: pointer;
@@ -1352,7 +1355,7 @@ footer {
 }
 
 #featured .slick-dots li[aria-hidden="false"] button {
-    background-color: darken($gray, 25%);
+    background-color: color.adjust(base.$gray, $lightness: -25%);
 }
 /* @end */
 
@@ -1360,11 +1363,11 @@ footer {
 
 #search-results {
     width: 100%;
-    margin: $spacing-l 0 0;
+    margin: base.$spacing-l 0 0;
 }
 
 #search-results img {
-    height: 3 * $spacing-l;
+    height: 3 * base.$spacing-l;
     float: right;
 }
 
@@ -1377,14 +1380,14 @@ footer {
 /* @group ----- Pages ----- */
 
 .page .site-page-pagination {
-    border-top: 1px solid $gray;
-    padding-top: $spacing-m - 1px;
-    margin-top: 2 * $spacing-l;
+    border-top: 1px solid base.$gray;
+    padding-top: base.$spacing-m - 1px;
+    margin-top: 2 * base.$spacing-l;
     width: 100%;
     clear: both;
 
     a:last-child:not(:only-child) {
-        margin-left: $spacing-l;
+        margin-left: base.$spacing-l;
     }
 }
 
@@ -1398,11 +1401,11 @@ footer {
 }
 
 .page #content .sub-menu {
-    padding: 0 $spacing-l $spacing-l 0;
+    padding: 0 base.$spacing-l base.$spacing-l 0;
     width: 18.75%;
     float: left;
     position: sticky;
-    top: $spacing-l;
+    top: base.$spacing-l;
     left: 0;
 }
 
@@ -1417,16 +1420,16 @@ footer {
 }
 
 .page #content .sub-menu a {
-    font-size: .875 * $base-font-size;
+    font-size: .875 * base.$base-font-size;
     display: inline-block;
-    padding-left: $spacing-l;
-    text-indent: -1 * $spacing-l;
+    padding-left: base.$spacing-l;
+    text-indent: -1 * base.$spacing-l;
 
     &:before {
         content: "\25C6";
-        width: $spacing-m;
+        width: base.$spacing-m;
         display: inline-block;
-        margin-right: $spacing-m;
+        margin-right: base.$spacing-m;
         text-indent: 0;
     }
 }
@@ -1436,13 +1439,13 @@ footer {
 }
 
 .page #content .sub-menu > ul > li {
-    padding: $spacing-s - 1px;
+    padding: base.$spacing-s - 1px;
 }
 
 .page #content .sub-menu h4 {
-    border-bottom: 1px solid $gray;
-    padding-bottom: $spacing-s - 1px;
-    margin: 0 0 $spacing-s;
+    border-bottom: 1px solid base.$gray;
+    padding-bottom: base.$spacing-s - 1px;
+    margin: 0 0 base.$spacing-s;
 }
 
 .page.browse .pagination {
@@ -1450,7 +1453,7 @@ footer {
 }
 
 .breadcrumbs {
-    margin-bottom: $spacing-l;
+    margin-bottom: base.$spacing-l;
 }
 
 /* @end */
@@ -1458,7 +1461,7 @@ footer {
 /* @group ----- Search ----- */
 
 .results {
-  margin-bottom: 2 * $spacing-l;
+  margin-bottom: 2 * base.$spacing-l;
   clear: both;
 }
 
@@ -1474,7 +1477,7 @@ footer {
 
 .results .result-site,
 .results ul ul {
-  padding-left: $spacing-m;
+  padding-left: base.$spacing-m;
 }
 
 .results > ul {
@@ -1484,16 +1487,16 @@ footer {
 }
 
 .results > ul > li {
-  margin-bottom: $spacing-l;
-  width: calc(50% - #{$spacing-l});
+  margin-bottom: base.$spacing-l;
+  width: calc(50% - #{base.$spacing-l});
   
   &:nth-child(2n) {
-    margin-left: $spacing-l;
+    margin-left: base.$spacing-l;
   }
  }
 
 .pagination + .results {
-  margin: $spacing-l 0 0;
+  margin: base.$spacing-l 0 0;
   clear: both;
 }
 
@@ -1511,7 +1514,7 @@ footer {
 }
 
 .sitewide-search-form ~ .pagination {
-  margin: (1.25 * $spacing-l) 0 $spacing-l;
+  margin: (1.25 * base.$spacing-l) 0 base.$spacing-l;
   text-align: right;
   width: 50%;
 }
@@ -1521,9 +1524,9 @@ footer {
 }
 
 .index.search .results ul li {
-  margin-bottom: $spacing-s;
-  padding-bottom: $spacing-s;
-  border-bottom: 1px solid $gray;
+  margin-bottom: base.$spacing-s;
+  padding-bottom: base.$spacing-s;
+  border-bottom: 1px solid base.$gray;
 }
 
 .sitewide-search-form {

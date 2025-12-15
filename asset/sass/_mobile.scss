@@ -1,8 +1,10 @@
+@use "base";
+
 /* @group ----- Containers ----- */
 
 #wrap,
 footer {
-    padding: 0 $spacing-l;
+    padding: 0 base.$spacing-l;
 }
 
 /* @end */
@@ -15,7 +17,7 @@ footer {
 .media-list {
     width: 100%;
     text-align: left;
-    margin-bottom: $spacing-s;
+    margin-bottom: base.$spacing-s;
 }
 
 .field .inputs{
@@ -30,8 +32,8 @@ footer {
 #sort-links {
     width: 100%;
     text-align: center;
-    padding: ($spacing-s - 1px) 0 $spacing-s;
-    border-bottom: 1px solid $gray;
+    padding: (base.$spacing-s - 1px) 0 base.$spacing-s;
+    border-bottom: 1px solid base.$gray;
 }
 
 .pagination-nav ul,
@@ -49,27 +51,27 @@ footer {
 
 header > h1,
 .site-title {
-    margin: $spacing-s 0;
-    line-height: 1.5 * $base-line-height;
+    margin: base.$spacing-s 0;
+    line-height: 1.5 * base.$base-line-height;
 }
 
 .site-title img {
-    max-height: $spacing-l;
-    max-width: calc(100% - #{1.75 * $spacing-l});
+    max-height: base.$spacing-l;
+    max-width: calc(100% - #{1.75 * base.$spacing-l});
 }
 
 #search-container {
-    top: -(.25 * $spacing-l);
+    top: -(.25 * base.$spacing-l);
 }
 
 #top-nav ul {
-    margin: $spacing-m 0;
+    margin: base.$spacing-m 0;
 }
 
 header nav .navigation {
     justify-content: center;
     flex-wrap: wrap;
-    margin: $spacing-m 0;
+    margin: base.$spacing-m 0;
 }
 
 .sub-nav.first {
@@ -82,7 +84,7 @@ header nav .navigation {
 }
 
 #content > h2 {
-    margin: $spacing-m 0;
+    margin: base.$spacing-m 0;
 }
 
 /* @end */
@@ -90,7 +92,7 @@ header nav .navigation {
 /* @group ----- Footer ----- */
 
 footer {
-    margin: $spacing-l 0;
+    margin: base.$spacing-l 0;
     padding: 0;
 }
 
@@ -103,30 +105,30 @@ footer {
     justify-content: flex-start;
     
     & > * {
-        margin: $spacing-s $spacing-l $spacing-s 0;
+        margin: base.$spacing-s base.$spacing-l base.$spacing-s 0;
     }
 }
 
 .browse .records {
-    padding: $spacing-l 0;
+    padding: base.$spacing-l 0;
 }
 
 .browse .grid.resource-list {
     justify-content: flex-start;
-    margin: 0 (-1 * $spacing-m);
+    margin: 0 (-1 * base.$spacing-m);
 }
 
 .browse .grid .resource {
     display: flex;
     flex-wrap: wrap;
     width: 50%;
-    padding: $spacing-m - 1px;
-    margin-bottom: $spacing-l;
+    padding: base.$spacing-m - 1px;
+    margin-bottom: base.$spacing-l;
     align-content: flex-start;
     
     .thumbnail {
         width: 100%;
-        margin: 0 0 $spacing-m 0;
+        margin: 0 0 base.$spacing-m 0;
     }
 }
 
@@ -136,7 +138,7 @@ footer {
     
     .thumbnail {
         width: 100%;
-        margin: 0 0 $spacing-m 0;
+        margin: 0 0 base.$spacing-m 0;
         display: block;
     }
 }
@@ -169,15 +171,15 @@ footer {
 .resource.show dt ~ dd, 
 .media-list dt ~ .resource-link,
 .resource.show .collapsible .property {
-    padding-left: $spacing-m;
+    padding-left: base.$spacing-m;
 }
 
 .resource.show .collapsible .property:not(:last-child) {
-    margin-bottom: $spacing-m;
+    margin-bottom: base.$spacing-m;
 }
 
 .resource.show .property > dt { 
-    margin-bottom: $spacing-s;
+    margin-bottom: base.$spacing-s;
 }
 
 .resource.show .property dl dt { 
@@ -191,7 +193,7 @@ footer {
 }
 
 #linked-filter {
-    margin-bottom: $spacing-l;
+    margin-bottom: base.$spacing-l;
 }
 
 #linked-resources .resource-class {
@@ -209,7 +211,7 @@ footer {
 }
 
 .media-embeds .file {
-    margin-bottom: $spacing-l;
+    margin-bottom: base.$spacing-l;
 }
 
 .property .value:not(:last-child) .resource-link {
@@ -221,12 +223,12 @@ footer {
 /* @group ----- Search ----- */
 
 #search-filters ul li {
-    font-size: .875 * $base-font-size;
-    margin: 0 (.125 * $spacing-l) $spacing-m;
+    font-size: .875 * base.$base-font-size;
+    margin: 0 (.125 * base.$spacing-l) base.$spacing-m;
 }
 
 #search-results {
-    margin-top: $spacing-m;
+    margin-top: base.$spacing-m;
 }
 
 .index.search .results ul {

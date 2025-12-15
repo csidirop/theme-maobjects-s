@@ -1,10 +1,11 @@
-@import "normalize";
-@import "base";
+@use "sass:meta";
+@use "normalize";
+@use "base";
 
 @media screen {
-    @import "screen";
+    @include meta.load-css("screen");
 }
 
 @media screen and (max-width:640px) {
-    @import "mobile";
+    @include meta.load-css("mobile");
 }
