@@ -1,0 +1,29 @@
+@mixin button_blau {
+    border: 0.1875rem solid $uni-blau;
+    color: #fff;
+    background: $uni-blau;
+}
+
+@mixin button_blau_hover {
+    border: 0.1875rem solid $uni-blau-hell;
+    color: $uni-blau;
+    background: #fff;
+}
+
+body {
+    // Font styling:
+    font-family: myriad-pro, sans-serif !important;
+    color: $uni-blau;
+
+    a {
+        color: $uni-blau;
+        text-decoration: none;
+        border-bottom: .1875rem solid lightgray;
+
+        &:hover {
+            color: #455d82;
+            border-color: $uni-blau-hell;
+            text-decoration: none;
+        }
+    }
+}

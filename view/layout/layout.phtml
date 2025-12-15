@@ -9,6 +9,9 @@ $this->headTitle($siteTitle)->setSeparator(' · ');
 $this->headTitle()->append($this->setting('installation_title', 'Omeka S'));
 $this->headLink()->prependStylesheet('//fonts.googleapis.com/css?family=Crimson+Text:400,400italic,700,700italic');
 $this->headLink()->prependStylesheet($this->assetUrl('css/iconfonts.css', 'Omeka'));
+// $this->headLink()->appendStylesheet("https://www.uni-mannheim.de/typo3conf/ext/uma_site/Resources/Public/Icons/sprite.css");
+// $this->headLink()->appendStylesheet("https://www.uni-mannheim.de/typo3conf/ext/uma_site/Resources/Public/Css/app.css");
+// dont load for now. not sure if we need that overload
 $this->headLink()->appendStylesheet($this->assetUrl('css/style.css'));
 $this->headScript()->prependFile($this->assetUrl('js/centerrow.js'));
 $this->headScript()->prependFile($this->assetUrl('js/jquery-accessibleMegaMenu.js'));

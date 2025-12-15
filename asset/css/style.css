@@ -2025,6 +2025,22 @@ nav ul {
     display: none;
   }
 }
+@media screen {
+  body {
+    font-family: myriad-pro, sans-serif !important;
+    color: #232e58;
+  }
+  body a {
+    color: #232e58;
+    text-decoration: none;
+    border-bottom: 0.1875rem solid lightgray;
+  }
+  body a:hover {
+    color: #455d82;
+    border-color: #abb8ca;
+    text-decoration: none;
+  }
+}
 @media screen and (max-width: 640px) {
   /* @group ----- Containers ----- */
   #wrap,
