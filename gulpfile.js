@@ -9,7 +9,6 @@ gulp.task('css', function () {
 
     return gulp.src('./asset/sass/*.scss')
         .pipe(sass({
-            outputStyle: 'compressed',
             includePaths: ['node_modules/susy/sass']
         }).on('error', sass.logError))
         .pipe(postcss([
