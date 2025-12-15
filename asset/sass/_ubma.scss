@@ -32,6 +32,28 @@ body {
     }
 }
 
+// HEADER:
+header {
+    display: flex;
+
+    nav {
+        margin-left: auto;
+
+        .navigation.nav-menu {
+            border: none;
+        }
+
+        .nav-item > a {
+            border: none;
+
+            &:hover {
+                text-decoration: none;
+                border-bottom: 0.1875rem solid $uni-blau;
+            }
+        }
+    }
+}
+
 // FOOTER:
 footer {
     background: $uni-blau;

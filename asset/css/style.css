@@ -2045,6 +2045,24 @@ nav ul {
   }
 }
 @media screen {
+  header {
+    display: flex;
+  }
+  header nav {
+    margin-left: auto;
+  }
+  header nav .navigation.nav-menu {
+    border: none;
+  }
+  header nav .nav-item > a {
+    border: none;
+  }
+  header nav .nav-item > a:hover {
+    text-decoration: none;
+    border-bottom: 0.1875rem solid #232e58;
+  }
+}
+@media screen {
   footer {
     background: #232e58;
     color: #abb8ca;
