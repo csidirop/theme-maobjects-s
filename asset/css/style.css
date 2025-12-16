@@ -2026,6 +2026,55 @@ nav ul {
   }
 }
 @media screen {
+  form input,
+select {
+    border-radius: 0.625rem;
+    background-color: #f6f6f6;
+    box-shadow: none;
+    font-weight: 400;
+  }
+}
+@media screen {
+  button,
+.button {
+    border: 0.1875rem solid #232e58;
+    color: white;
+    background: #232e58;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease-out;
+  }
+  button:hover,
+.button:hover {
+    border: 0.1875rem solid #abb8ca;
+    color: #232e58;
+    background: white;
+    border-radius: 0.5rem;
+  }
+}
+@media screen {
+  nav.pagination .button {
+    border: 0.1875rem solid #232e58;
+    color: white;
+    background: #232e58;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease-out;
+    box-shadow: unset;
+    line-height: 30px;
+  }
+  nav.pagination .button:hover {
+    border: 0.1875rem solid #abb8ca;
+    color: #232e58;
+    background: white;
+    border-radius: 0.5rem;
+  }
+  nav.pagination .button.inactive {
+    cursor: not-allowed;
+    pointer-events: none;
+    background: #f6f6f6;
+    border-color: #dedede;
+  }
+}
+@media screen {
   body {
     font-family: myriad-pro, sans-serif !important;
     color: #232e58;
@@ -2036,7 +2085,7 @@ nav ul {
     border-bottom: 0.1875rem solid lightgray;
   }
   body a:hover {
-    color: #455d82;
+    color: #232e58;
     border-color: #abb8ca;
     text-decoration: none;
   }
@@ -2103,6 +2152,32 @@ footer .logos .logo2 {
   footer .logos .uni-logo {
     height: 50px;
     margin-right: 20px;
+  }
+}
+@media screen {
+  .browse .resource-list.list > li.item {
+    border: unset;
+    padding: 1.2rem;
+  }
+  .browse .resource-list.list > li.item .resource-name {
+    margin-bottom: 1.2rem;
+    font-weight: normal;
+  }
+  .browse .resource-list.list > li.item:nth-of-type(odd) {
+    background-color: #f6f6f6;
+  }
+  .browse .resource-list.list > li.item:nth-of-type(even) {
+    background-color: white;
+  }
+  .browse .item-meta.hentry.list .item-meta-content {
+    display: flex;
+  }
+  .browse .item-meta.hentry.list .item-img {
+    margin-right: 3%;
+    max-width: 120px;
+  }
+  .browse .item-meta.hentry.list .item-img img {
+    max-width: 100%;
   }
 }
 @media screen and (max-width: 640px) {

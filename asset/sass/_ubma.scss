@@ -1,13 +1,52 @@
 @mixin button_blau {
     border: 0.1875rem solid $uni-blau;
-    color: #fff;
+    color: white;
     background: $uni-blau;
+    border-radius: .5rem;
+    transition: all .2s ease-out;
 }
 
 @mixin button_blau_hover {
     border: 0.1875rem solid $uni-blau-hell;
     color: $uni-blau;
-    background: #fff;
+    background: white;
+    border-radius: .5rem;
+}
+
+// BASIC STYLING:
+form input,
+select {
+  border-radius: .625rem;
+  background-color: #f6f6f6;
+  box-shadow: none;
+  font-weight: 400;
+}
+
+button,
+.button {
+     @include button_blau;
+
+     &:hover {
+        @include button_blau_hover;
+     }
+}
+
+// Navigation (Item, Browse, Collection?):
+nav.pagination .button {
+    @include button_blau;
+    box-shadow: unset;
+    line-height: 30px;
+
+    &:hover {
+        @include button_blau_hover;
+    }
+
+    &.inactive {
+        cursor: not-allowed;
+        pointer-events: none;
+        background: #f6f6f6;
+        border-color: $gray;
+    }
 }
 
 body {
@@ -21,7 +60,7 @@ body {
         border-bottom: .1875rem solid lightgray;
 
         &:hover {
-            color: #455d82;
+            color: $uni-blau;
             border-color: $uni-blau-hell;
             text-decoration: none;
         }
@@ -104,6 +143,45 @@ footer {
         .uni-logo {
             height: 50px;
             margin-right: 20px;
+        }
+    }
+}
+
+// BROWSE ITEM:
+.browse {
+    // List view styling:
+    .resource-list.list > li.item {
+        border: unset;
+        padding: 1.2rem;
+
+        .resource-name {
+            margin-bottom: 1.2rem;
+            font-weight: normal;
+        }
+
+        // Alternating row colors:
+        &:nth-of-type(odd) {
+            background-color: #f6f6f6;
+        }
+    
+        &:nth-of-type(even) {
+            background-color: white;
+        }
+    }
+  
+    // List specific styles:
+    .item-meta.hentry.list {
+        .item-meta-content {
+            display: flex;
+        }
+    
+        .item-img {
+            margin-right: 3%;
+            max-width: 120px;
+    
+            img {
+                max-width: 100%;
+            }
         }
     }
 }
