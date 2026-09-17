@@ -1,0 +1,52 @@
+<?php
+/**
+ * Theme override of common/resource-values.phtml.
+ *
+ * The property-group handling below is based on the corresponding view from
+ * the AdvancedResourceTemplate module. Keep it in sync with that module when
+ * upgrading Omeka or AdvancedResourceTemplate. The grouped values are passed
+ * to resource-values-list.phtml, where this theme customizes Boolean output.
+ */
+$groups = null;
+
+if (class_exists('AdvancedResourceTemplate\Api\Representation\ResourceTemplatePropertyDataRepresentation')) {
+    $template = $resource->resourceTemplate();
+    $groups = $template ? $template->dataValue('groups', []) : null;
+}
+
+if (!$groups) {
+    echo $this->partial('common/resource-values-list', ['values' => $values]);
+    return;
+}
+
+$groupedValues = array_fill_keys(array_keys($groups), []);
+$otherValues = [];
+
+foreach ($values as $propertyData) {
+    $group = $propertyData['group'] ?? null;
+    if ($group !== null && array_key_exists($group, $groupedValues)) {
+        $groupedValues[$group][] = $propertyData;
+    } else {
+        $otherValues[] = $propertyData;
+    }
+}
+
+$escape = $this->plugin('escapeHtml');
+$translate = $this->plugin('translate');
+?>
+<div class="property-groups">
+    <?php foreach ($groupedValues as $groupLabel => $groupValues): ?>
+        <?php if ($groupValues): ?>
+        <div class="property-group">
+            <h3><?php echo $escape($groupLabel); ?></h3>
+            <?php echo $this->partial('common/resource-values-list', ['values' => $groupValues]); ?>
+        </div>
+        <?php endif; ?>
+    <?php endforeach; ?>
+    <?php if ($otherValues): ?>
+    <div class="property-group">
+        <h3><?php echo $escape($translate('Other metadata')); ?></h3>
+        <?php echo $this->partial('common/resource-values-list', ['values' => $otherValues]); ?>
+    </div>
+    <?php endif; ?>
+</div>

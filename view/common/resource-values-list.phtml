@@ -1,0 +1,132 @@
+<?php
+/**
+ * Render one flat list of resource values.
+ *
+ * Most of this file is copied from Omeka S core's
+ * application/view/common/resource-values.phtml. It is kept here because core
+ * does not expose a theme hook around only the rendered value content. When
+ * upgrading Omeka, compare this file with the core template for changes.
+ *
+ * Theme-specific changes:
+ * - read the boolean_value_display theme setting;
+ * - format values whose data type is "boolean";
+ * - add Boolean state classes for styling;
+ * - accept iterators and values grouped by resource-values.phtml.
+ */
+$translate = $this->plugin('translate');
+$escape = $this->plugin('escapeHtml');
+
+$labelInfo = $this->fallbackSetting('property_label_information', ['site', 'global'], 'none');
+$showLocale = (bool) $this->fallbackSetting('show_locale_label', ['site'], true);
+$filterLocale = (bool) $this->fallbackSetting('filter_locale_values', ['site'], false);
+$showValueAnnotations = (bool) $this->fallbackSetting('show_value_annotations', ['site'], true);
+$booleanValueDisplay = $this->themeSetting('boolean_value_display', 'true_false');
+$lang = $this->lang();
+
+// AdvancedResourceTemplate may supply an iterator when properties have
+// multiple labels. Normalize it without retaining duplicate term keys.
+if ($values instanceof Traversable) {
+    $values = iterator_to_array($values, false);
+}
+
+$filterLocaleCallback = function ($value) use ($lang) {
+    $valueLang = $value->lang();
+    return $valueLang == '' || strcasecmp($valueLang, $lang) === 0;
+};
+
+// Theme customization: prepare the configured alternative Boolean output.
+// Returning null retains the data type's original true/false rendering.
+$renderBoolean = function ($value) use ($booleanValueDisplay, $escape, $translate) {
+    $isTrue = in_array(strtolower(trim((string) $value->value())), ['1', 'true'], true);
+    $label = $translate($isTrue ? 'Yes' : 'No');
+
+    if ('yes_no' === $booleanValueDisplay) {
+        return $escape($label);
+    }
+
+    if ('icons' === $booleanValueDisplay) {
+        $icon = $isTrue ? 'fa-check' : 'fa-times';
+        return sprintf(
+            '<span class="boolean-icon fas %s" aria-hidden="true"></span><span class="sr-only">%s</span>',
+            $icon,
+            $escape($label)
+        );
+    }
+
+    return null;
+};
+?>
+<?php if (count($values) > 0): ?>
+<dl>
+<?php
+foreach ($values as $term => $propertyData):
+    $propertyValues = $propertyData['values'];
+    if ($filterLocale) {
+        $propertyValues = array_filter($propertyValues, $filterLocaleCallback);
+    }
+    if (!$propertyValues) {
+        continue;
+    }
+    $property = $propertyData['property'];
+    $propertyLabel = $propertyData['alternate_label'] ?: $translate($property->label());
+    if ('term' === $labelInfo) {
+        $propertyTerm = $property->term();
+    } elseif ('vocab' === $labelInfo) {
+        $propertyTerm = $property->vocabulary()->label();
+    } else {
+        $propertyTerm = null;
+    }
+?>
+    <div class="property">
+        <dt>
+        <?php echo $escape($propertyLabel); ?>
+        <?php if ($propertyTerm !== null): ?>
+        <span class="field-term">(<?php echo $escape($propertyTerm); ?>)</span>
+        <?php endif; ?>
+        </dt>
+        <?php foreach ($propertyValues as $value): ?>
+        <?php
+        $valueType = $value->type();
+        $valueLang = $value->lang();
+        $valueAnnotation = $value->valueAnnotation();
+        $class = ['value'];
+        if ('resource' == $valueType || strpos($valueType, 'resource') !== false) {
+            $class[] = 'resource';
+            $class[] = $escape($value->valueResource()->resourceName());
+        } elseif ('uri' == $valueType) {
+            $class[] = 'uri';
+        } elseif ('boolean' === $valueType) {
+            // Theme customization: expose the Boolean state to CSS as well.
+            $class[] = 'boolean';
+            $class[] = (int) $value->value() ? 'boolean-true' : 'boolean-false';
+        }
+        ?>
+        <dd class="<?php echo implode(' ', $class); ?>" lang="<?php echo $escape($valueLang); ?>">
+            <?php if ($showLocale && $valueLang): ?>
+            <span class="language"><?php echo $valueLang; ?></span>
+            <?php endif; ?>
+            <span class="value-content"><?php
+            // Theme customization: all other data types retain core rendering.
+            $booleanHtml = 'boolean' === $valueType ? $renderBoolean($value) : null;
+            echo null === $booleanHtml
+                ? ($filterLocale ? $value->asHtml($lang) : $value->asHtml())
+                : $booleanHtml;
+            ?></span>
+            <?php if (!$value->isPublic()): ?>
+                <span class="o-icon-private" role="img" title="<?php echo $this->escapeHtml($translate('Private')); ?>" aria-label="<?php echo $this->escapeHtml($translate('Private')); ?>"></span>
+            <?php endif; ?>
+            <?php if ($valueAnnotation && $showValueAnnotations): ?>
+                <a href="#" class="<?php echo ('expanded' === $showValueAnnotations) ? 'collapse' : 'expand'; ?>" aria-label="<?php echo ('expanded' === $showValueAnnotations) ? $this->escapeHtml($translate('Collapse')) : $this->escapeHtml($translate('Expand')); ?>">
+                    <span class="has-annotation o-icon-annotation" role="img" title="<?php echo $this->escapeHtml($translate('Has annotation')); ?>" aria-label="<?php echo $this->escapeHtml($translate('Has annotation')); ?>"></span>
+                </a>
+                <div class="collapsible annotation">
+                    <?php echo $valueAnnotation->displayValues(); ?>
+                </div>
+            <?php endif; ?>
+            <?php $this->trigger('view.show.value', ['value' => $value]); ?>
+        </dd>
+        <?php endforeach; ?>
+    </div>
+<?php endforeach; ?>
+</dl>
+<?php endif; ?>

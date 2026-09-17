@@ -31,6 +31,7 @@ Run these commands within the theme's root directory.
 * **Banner position**: Where to anchor the banner image within its container: centered, stuck to the top, or stuck to the bottom.
 * **Top navigation depth**: If the main navigation is set to display child pages, this setting controls how many navigation levels to display. Setting this to '0' shows all levels.
 * **Footer content**: Control what appears in the footer. This field takes HTML markup.
+* **Boolean value display**: Display Boolean metadata as True/False, Yes/No, or accessible checkmark/X icons.
 
 ## Resource Page Configuration
 
