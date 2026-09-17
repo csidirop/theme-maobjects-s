@@ -815,6 +815,47 @@ footer {
     width: 1.5 * $spacing-l;
 }
 
+.resource-class-filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $spacing-s $spacing-m;
+    margin-bottom: $spacing-l;
+
+    .filter-label {
+        font-weight: bold;
+    }
+
+    ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $spacing-s;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    a.filter-chip {
+        display: block;
+        padding: 2px $spacing-m;
+        border: 2px solid $uni-blau-hell;
+        border-radius: .5rem;
+        color: $uni-blau;
+        background: #fff;
+        font-size: .875em;
+        line-height: $base-line-height;
+
+        &:hover,
+        &:focus,
+        &.active {
+            border-color: $uni-blau;
+            color: #fff;
+            background: $uni-blau;
+            text-decoration: none;
+        }
+    }
+}
+
 .o-icon-grid:before {
     font-family: "Font Awesome 5 Free";
     content: "\f009";

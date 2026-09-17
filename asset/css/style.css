@@ -1237,6 +1237,42 @@ nav ul {
   }
 }
 @media screen {
+  .resource-class-filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 12px;
+    margin-bottom: 24px;
+  }
+  .resource-class-filter .filter-label {
+    font-weight: bold;
+  }
+  .resource-class-filter ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .resource-class-filter a.filter-chip {
+    display: block;
+    padding: 2px 12px;
+    border: 2px solid #abb8ca;
+    border-radius: 0.5rem;
+    color: #232e58;
+    background: #fff;
+    font-size: 0.875em;
+    line-height: 24px;
+  }
+  .resource-class-filter a.filter-chip:hover, .resource-class-filter a.filter-chip:focus, .resource-class-filter a.filter-chip.active {
+    border-color: #232e58;
+    color: #fff;
+    background: #232e58;
+    text-decoration: none;
+  }
+}
+@media screen {
   .o-icon-grid:before {
     font-family: "Font Awesome 5 Free";
     content: "\f009";

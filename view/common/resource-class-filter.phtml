@@ -1,0 +1,51 @@
+<?php
+/**
+ * Render single-choice resource class filters for the item browse page.
+ *
+ * Omeka's item API accepts resource_class_id[] as a search parameter. Each
+ * link preserves the current search and sort query, replaces any existing
+ * class selection, and resets pagination to the first page.
+ */
+$translate = $this->plugin('translate');
+$escape = $this->plugin('escapeHtml');
+$query = $this->params()->fromQuery();
+$selectedClassIds = array_values(array_filter(
+    array_map('intval', (array) ($query['resource_class_id'] ?? []))
+));
+
+$resourceClasses = $this->api()->search('resource_classes', [
+    'site_id' => $this->currentSite()->id(),
+    'sort_by' => 'label',
+    'sort_order' => 'asc',
+])->getContent();
+
+if (count($resourceClasses) < 2) {
+    return;
+}
+
+$baseQuery = $query;
+unset($baseQuery['page'], $baseQuery['resource_class_id']);
+?>
+<nav class="resource-class-filter" aria-labelledby="resource-class-filter-label">
+    <span class="filter-label" id="resource-class-filter-label"><?php echo $translate('Filter by type'); ?></span>
+    <ul>
+        <li>
+            <a href="<?php echo $escape($this->url(null, [], ['query' => $baseQuery], true)); ?>"
+                class="filter-chip<?php echo $selectedClassIds ? '' : ' active'; ?>"
+                <?php echo $selectedClassIds ? '' : 'aria-current="true"'; ?>><?php echo $translate('All'); ?></a>
+        </li>
+        <?php foreach ($resourceClasses as $resourceClass): ?>
+        <?php
+        $classId = $resourceClass->id();
+        $classQuery = $baseQuery;
+        $classQuery['resource_class_id'] = [$classId];
+        $isActive = in_array($classId, $selectedClassIds, true);
+        ?>
+        <li>
+            <a href="<?php echo $escape($this->url(null, [], ['query' => $classQuery], true)); ?>"
+                class="filter-chip<?php echo $isActive ? ' active' : ''; ?>"
+                <?php echo $isActive ? 'aria-current="true"' : ''; ?>><?php echo $escape($translate($resourceClass->label())); ?></a>
+        </li>
+        <?php endforeach; ?>
+    </ul>
+</nav>

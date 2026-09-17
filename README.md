@@ -38,6 +38,8 @@ Run these commands within the theme's root directory.
 
 Omeka S 4.0 introduced configurable resource pages. Center Row supports block configuration for items, item sets, and media show pages. Each of those views contains a single main configurable region.
 
+The item browse page includes a resource-class filter. It lists the classes used by items in the current site and preserves active search and sort parameters when filtering.
+
 ## Copyright
 Center Row is Copyright © 2016-present Corporation for Digital Scholarship, Vienna, Virginia, USA http://digitalscholar.org
 

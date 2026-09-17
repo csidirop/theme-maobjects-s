@@ -29,6 +29,10 @@ $query = $this->params()->fromQuery();
 
 <?php echo $this->searchFilters(); ?>
 
+<?php if (!isset($itemSet)): ?>
+    <?php echo $this->partial('common/resource-class-filter'); ?>
+<?php endif; ?>
+
 <?php 
     $layoutSetting = $this->themeSetting('browse_layout', 'grid');
     $gridState = ($layoutSetting == 'togglegrid') ? 'disabled' : '';
