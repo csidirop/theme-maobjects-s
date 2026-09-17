@@ -896,6 +896,18 @@ footer {
     }
 }
 
+.resource-short-title {
+    display: block;
+    margin-top: $spacing-s;
+    font-size: .95em;
+    font-style: italic;
+    font-weight: normal;
+    line-height: $base-line-height;
+    direction: rtl;
+    unicode-bidi: plaintext;
+    text-align: left;
+}
+
 .browse .resource h4 {
     font-size: $base-font-size;
     line-height: $base-line-height;

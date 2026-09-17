@@ -1,0 +1,23 @@
+<?php
+/**
+ * Render the optional secondary title used by item cards and search results.
+ *
+ * The Onheyb vocabulary does not store a language tag on these values, so Yiddish and right-to-left direction are supplied explicitly for accessible,
+ * predictable rendering.
+ */
+if (!$this->themeSetting('show_yiddish_short_title', false)) {
+    return;
+}
+
+$filterLocale = (bool) $this->siteSetting('filter_locale_values');
+$valueLang = $filterLocale ? [$this->lang(), ''] : null;
+$shortTitle = $resource->value('yido:shortTitleYiddish', ['lang' => $valueLang]);
+
+if (!$shortTitle) {
+    return;
+}
+
+$escape = $this->plugin('escapeHtml');
+$language = $shortTitle->lang() ?: 'yi';
+?>
+<span class="resource-short-title" lang="<?php echo $escape($language); ?>" dir="rtl"><?php echo $escape($shortTitle); ?></span>

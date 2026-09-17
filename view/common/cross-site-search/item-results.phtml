@@ -1,0 +1,39 @@
+<?php
+/**
+ * Theme override of Omeka S core's cross-site item-results partial.
+ *
+ * TODO: Keep this file in sync with
+ *      application/view/common/cross-site-search/item-results.phtml
+ * when upgrading Omeka.
+ * The only theme-specific addition is resource-list-short-title below each item result title.
+ */
+$fulltextSearch = $this->params()->fromQuery('fulltext_search');
+?>
+<?php echo $this->hyperlink(
+    $this->translate('Advanced item search'),
+    $this->url(null, ['action' => 'items-advanced', 'class' => 'advanced-search'], ['query' => $this->params()->fromQuery()], true),
+    ['class' => 'advanced-search']
+); ?>
+
+<h2><?php echo sprintf($this->translate('Item results for "%s"'), $this->escapeHtml($fulltextSearch)); ?></h2>
+
+<?php echo $this->pagination(); ?>
+
+<div class="item results">
+    <ul>
+        <?php foreach ($items as $item): ?>
+        <?php $sites = $item->sites(); ?>
+        <li>
+            <span class="result-title"><?php echo $item->displayTitle(); ?></span>
+            <?php echo $this->partial('common/resource-list-short-title', ['resource' => $item]); ?>
+            <ul>
+                <?php foreach ($sites as $site): ?>
+                <li><?php echo $this->hyperlink($site->title(), $item->siteUrl($site->slug())); ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </li>
+        <?php endforeach; ?>
+    </ul>
+</div>
+
+<?php echo $this->pagination(); ?>

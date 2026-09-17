@@ -258,6 +258,7 @@ if ($this->siteSetting('hierarchy_show_itemSet_metadata') && $itemSet):
                     $escape($heading));
                 echo $item->linkRaw($linkContent, null, ['class' => 'resource-link']);
                 ?>
+                <?php echo $this->partial('common/resource-list-short-title', ['resource' => $item]); ?>
             </li>
         <?php endforeach; ?>
         </ul>

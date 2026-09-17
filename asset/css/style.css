@@ -1315,6 +1315,19 @@ nav ul {
   }
 }
 @media screen {
+  .resource-short-title {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.95em;
+    font-style: italic;
+    font-weight: normal;
+    line-height: 24px;
+    direction: rtl;
+    unicode-bidi: plaintext;
+    text-align: left;
+  }
+}
+@media screen {
   .browse .resource h4 {
     font-size: 18px;
     line-height: 24px;

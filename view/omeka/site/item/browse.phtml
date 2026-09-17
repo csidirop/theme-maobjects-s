@@ -62,6 +62,7 @@ $query = $this->params()->fromQuery();
             $escape($heading));
         echo $item->linkRaw($linkContent, null, ['class' => 'resource-link']);
         ?>
+        <?php echo $this->partial('common/resource-list-short-title', ['resource' => $item]); ?>
         <?php if ($body): ?>
         <div class="description"><?php echo $escape($body); ?></div>
         <?php endif; ?>

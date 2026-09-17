@@ -53,6 +53,9 @@ foreach ($resources as $resource):
         if ($linkContent !== ''):
             echo $resource->linkRaw($linkContent, null, ['class' => 'resource-link']);
         endif;
+        if ($showHeading && 'items' === $resource->resourceName()):
+            echo $this->partial('common/resource-list-short-title', ['resource' => $resource]);
+        endif;
         if ($showBody && $body):
             echo '<div class="description">' . $escape($body) . '</div>';
         endif;
