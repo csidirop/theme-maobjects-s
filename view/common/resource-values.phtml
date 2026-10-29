@@ -7,6 +7,15 @@
  * upgrading Omeka or AdvancedResourceTemplate. The grouped values are passed
  * to resource-values-list.phtml, where this theme customizes Boolean output.
  */
+$resourceClass = $resource->resourceClass();
+if ($resourceClass && 'yido:Work' === $resourceClass->term()) {
+    echo $this->partial('common/work-resource-values', [
+        'resource' => $resource,
+        'values' => $values,
+    ]);
+    return;
+}
+
 $groups = null;
 
 if (class_exists('AdvancedResourceTemplate\Api\Representation\ResourceTemplatePropertyDataRepresentation')) {

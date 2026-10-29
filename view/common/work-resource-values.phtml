@@ -1,0 +1,432 @@
+<?php
+/**
+ * Domain-specific public view for resources of class yido:Work.
+ *
+ * The work-to-witness relation is stored in yido:manuscripts and
+ * yido:printedEditions. Collection contexts such as a genizah are found via
+ * the reverse yido:content relation of each witness.
+ *
+ * This partial is called from resource-values.phtml instead of replacing the
+ * complete item show template. Omeka can therefore continue to render its
+ * configured resource-page blocks (item sets, media, linked resources, etc.)
+ * around this domain-specific presentation.
+ */
+$escape = $this->plugin('escapeHtml');
+$translate = $this->plugin('translate');
+$lang = $this->lang();
+
+$this->htmlElement('body')->appendAttribute('class', 'work-show');
+
+// Omeka's value() method returns either one ValueRepresentation, an array, or
+// null depending on the options and available data. Normalize that result so
+// all later rendering code can iterate over it safely.
+$valueList = static function ($subject, $term) {
+    $values = $subject->value($term, ['all' => true]);
+    return is_array($values) ? $values : ($values ? [$values] : []);
+};
+
+// Resolve resource-valued properties such as yido:printedEditions to the
+// linked ItemRepresentation objects. Keying by ID also prevents accidental
+// duplicates when a relation occurs more than once.
+$resourceValues = static function ($subject, $term) use ($valueList) {
+    $resources = [];
+    foreach ($valueList($subject, $term) as $value) {
+        $linkedResource = $value->valueResource();
+        if ($linkedResource) {
+            $resources[$linkedResource->id()] = $linkedResource;
+        }
+    }
+    return array_values($resources);
+};
+
+// The current vocabulary data does not consistently store language tags on
+// Hebrew-script values. Recognize the vocabulary terms so these values still
+// receive an explicit language and right-to-left direction in the HTML.
+$isRtlTerm = static function ($term) {
+    return (bool) preg_match('/(?:Yiddish|Hebrew)$/', $term);
+};
+
+// Render the value with Omeka's data-type renderer wherever possible. Boolean
+// and resource values need small theme-specific adaptations: accessible state
+// icons for the former and site-context links for the latter.
+$renderValue = function ($value, $rtl = false) use ($escape, $translate, $lang) {
+    if ('boolean' === $value->type()) {
+        $isTrue = in_array(strtolower(trim((string) $value->value())), ['1', 'true'], true);
+        $label = $translate($isTrue ? 'Yes' : 'No');
+        $html = sprintf(
+            '<span class="work-boolean work-boolean-%s"><span aria-hidden="true">%s</span><span class="sr-only">%s</span></span>',
+            $isTrue ? 'true' : 'false',
+            $isTrue ? '&#10003;' : '&#10005;',
+            $escape($label)
+        );
+    } elseif (0 === strpos($value->type(), 'resource')) {
+        $linkedResource = $value->valueResource();
+        $html = $linkedResource
+            ? sprintf(
+                '<a href="%s">%s</a>',
+                $escape($linkedResource->url()),
+                $escape($linkedResource->displayTitle(null, $lang))
+            )
+            : '';
+    } else {
+        $html = $value->asHtml();
+    }
+
+    $valueLang = $value->lang();
+    $attributes = '';
+    if ($valueLang) {
+        $attributes .= sprintf(' lang="%s"', $escape($valueLang));
+    } elseif ($rtl) {
+        $attributes .= ' lang="yi"';
+    }
+    if ($rtl) {
+        $attributes .= ' dir="rtl"';
+    }
+
+    return sprintf('<span class="work-value"%s>%s</span>', $attributes, $html);
+};
+
+// Field groups should disappear when none of their configured terms has data.
+// This keeps sparse records compact and avoids empty headings or containers.
+$hasAnyValues = static function ($subject, array $terms) use ($valueList) {
+    foreach ($terms as $term => $label) {
+        if ($valueList($subject, $term)) {
+            return true;
+        }
+    }
+    return false;
+};
+
+// Render a semantic description-list fragment from an ordered term => label
+// map. Keeping this in one helper makes Work, witness, and collection-context
+// fields use identical markup and accessibility behavior.
+$renderFields = function ($subject, array $fields) use ($escape, $valueList, $isRtlTerm, $renderValue) {
+    ob_start();
+    foreach ($fields as $term => $label) {
+        $propertyValues = $valueList($subject, $term);
+        if (!$propertyValues) {
+            continue;
+        }
+        ?>
+        <div class="work-field">
+            <dt><?php echo $escape($label); ?></dt>
+            <dd>
+                <ul class="work-value-list">
+                    <?php foreach ($propertyValues as $propertyValue): ?>
+                    <li><?php echo $renderValue($propertyValue, $isRtlTerm($term)); ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </dd>
+        </div>
+        <?php
+    }
+    return ob_get_clean();
+};
+
+// These high-level Work facts are shown in the compact introductory panel.
+// Longer descriptive values and witness relations are handled separately.
+$workFields = [
+    'yido:originalLanguageOfTheWork' => $translate('Original language'),
+    'yido:creator' => $translate('Creator'),
+    'yido:creatorYiddish' => $translate('Creator (Yiddish)'),
+];
+
+// Editorial display order for witness metadata. A field is only printed when
+// the linked manuscript or print contains a public value for the term. The map
+// intentionally covers both resource classes so the same component can render
+// yido:Manuscript and yido:PrintedBook records.
+$witnessSections = [
+    $translate('Titles and text') => [
+        'yido:shortTitleAlt' => $translate('Alternative title'),
+        'yido:shortTitleYiddishAlt' => $translate('Alternative title (Yiddish)'),
+        'yido:incipit' => $translate('Incipit'),
+        'yido:incipitYiddish' => $translate('Incipit (Yiddish)'),
+        'yido:incipitTranslationEng' => $translate('Incipit translation'),
+        'yido:columnTitles' => $translate('Column titles'),
+        'yido:columnTitlesYiddish' => $translate('Column titles (Yiddish)'),
+        'yido:languages' => $translate('Languages'),
+    ],
+    $translate('Creation and publication') => [
+        'yido:publisher' => $translate('Printer / publisher'),
+        'yido:publisherYiddish' => $translate('Printer / publisher (Yiddish)'),
+        'yido:placeOfPublication' => $translate('Place of publication'),
+        'yido:timeOfPublication' => $translate('Date of publication'),
+        'yido:jewishTimeOfPublication' => $translate('Jewish date of publication'),
+        'yido:compiler' => $translate('Compiler'),
+        'yido:compilerYiddish' => $translate('Compiler (Yiddish)'),
+        'yido:redactor' => $translate('Editor'),
+        'yido:redactorYiddish' => $translate('Editor (Yiddish)'),
+        'yido:author' => $translate('Author'),
+        'yido:authorYiddish' => $translate('Author (Yiddish)'),
+        'yido:placeOfCreation' => $translate('Place of creation'),
+        'yido:timeOfCreation' => $translate('Date of creation'),
+        'yido:jewishTimeOfCreation' => $translate('Jewish date of creation'),
+    ],
+    $translate('Physical description') => [
+        'yido:type' => $translate('Type'),
+        'yido:material' => $translate('Material'),
+        'yido:format' => $translate('Format'),
+        'yido:typeface' => $translate('Typeface'),
+        'yido:script' => $translate('Script'),
+        'yido:scriptType' => $translate('Script type'),
+        'yido:scriptTrace' => $translate('Script characteristics'),
+        'yido:size' => $translate('Size'),
+        'yido:length' => $translate('Length'),
+        'yido:width' => $translate('Width'),
+        'yido:scriptSpace' => $translate('Script space'),
+        'yido:numberOfPages' => $translate('Pages / leaves / folios'),
+        'yido:numberingOfPages' => $translate('Pagination'),
+        'yido:numberOfColumns' => $translate('Columns'),
+        'yido:numberOfLines' => $translate('Lines per page'),
+    ],
+    $translate('Features') => [
+        'yido:catchwords' => $translate('Catchwords'),
+        'yido:illustrations' => $translate('Illustrations'),
+        'yido:capitalLetters' => $translate('Initials / capital letters'),
+        'yido:glosses' => $translate('Glosses'),
+        'yido:rubrications' => $translate('Rubrications'),
+    ],
+    $translate('Holdings and access') => [
+        'yido:institution' => $translate('Institutions'),
+        'yido:place' => $translate('Places'),
+        'yido:callNumber' => $translate('Shelfmarks'),
+        'yido:digitalCopy' => $translate('Digital copies'),
+    ],
+    $translate('Notes and bibliography') => [
+        'yido:specialFeatures' => $translate('Special features'),
+        'yido:remarks' => $translate('Remarks'),
+        'yido:reprintOf' => $translate('Reprint of'),
+        'yido:researchLiterature' => $translate('Research literature'),
+    ],
+];
+
+// A collection such as a genizah is not the witness itself. Only the context
+// fields useful in the Work view are summarized here; the collection title
+// links to its full record for all remaining metadata.
+$contextFields = [
+    'yido:origin' => $translate('Origin'),
+    'yido:institution' => $translate('Institution'),
+    'yido:place' => $translate('Place'),
+];
+
+// Read Work-level content and resolve its two explicit witness relations.
+$workTitleYiddish = $valueList($resource, 'yido:workTitleHebrew');
+$alternativeTitles = $valueList($resource, 'yido:alternativeWorkTitle');
+$alternativeTitlesYiddish = $valueList($resource, 'yido:alternativeWorkTitleHebrew');
+$descriptions = $valueList($resource, 'yido:shortDescription');
+$descriptionSources = $valueList($resource, 'yido:shortDescriptionSource');
+$manuscripts = $resourceValues($resource, 'yido:manuscripts');
+$prints = $resourceValues($resource, 'yido:printedEditions');
+
+// Values used in the custom sections must not appear a second time in the
+// generic fallback. Any current or future Work property not listed here is
+// retained below under "Further information" instead of being silently lost.
+$handledWorkTerms = [
+    'yido:workTitle',
+    'yido:alternativeWorkTitle',
+    'yido:workTitleHebrew',
+    'yido:alternativeWorkTitleHebrew',
+    'yido:originalLanguageOfTheWork',
+    'yido:creator',
+    'yido:creatorYiddish',
+    'yido:shortDescription',
+    'yido:shortDescriptionSource',
+    'yido:manuscripts',
+    'yido:printedEditions',
+];
+
+// AdvancedResourceTemplate may provide a Traversable rather than an array.
+// Normalize it before filtering out the properties handled above.
+$valueData = $values instanceof Traversable ? iterator_to_array($values, false) : $values;
+$otherWorkValues = [];
+foreach ($valueData as $propertyData) {
+    $term = $propertyData['property']->term();
+    if (!in_array($term, $handledWorkTerms, true)) {
+        $otherWorkValues[] = $propertyData;
+    }
+}
+
+// Keep the two top-level transmission categories stable even when one is
+// empty. The empty state is useful scholarly information (for example,
+// "No manuscripts known") and mirrors the requested mockup.
+$witnessGroups = [
+    [
+        'label' => $translate('Manuscripts'),
+        'singular' => $translate('Manuscript'),
+        'empty' => $translate('No manuscripts known.'),
+        'resources' => $manuscripts,
+    ],
+    [
+        'label' => $translate('Prints'),
+        'singular' => $translate('Print'),
+        'empty' => $translate('No prints known.'),
+        'resources' => $prints,
+    ],
+];
+?>
+
+<div class="work-view">
+    <?php // Add the Hebrew-script title as a visual counterpart to Omeka's page title. ?>
+    <?php if ($workTitleYiddish): ?>
+    <p class="work-title-yiddish" lang="yi" dir="rtl">
+        <?php foreach ($workTitleYiddish as $index => $title): ?>
+            <?php echo $index ? '<span aria-hidden="true"> · </span>' : ''; ?>
+            <?php echo $escape($title->value()); ?>
+        <?php endforeach; ?>
+    </p>
+    <?php endif; ?>
+
+    <?php // Present short Work facts before the longer descriptive sections. ?>
+    <?php if ($hasAnyValues($resource, $workFields)): ?>
+    <dl class="work-facts">
+        <?php echo $renderFields($resource, $workFields); ?>
+    </dl>
+    <?php endif; ?>
+
+    <?php // Alternative titles remain visible text, not tooltip-only content. ?>
+    <?php if ($alternativeTitles || $alternativeTitlesYiddish): ?>
+    <section class="work-section work-alternative-titles" aria-labelledby="work-alternative-titles-heading">
+        <h3 id="work-alternative-titles-heading"><?php echo $escape($translate('Alternative titles')); ?></h3>
+        <?php foreach ($alternativeTitles as $title): ?>
+        <p><?php echo $renderValue($title); ?></p>
+        <?php endforeach; ?>
+        <?php foreach ($alternativeTitlesYiddish as $title): ?>
+        <p><?php echo $renderValue($title, true); ?></p>
+        <?php endforeach; ?>
+    </section>
+    <?php endif; ?>
+
+    <?php // The short description is deliberately kept outside an accordion. ?>
+    <?php if ($descriptions): ?>
+    <section class="work-section work-description" aria-labelledby="work-description-heading">
+        <h3 id="work-description-heading"><?php echo $escape($translate('Short description')); ?></h3>
+        <?php foreach ($descriptions as $description): ?>
+        <p><?php echo $renderValue($description); ?></p>
+        <?php endforeach; ?>
+        <?php if ($descriptionSources): ?>
+        <p class="work-description-source">
+            <strong><?php echo $escape($translate('Source:')); ?></strong>
+            <?php foreach ($descriptionSources as $source): ?>
+                <?php echo $renderValue($source); ?>
+            <?php endforeach; ?>
+        </p>
+        <?php endif; ?>
+    </section>
+    <?php endif; ?>
+
+    <section class="work-transmission" aria-labelledby="work-transmission-heading">
+        <h3 id="work-transmission-heading"><?php echo $escape($translate('Transmission')); ?></h3>
+
+        <?php // Native details/summary elements provide keyboard-accessible disclosure without Bootstrap. ?>
+        <?php foreach ($witnessGroups as $group): ?>
+        <details class="transmission-group">
+            <summary>
+                <span><?php echo $escape($group['label']); ?></span>
+                <span class="transmission-count" aria-label="<?php echo $escape(sprintf($translate('%d records'), count($group['resources']))); ?>">
+                    <?php echo count($group['resources']); ?>
+                </span>
+            </summary>
+            <div class="transmission-group-content">
+                <?php if (!$group['resources']): ?>
+                <p class="empty-transmission"><?php echo $escape($group['empty']); ?></p>
+                <?php endif; ?>
+
+                <?php foreach ($group['resources'] as $witness): ?>
+                <?php
+                $witnessTitleYiddish = $valueList($witness, 'yido:shortTitleYiddish');
+
+                // In the data model, a Genizah points to a Printed Book via yido:content. It is therefore an incoming (reverse) relation
+                // from the witness's point of view:
+                $contexts = [];
+                $subjectValues = $witness->subjectValues();
+                foreach ($subjectValues['yido:content'] ?? [] as $subjectValue) {
+                    $context = $subjectValue->resource();
+                    if ($context && $context->isPublic()) {
+                        $contexts[$context->id()] = $context;
+                    }
+                }
+                // Omeka's subjectValues() may be empty in a resource-page block even though the reverse relation is present. Use the same
+                // property query as the public API as a reliable fallback:
+                if (!$contexts) {
+                    $contextResults = $this->api()->search('items', [
+                        'property' => [[
+                            'property' => 'yido:content',
+                            'type' => 'res',
+                            'text' => $witness->id(),
+                        ]],
+                    ])->getContent();
+                    foreach ($contextResults as $context) {
+                        if ($context->isPublic()) {
+                            $contexts[$context->id()] = $context;
+                        }
+                    }
+                }
+                ?>
+                <details class="witness-card">
+                    <summary>
+                        <span class="witness-type"><?php echo $escape($group['singular']); ?></span>
+                        <span class="witness-summary-title"><?php echo $escape($witness->displayTitle(null, $lang)); ?></span>
+                        <?php if ($witnessTitleYiddish): ?>
+                        <span class="witness-summary-yiddish" lang="yi" dir="rtl">
+                            <?php foreach ($witnessTitleYiddish as $title): ?>
+                                <?php echo $escape($title->value()); ?>
+                            <?php endforeach; ?>
+                        </span>
+                        <?php endif; ?>
+                    </summary>
+
+                    <div class="witness-card-content">
+                        <?php if ($contexts): ?>
+                        <?php // Show provenance/collection context before the witness's own metadata. ?>
+                        <section class="witness-context" aria-labelledby="witness-context-<?php echo $witness->id(); ?>">
+                            <h4 id="witness-context-<?php echo $witness->id(); ?>"><?php echo $escape($translate('Collection context')); ?></h4>
+                            <?php foreach ($contexts as $context): ?>
+                            <article class="context-card">
+                                <h5>
+                                    <a href="<?php echo $escape($context->url()); ?>"><?php echo $escape($context->displayTitle(null, $lang)); ?></a>
+                                </h5>
+                                <?php if ($hasAnyValues($context, $contextFields)): ?>
+                                <dl class="work-field-grid">
+                                    <?php echo $renderFields($context, $contextFields); ?>
+                                </dl>
+                                <?php endif; ?>
+                            </article>
+                            <?php endforeach; ?>
+                        </section>
+                        <?php endif; ?>
+
+                        <?php
+                        // Repeated institutions, places, shelfmarks, and copies are rendered as independent lists. Omeka currently
+                        // stores them as parallel property values without a reliable row-level association, so pairing them into
+                        // a table here could invent relationships not present in the data:
+                        ?>
+                        <?php foreach ($witnessSections as $sectionLabel => $sectionFields): ?>
+                            <?php if ($hasAnyValues($witness, $sectionFields)): ?>
+                            <section class="witness-section">
+                                <h4><?php echo $escape($sectionLabel); ?></h4>
+                                <dl class="work-field-grid">
+                                    <?php echo $renderFields($witness, $sectionFields); ?>
+                                </dl>
+                            </section>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+
+                        <p class="witness-record-link">
+                            <a href="<?php echo $escape($witness->url()); ?>"><?php echo $escape($translate('View complete record')); ?></a>
+                        </p>
+                    </div>
+                </details>
+                <?php endforeach; ?>
+            </div>
+        </details>
+        <?php endforeach; ?>
+    </section>
+
+    <?php // Preserve unrecognized/new Work metadata through the standard theme renderer. ?>
+    <?php if ($otherWorkValues): ?>
+    <section class="work-section work-other-metadata" aria-labelledby="work-other-metadata-heading">
+        <h3 id="work-other-metadata-heading"><?php echo $escape($translate('Further information')); ?></h3>
+        <?php echo $this->partial('common/resource-values-list', ['values' => $otherWorkValues]); ?>
+    </section>
+    <?php endif; ?>
+</div>

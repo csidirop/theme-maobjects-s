@@ -257,3 +257,49 @@ form input[type="submit"] {
     margin-top: 0
 }
 /* @end */
+
+/* @group ----- Work detail ----- */
+
+.work-view {
+    margin-top: 0;
+}
+
+.work-title-yiddish {
+    font-size: 1.15 * $base-font-size;
+}
+
+.work-field-grid {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.witness-card-content,
+.context-card {
+    padding: $spacing-m;
+}
+
+.transmission-group > summary,
+.witness-card > summary {
+    padding-left: $spacing-m;
+}
+
+.transmission-group-content {
+    padding: 0;
+}
+
+.witness-card {
+    margin: $spacing-m;
+}
+
+.witness-card > summary {
+    grid-template-columns: 1fr;
+}
+
+.witness-type {
+    justify-self: start;
+}
+
+.witness-summary-yiddish {
+    grid-column: 1;
+}
+
+/* @end */
