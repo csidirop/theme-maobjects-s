@@ -437,6 +437,32 @@ a.resource-class-badge {
     padding: $spacing-l;
 }
 
+// Standalone witness pages reuse the accordion's inner metadata layout. A
+// subtle enclosing panel preserves that visual relationship without adding a
+// redundant disclosure control around the complete item record.
+.standalone-witness-view {
+    margin-top: $spacing-l;
+    max-width: 80rem;
+}
+
+.standalone-witness-content {
+    border: 1px solid var(--work-border);
+    border-radius: .35rem;
+
+    > .witness-context:first-child,
+    > .witness-section:first-child {
+        border-top: 0;
+        margin-top: 0;
+        padding-top: 0;
+    }
+
+    h3 {
+        font-size: 1.1 * $base-font-size;
+        line-height: 1.4;
+        margin: 0 0 $spacing-m;
+    }
+}
+
 .witness-section,
 .witness-context {
     border-top: 1px solid var(--work-border);

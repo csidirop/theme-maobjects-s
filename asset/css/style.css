@@ -2430,6 +2430,29 @@ footer .logos .logo2 {
   }
 }
 @media screen {
+  .standalone-witness-view {
+    margin-top: 24px;
+    max-width: 80rem;
+  }
+}
+@media screen {
+  .standalone-witness-content {
+    border: 1px solid var(--work-border);
+    border-radius: 0.35rem;
+  }
+  .standalone-witness-content > .witness-context:first-child,
+.standalone-witness-content > .witness-section:first-child {
+    border-top: 0;
+    margin-top: 0;
+    padding-top: 0;
+  }
+  .standalone-witness-content h3 {
+    font-size: 19.8px;
+    line-height: 1.4;
+    margin: 0 0 12px;
+  }
+}
+@media screen {
   .witness-section,
 .witness-context {
     border-top: 1px solid var(--work-border);

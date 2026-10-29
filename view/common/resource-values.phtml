@@ -28,6 +28,20 @@ if ($resource
     return;
 }
 
+// Manuscripts and printed books use the same grouped metadata presentation as
+// the witness cards embedded in a Work's transmission accordion.
+if ($resource
+    && 'items' === $resource->resourceName()
+    && $resourceClass
+    && in_array($resourceClass->term(), ['yido:Manuscript', 'yido:PrintedBook'], true)
+) {
+    echo $this->partial('common/witness-resource-values', [
+        'resource' => $resource,
+        'values' => $values,
+    ]);
+    return;
+}
+
 $groups = null;
 
 if ($resource

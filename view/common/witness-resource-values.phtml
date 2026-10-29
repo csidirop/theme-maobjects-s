@@ -1,0 +1,246 @@
+<?php
+/**
+ * Structured metadata view for a standalone manuscript or printed book.
+ *
+ * The Work page presents these resources inside transmission accordions. This
+ * partial gives their own item pages the same editorial grouping and visual
+ * hierarchy without repeating the accordion header or a link to the page the
+ * visitor is already viewing.
+ */
+$escape = $this->plugin('escapeHtml');
+$translate = $this->plugin('translate');
+$lang = $this->lang();
+
+$this->htmlElement('body')->appendAttribute('class', 'witness-show');
+
+// Normalize Omeka's possible null, single-value, and array return types.
+$valueList = static function ($subject, $term) {
+    $propertyValues = $subject->value($term, ['all' => true]);
+    return is_array($propertyValues)
+        ? $propertyValues
+        : ($propertyValues ? [$propertyValues] : []);
+};
+
+$isRtlTerm = static function ($term) {
+    return (bool) preg_match('/(?:Yiddish|Hebrew)$/', $term);
+};
+
+// Retain Omeka's data-type rendering, adding the adaptations used in the Work
+// accordion for booleans, resource links, and Hebrew-script values.
+$renderValue = function ($value, $rtl = false) use ($escape, $translate, $lang) {
+    if ('boolean' === $value->type()) {
+        $isTrue = in_array(strtolower(trim((string) $value->value())), ['1', 'true'], true);
+        $label = $translate($isTrue ? 'Yes' : 'No');
+        $html = sprintf(
+            '<span class="work-boolean work-boolean-%s"><span aria-hidden="true">%s</span><span class="sr-only">%s</span></span>',
+            $isTrue ? 'true' : 'false',
+            $isTrue ? '&#10003;' : '&#10005;',
+            $escape($label)
+        );
+    } elseif (0 === strpos($value->type(), 'resource')) {
+        $linkedResource = $value->valueResource();
+        $html = $linkedResource
+            ? sprintf(
+                '<a href="%s">%s</a>',
+                $escape($linkedResource->url()),
+                $escape($linkedResource->displayTitle(null, $lang))
+            )
+            : '';
+    } else {
+        $html = $value->asHtml();
+    }
+
+    $attributes = '';
+    if ($value->lang()) {
+        $attributes .= sprintf(' lang="%s"', $escape($value->lang()));
+    } elseif ($rtl) {
+        $attributes .= ' lang="yi"';
+    }
+    if ($rtl) {
+        $attributes .= ' dir="rtl"';
+    }
+
+    return sprintf('<span class="work-value"%s>%s</span>', $attributes, $html);
+};
+
+$hasAnyValues = static function ($subject, array $fields) use ($valueList) {
+    foreach ($fields as $term => $label) {
+        if ($valueList($subject, $term)) {
+            return true;
+        }
+    }
+    return false;
+};
+
+$renderFields = function ($subject, array $fields) use ($escape, $valueList, $isRtlTerm, $renderValue) {
+    ob_start();
+    foreach ($fields as $term => $label) {
+        $propertyValues = $valueList($subject, $term);
+        if (!$propertyValues) {
+            continue;
+        }
+        ?>
+        <div class="work-field">
+            <dt><?php echo $escape($label); ?></dt>
+            <dd>
+                <ul class="work-value-list">
+                    <?php foreach ($propertyValues as $propertyValue): ?>
+                    <li><?php echo $renderValue($propertyValue, $isRtlTerm($term)); ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </dd>
+        </div>
+        <?php
+    }
+    return ob_get_clean();
+};
+
+// Keep this order aligned with the witness sections in work-resource-values.
+$witnessSections = [
+    $translate('Titles and text') => [
+        'yido:shortTitleAlt' => $translate('Alternative title'),
+        'yido:shortTitleYiddishAlt' => $translate('Alternative title (Yiddish)'),
+        'yido:incipit' => $translate('Incipit'),
+        'yido:incipitYiddish' => $translate('Incipit (Yiddish)'),
+        'yido:incipitTranslationEng' => $translate('Incipit translation'),
+        'yido:columnTitles' => $translate('Column titles'),
+        'yido:columnTitlesYiddish' => $translate('Column titles (Yiddish)'),
+        'yido:languages' => $translate('Languages'),
+    ],
+    $translate('Creation and publication') => [
+        'yido:publisher' => $translate('Printer / publisher'),
+        'yido:publisherYiddish' => $translate('Printer / publisher (Yiddish)'),
+        'yido:placeOfPublication' => $translate('Place of publication'),
+        'yido:timeOfPublication' => $translate('Date of publication'),
+        'yido:jewishTimeOfPublication' => $translate('Jewish date of publication'),
+        'yido:compiler' => $translate('Compiler'),
+        'yido:compilerYiddish' => $translate('Compiler (Yiddish)'),
+        'yido:redactor' => $translate('Editor'),
+        'yido:redactorYiddish' => $translate('Editor (Yiddish)'),
+        'yido:author' => $translate('Author'),
+        'yido:authorYiddish' => $translate('Author (Yiddish)'),
+        'yido:placeOfCreation' => $translate('Place of creation'),
+        'yido:timeOfCreation' => $translate('Date of creation'),
+        'yido:jewishTimeOfCreation' => $translate('Jewish date of creation'),
+    ],
+    $translate('Physical description') => [
+        'yido:type' => $translate('Type'),
+        'yido:material' => $translate('Material'),
+        'yido:format' => $translate('Format'),
+        'yido:typeface' => $translate('Typeface'),
+        'yido:script' => $translate('Script'),
+        'yido:scriptType' => $translate('Script type'),
+        'yido:scriptTrace' => $translate('Script characteristics'),
+        'yido:size' => $translate('Size'),
+        'yido:length' => $translate('Length'),
+        'yido:width' => $translate('Width'),
+        'yido:scriptSpace' => $translate('Script space'),
+        'yido:numberOfPages' => $translate('Pages / leaves / folios'),
+        'yido:numberingOfPages' => $translate('Pagination'),
+        'yido:numberOfColumns' => $translate('Columns'),
+        'yido:numberOfLines' => $translate('Lines per page'),
+    ],
+    $translate('Features') => [
+        'yido:catchwords' => $translate('Catchwords'),
+        'yido:illustrations' => $translate('Illustrations'),
+        'yido:capitalLetters' => $translate('Initials / capital letters'),
+        'yido:glosses' => $translate('Glosses'),
+        'yido:rubrications' => $translate('Rubrications'),
+    ],
+    $translate('Holdings and access') => [
+        'yido:institution' => $translate('Institutions'),
+        'yido:place' => $translate('Places'),
+        'yido:callNumber' => $translate('Shelfmarks'),
+        'yido:digitalCopy' => $translate('Digital copies'),
+    ],
+    $translate('Notes and bibliography') => [
+        'yido:specialFeatures' => $translate('Special features'),
+        'yido:remarks' => $translate('Remarks'),
+        'yido:reprintOf' => $translate('Reprint of'),
+        'yido:researchLiterature' => $translate('Research literature'),
+    ],
+];
+
+$contextFields = [
+    'yido:origin' => $translate('Origin'),
+    'yido:institution' => $translate('Institution'),
+    'yido:place' => $translate('Place'),
+];
+
+// A collection context (for example a Genizah) links to this witness through
+// yido:content. Resolve that incoming relation just as the Work accordion does.
+$contexts = [];
+foreach (($resource->subjectValues()['yido:content'] ?? []) as $subjectValue) {
+    $context = $subjectValue->resource();
+    if ($context && $context->isPublic()) {
+        $contexts[$context->id()] = $context;
+    }
+}
+if (!$contexts) {
+    $contextResults = $this->api()->search('items', [
+        'property' => [[
+            'property' => 'yido:content',
+            'type' => 'res',
+            'text' => $resource->id(),
+        ]],
+    ])->getContent();
+    foreach ($contextResults as $context) {
+        if ($context->isPublic()) {
+            $contexts[$context->id()] = $context;
+        }
+    }
+}
+
+// Structured fields are removed from the generic fallback to avoid duplicate
+// output. The title fields are already represented by the page heading.
+$handledTerms = ['dcterms:title', 'yido:shortTitle', 'yido:shortTitleYiddish'];
+foreach ($witnessSections as $sectionFields) {
+    $handledTerms = array_merge($handledTerms, array_keys($sectionFields));
+}
+
+$valueData = $values instanceof Traversable ? iterator_to_array($values, false) : $values;
+$otherValues = [];
+foreach ($valueData as $propertyData) {
+    if (!in_array($propertyData['property']->term(), $handledTerms, true)) {
+        $otherValues[] = $propertyData;
+    }
+}
+?>
+
+<div class="work-view standalone-witness-view">
+    <div class="witness-card-content standalone-witness-content">
+        <?php if ($contexts): ?>
+        <section class="witness-context" aria-labelledby="witness-context-<?php echo $resource->id(); ?>">
+            <h3 id="witness-context-<?php echo $resource->id(); ?>"><?php echo $escape($translate('Collection context')); ?></h3>
+            <?php foreach ($contexts as $context): ?>
+            <article class="context-card">
+                <h4><a href="<?php echo $escape($context->url()); ?>"><?php echo $escape($context->displayTitle(null, $lang)); ?></a></h4>
+                <?php if ($hasAnyValues($context, $contextFields)): ?>
+                <dl class="work-field-grid">
+                    <?php echo $renderFields($context, $contextFields); ?>
+                </dl>
+                <?php endif; ?>
+            </article>
+            <?php endforeach; ?>
+        </section>
+        <?php endif; ?>
+
+        <?php foreach ($witnessSections as $sectionLabel => $sectionFields): ?>
+            <?php if ($hasAnyValues($resource, $sectionFields)): ?>
+            <section class="witness-section">
+                <h3><?php echo $escape($sectionLabel); ?></h3>
+                <dl class="work-field-grid">
+                    <?php echo $renderFields($resource, $sectionFields); ?>
+                </dl>
+            </section>
+            <?php endif; ?>
+        <?php endforeach; ?>
+
+        <?php if ($otherValues): ?>
+        <section class="witness-section witness-other-metadata">
+            <h3><?php echo $escape($translate('Further information')); ?></h3>
+            <?php echo $this->partial('common/resource-values-list', ['values' => $otherValues]); ?>
+        </section>
+        <?php endif; ?>
+    </div>
+</div>

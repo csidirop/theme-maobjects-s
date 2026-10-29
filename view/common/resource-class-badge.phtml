@@ -16,17 +16,25 @@ $translate = $this->plugin('translate');
 $label = $translate($resourceClass->label());
 $badgeUrl = null;
 
-// Work items also belong to the technical "Works" item set. Its resource
-// class matches the item's class, which gives us a stable way to find the
-// browse target without hardcoding a database-specific item-set ID.
+// Work and Printed Book items also belong to item sets used as their browse
+// pages. Find those sets by their stable titles instead of hardcoding database
+// IDs. The resource-class comparison remains a fallback for typed item sets.
+$browseItemSetTitles = [
+    'yido:Work' => 'Works',
+    'yido:PrintedBook' => 'Printed Books',
+];
+
 if ('items' === $resource->resourceName()
-    && 'yido:Work' === $resourceClass->term()
+    && isset($browseItemSetTitles[$resourceClass->term()])
 ) {
+    $browseItemSetTitle = $browseItemSetTitles[$resourceClass->term()];
+
     foreach ($resource->itemSets() as $itemSet) {
         $itemSetClass = $itemSet->resourceClass();
         if ($itemSet->isPublic()
-            && $itemSetClass
-            && $itemSetClass->term() === $resourceClass->term()
+            && ($itemSet->displayTitle() === $browseItemSetTitle
+                || ($itemSetClass
+                    && $itemSetClass->term() === $resourceClass->term()))
         ) {
             $badgeUrl = $itemSet->url();
             break;
