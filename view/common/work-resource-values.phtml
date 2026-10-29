@@ -218,6 +218,22 @@ $descriptionSources = $valueList($resource, 'yido:shortDescriptionSource');
 $manuscripts = $resourceValues($resource, 'yido:manuscripts');
 $prints = $resourceValues($resource, 'yido:printedEditions');
 
+// Omeka item sets serve two different purposes in this project. A set whose
+// class matches the current item (for example the "Works" set with class
+// yido:Work) is a technical grouping and duplicates the resource-class badge.
+// Other sets are meaningful collection memberships and belong in the compact
+// introductory facts instead of Omeka's generic item-set block at page end.
+$workCollections = [];
+$workResourceClass = $resource->resourceClass();
+$workResourceClassTerm = $workResourceClass ? $workResourceClass->term() : null;
+foreach ($resource->itemSets() as $itemSet) {
+    $itemSetClass = $itemSet->resourceClass();
+    if ($itemSetClass && $itemSetClass->term() === $workResourceClassTerm) {
+        continue;
+    }
+    $workCollections[$itemSet->id()] = $itemSet;
+}
+
 // Values used in the custom sections must not appear a second time in the
 // generic fallback. Any current or future Work property not listed here is
 // retained below under "Further information" instead of being silently lost.
@@ -277,9 +293,21 @@ $witnessGroups = [
     <?php endif; ?>
 
     <?php // Present short Work facts before the longer descriptive sections. ?>
-    <?php if ($hasAnyValues($resource, $workFields)): ?>
+    <?php if ($hasAnyValues($resource, $workFields) || $workCollections): ?>
     <dl class="work-facts">
         <?php echo $renderFields($resource, $workFields); ?>
+        <?php if ($workCollections): ?>
+        <div class="work-field work-collections">
+            <dt><?php echo $escape($translate(count($workCollections) === 1 ? 'Collection' : 'Collections')); ?></dt>
+            <dd>
+                <ul class="work-value-list">
+                    <?php foreach ($workCollections as $itemSet): ?>
+                    <li><a href="<?php echo $escape($itemSet->url()); ?>"><?php echo $escape($itemSet->displayTitle(null, $lang)); ?></a></li>
+                    <?php endforeach; ?>
+                </ul>
+            </dd>
+        </div>
+        <?php endif; ?>
     </dl>
     <?php endif; ?>
 
@@ -334,6 +362,13 @@ $witnessGroups = [
                 <?php foreach ($group['resources'] as $witness): ?>
                 <?php
                 $witnessTitleYiddish = $valueList($witness, 'yido:shortTitleYiddish');
+                $witnessResourceClass = $witness->resourceClass();
+                // Prefer the linked record's actual class over the broad
+                // transmission group name. This distinguishes, for example,
+                // a Printed Book from other kinds of print witness.
+                $witnessTypeLabel = $witnessResourceClass
+                    ? $translate($witnessResourceClass->label())
+                    : $group['singular'];
 
                 // In the data model, a Genizah points to a Printed Book via yido:content. It is therefore an incoming (reverse) relation
                 // from the witness's point of view:
@@ -364,7 +399,10 @@ $witnessGroups = [
                 ?>
                 <details class="witness-card">
                     <summary>
-                        <span class="witness-type"><?php echo $escape($group['singular']); ?></span>
+                        <span class="witness-type">
+                            <span class="sr-only"><?php echo $escape($translate('Item type:')); ?> </span>
+                            <?php echo $escape($witnessTypeLabel); ?>
+                        </span>
                         <span class="witness-summary-title"><?php echo $escape($witness->displayTitle(null, $lang)); ?></span>
                         <?php if ($witnessTitleYiddish): ?>
                         <span class="witness-summary-yiddish" lang="yi" dir="rtl">

@@ -8,7 +8,14 @@
  * to resource-values-list.phtml, where this theme customizes Boolean output.
  */
 $resourceClass = $resource->resourceClass();
-if ($resourceClass && 'yido:Work' === $resourceClass->term()) {
+// Item sets may also carry yido:Work as their resource class, but the custom
+// Work partial expects an ItemRepresentation (including itemSets()). Limit
+// the specialized presentation to items so Work-class item sets continue
+// through Omeka's standard metadata renderer.
+if ('items' === $resource->resourceName()
+    && $resourceClass
+    && 'yido:Work' === $resourceClass->term()
+) {
     echo $this->partial('common/work-resource-values', [
         'resource' => $resource,
         'values' => $values,

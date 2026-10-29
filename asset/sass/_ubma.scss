@@ -186,8 +186,54 @@ footer {
     }
 }
 
+// ITEM TYPE:
+// Replace Omeka's generic "Item" heading with a compact resource-class label
+// that identifies the catalogue record as a Work, Printed Book, Genizah, etc.
+.resource-heading {
+    align-items: baseline;
+    display: flex;
+    gap: $spacing-m;
+    justify-content: space-between;
+
+    h2 {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+}
+
+.resource-type {
+    flex: 0 0 auto;
+    margin: 0 0 $spacing-l;
+}
+
+.resource-class-badge {
+    background: $uni-blau;
+    border-radius: .2rem;
+    color: #fff;
+    display: inline-block;
+    font-size: .75 * $base-font-size;
+    font-weight: bold;
+    letter-spacing: .025em;
+    line-height: 1.4;
+    padding: .2rem .5rem;
+    text-transform: uppercase;
+}
+
+a.resource-class-badge {
+    text-decoration: none;
+
+    &:hover {
+        background: $uni-blau-hell;
+        color: $uni-blau;
+        text-decoration: none;
+    }
+}
+
 // WORK DETAIL VIEW:
-.work-show #content > h3:first-of-type {
+
+// The meaningful memberships are rendered with the introductory Work facts;
+// hide Omeka's later generic block (including the duplicate technical set).
+.work-show .item-sets {
     display: none;
 }
 

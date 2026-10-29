@@ -2181,7 +2181,49 @@ footer .logos .logo2 {
   }
 }
 @media screen {
-  .work-show #content > h3:first-of-type {
+  .resource-heading {
+    align-items: baseline;
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+  }
+  .resource-heading h2 {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}
+@media screen {
+  .resource-type {
+    flex: 0 0 auto;
+    margin: 0 0 24px;
+  }
+}
+@media screen {
+  .resource-class-badge {
+    background: #232e58;
+    border-radius: 0.2rem;
+    color: #fff;
+    display: inline-block;
+    font-size: 13.5px;
+    font-weight: bold;
+    letter-spacing: 0.025em;
+    line-height: 1.4;
+    padding: 0.2rem 0.5rem;
+    text-transform: uppercase;
+  }
+}
+@media screen {
+  a.resource-class-badge {
+    text-decoration: none;
+  }
+  a.resource-class-badge:hover {
+    background: #abb8ca;
+    color: #232e58;
+    text-decoration: none;
+  }
+}
+@media screen {
+  .work-show .item-sets {
     display: none;
   }
 }
