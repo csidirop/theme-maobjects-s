@@ -7,12 +7,17 @@
  * upgrading Omeka or AdvancedResourceTemplate. The grouped values are passed
  * to resource-values-list.phtml, where this theme customizes Boolean output.
  */
-$resourceClass = $resource->resourceClass();
+// Omeka reuses this partial for value annotations and passes only $values in
+// that context. Treat the resource as optional so annotation metadata uses
+// the generic renderer instead of the item-specific Work presentation.
+$resource = $resource ?? null;
+$resourceClass = $resource ? $resource->resourceClass() : null;
 // Item sets may also carry yido:Work as their resource class, but the custom
 // Work partial expects an ItemRepresentation (including itemSets()). Limit
 // the specialized presentation to items so Work-class item sets continue
 // through Omeka's standard metadata renderer.
-if ('items' === $resource->resourceName()
+if ($resource
+    && 'items' === $resource->resourceName()
     && $resourceClass
     && 'yido:Work' === $resourceClass->term()
 ) {
@@ -25,7 +30,9 @@ if ('items' === $resource->resourceName()
 
 $groups = null;
 
-if (class_exists('AdvancedResourceTemplate\Api\Representation\ResourceTemplatePropertyDataRepresentation')) {
+if ($resource
+    && class_exists('AdvancedResourceTemplate\Api\Representation\ResourceTemplatePropertyDataRepresentation')
+) {
     $template = $resource->resourceTemplate();
     $groups = $template ? $template->dataValue('groups', []) : null;
 }
