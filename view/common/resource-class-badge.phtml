@@ -1,0 +1,47 @@
+<?php
+/**
+ * Compact label for an item's Omeka resource class.
+ *
+ * Resource classes carry the domain-specific record type (for example Work,
+ * Printed Book, or Genizah). Keeping this in a partial lets item pages and
+ * embedded resource summaries use the same wording and accessible markup.
+ */
+$resourceClass = $resource->resourceClass();
+if (!$resourceClass) {
+    return;
+}
+
+$escape = $this->plugin('escapeHtml');
+$translate = $this->plugin('translate');
+$label = $translate($resourceClass->label());
+$badgeUrl = null;
+
+// Work items also belong to the technical "Works" item set. Its resource
+// class matches the item's class, which gives us a stable way to find the
+// browse target without hardcoding a database-specific item-set ID.
+if ('items' === $resource->resourceName()
+    && 'yido:Work' === $resourceClass->term()
+) {
+    foreach ($resource->itemSets() as $itemSet) {
+        $itemSetClass = $itemSet->resourceClass();
+        if ($itemSet->isPublic()
+            && $itemSetClass
+            && $itemSetClass->term() === $resourceClass->term()
+        ) {
+            $badgeUrl = $itemSet->url();
+            break;
+        }
+    }
+}
+?>
+<?php if ($badgeUrl): ?>
+<a class="resource-class-badge" href="<?php echo $escape($badgeUrl); ?>">
+    <span class="sr-only"><?php echo $escape($translate('Item type:')); ?> </span>
+    <?php echo $escape($label); ?>
+</a>
+<?php else: ?>
+<span class="resource-class-badge">
+    <span class="sr-only"><?php echo $escape($translate('Item type:')); ?> </span>
+    <?php echo $escape($label); ?>
+</span>
+<?php endif; ?>
