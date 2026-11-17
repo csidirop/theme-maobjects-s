@@ -3,8 +3,8 @@
  * Domain-specific public view for resources of class yido:Work.
  *
  * The work-to-witness relation is stored in yido:manuscripts and
- * yido:printedEditions. Collection contexts such as a genizah are found via
- * the reverse yido:content relation of each witness.
+ * yido:printedEditions. Each witness preview shows titles/text and
+ * creation/publication metadata, with a link to the complete record.
  *
  * This partial is called from resource-values.phtml instead of replacing the
  * complete item show template. Omeka can therefore continue to render its
@@ -94,8 +94,8 @@ $hasAnyValues = static function ($subject, array $terms) use ($valueList) {
 };
 
 // Render a semantic description-list fragment from an ordered term => label
-// map. Keeping this in one helper makes Work, witness, and collection-context
-// fields use identical markup and accessibility behavior.
+// map. Keeping this in one helper makes Work and witness fields use identical
+// markup and accessibility behavior.
 $renderFields = function ($subject, array $fields) use ($escape, $valueList, $isRtlTerm, $renderValue) {
     ob_start();
     foreach ($fields as $term => $label) {
@@ -127,11 +127,10 @@ $workFields = [
     'yido:creatorYiddish' => $translate('Creator (Yiddish)'),
 ];
 
-// Editorial display order for witness metadata. A field is only printed when
-// the linked manuscript or print contains a public value for the term. The map
-// intentionally covers both resource classes so the same component can render
-// yido:Manuscript and yido:PrintedBook records.
-$witnessSections = [
+// Keep transmission previews to these two sections. Full metadata remains on
+// the linked manuscript or printed book's own page. A field is only printed
+// when the linked record contains a public value for the term.
+$witnessPreviewSections = [
     $translate('Titles and text') => [
         'yido:shortTitleAlt' => $translate('Alternative title'),
         'yido:shortTitleYiddishAlt' => $translate('Alternative title (Yiddish)'),
@@ -158,51 +157,6 @@ $witnessSections = [
         'yido:timeOfCreation' => $translate('Date of creation'),
         'yido:jewishTimeOfCreation' => $translate('Jewish date of creation'),
     ],
-    $translate('Physical description') => [
-        'yido:type' => $translate('Type'),
-        'yido:material' => $translate('Material'),
-        'yido:format' => $translate('Format'),
-        'yido:typeface' => $translate('Typeface'),
-        'yido:script' => $translate('Script'),
-        'yido:scriptType' => $translate('Script type'),
-        'yido:scriptTrace' => $translate('Script characteristics'),
-        'yido:size' => $translate('Size'),
-        'yido:length' => $translate('Length'),
-        'yido:width' => $translate('Width'),
-        'yido:scriptSpace' => $translate('Script space'),
-        'yido:numberOfPages' => $translate('Pages / leaves / folios'),
-        'yido:numberingOfPages' => $translate('Pagination'),
-        'yido:numberOfColumns' => $translate('Columns'),
-        'yido:numberOfLines' => $translate('Lines per page'),
-    ],
-    $translate('Features') => [
-        'yido:catchwords' => $translate('Catchwords'),
-        'yido:illustrations' => $translate('Illustrations'),
-        'yido:capitalLetters' => $translate('Initials / capital letters'),
-        'yido:glosses' => $translate('Glosses'),
-        'yido:rubrications' => $translate('Rubrications'),
-    ],
-    $translate('Holdings and access') => [
-        'yido:institution' => $translate('Institutions'),
-        'yido:place' => $translate('Places'),
-        'yido:callNumber' => $translate('Shelfmarks'),
-        'yido:digitalCopy' => $translate('Digital copies'),
-    ],
-    $translate('Notes and bibliography') => [
-        'yido:specialFeatures' => $translate('Special features'),
-        'yido:remarks' => $translate('Remarks'),
-        'yido:reprintOf' => $translate('Reprint of'),
-        'yido:researchLiterature' => $translate('Research literature'),
-    ],
-];
-
-// A collection such as a genizah is not the witness itself. Only the context
-// fields useful in the Work view are summarized here; the collection title
-// links to its full record for all remaining metadata.
-$contextFields = [
-    'yido:origin' => $translate('Origin'),
-    'yido:institution' => $translate('Institution'),
-    'yido:place' => $translate('Place'),
 ];
 
 // Read Work-level content and resolve its two explicit witness relations.
@@ -359,33 +313,6 @@ $witnessGroups = [
                 $witnessTypeLabel = $witnessResourceClass
                     ? $translate($witnessResourceClass->label())
                     : $group['singular'];
-
-                // In the data model, a Genizah points to a Printed Book via yido:content. It is therefore an incoming (reverse) relation
-                // from the witness's point of view:
-                $contexts = [];
-                $subjectValues = $witness->subjectValues();
-                foreach ($subjectValues['yido:content'] ?? [] as $subjectValue) {
-                    $context = $subjectValue->resource();
-                    if ($context && $context->isPublic()) {
-                        $contexts[$context->id()] = $context;
-                    }
-                }
-                // Omeka's subjectValues() may be empty in a resource-page block even though the reverse relation is present. Use the same
-                // property query as the public API as a reliable fallback:
-                if (!$contexts) {
-                    $contextResults = $this->api()->search('items', [
-                        'property' => [[
-                            'property' => 'yido:content',
-                            'type' => 'res',
-                            'text' => $witness->id(),
-                        ]],
-                    ])->getContent();
-                    foreach ($contextResults as $context) {
-                        if ($context->isPublic()) {
-                            $contexts[$context->id()] = $context;
-                        }
-                    }
-                }
                 ?>
                 <details class="witness-card">
                     <summary>
@@ -404,31 +331,7 @@ $witnessGroups = [
                     </summary>
 
                     <div class="witness-card-content">
-                        <?php if ($contexts): ?>
-                        <?php // Show provenance/collection context before the witness's own metadata. ?>
-                        <section class="witness-context" aria-labelledby="witness-context-<?php echo $witness->id(); ?>">
-                            <h4 id="witness-context-<?php echo $witness->id(); ?>"><?php echo $escape($translate('Collection context')); ?></h4>
-                            <?php foreach ($contexts as $context): ?>
-                            <article class="context-card">
-                                <h5>
-                                    <a href="<?php echo $escape($context->url()); ?>"><?php echo $escape($context->displayTitle(null, $lang)); ?></a>
-                                </h5>
-                                <?php if ($hasAnyValues($context, $contextFields)): ?>
-                                <dl class="work-field-grid">
-                                    <?php echo $renderFields($context, $contextFields); ?>
-                                </dl>
-                                <?php endif; ?>
-                            </article>
-                            <?php endforeach; ?>
-                        </section>
-                        <?php endif; ?>
-
-                        <?php
-                        // Repeated institutions, places, shelfmarks, and copies are rendered as independent lists. Omeka currently
-                        // stores them as parallel property values without a reliable row-level association, so pairing them into
-                        // a table here could invent relationships not present in the data:
-                        ?>
-                        <?php foreach ($witnessSections as $sectionLabel => $sectionFields): ?>
+                        <?php foreach ($witnessPreviewSections as $sectionLabel => $sectionFields): ?>
                             <?php if ($hasAnyValues($witness, $sectionFields)): ?>
                             <section class="witness-section">
                                 <h4><?php echo $escape($sectionLabel); ?></h4>
