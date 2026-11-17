@@ -1,0 +1,22 @@
+<?php
+// These classes display incoming relationships in their custom metadata views.
+// Other resource types retain Omeka's configurable linked-resources block.
+$resourceClass = $resource->resourceClass();
+if ('items' === $resource->resourceName() && $resourceClass && in_array($resourceClass->term(), [
+    'yido:Work',
+    'yido:PrintedBook',
+    'yido:Manuscript',
+    'yido:SingleWorkInPrintedBook',
+    'yido:SingleWorkInManuscript',
+], true)) {
+    return;
+}
+
+$siteId = null;
+if ($this->siteSetting('exclude_resources_not_in_site')) {
+    $siteId = $this->currentSite()->id();
+}
+?>
+<?php if ($resource->subjectValueTotalCount(null, null, $siteId)): ?>
+<?php echo $this->linkedResources($resource); ?>
+<?php endif; ?>

@@ -1225,15 +1225,46 @@ body > .uma-footer {
     gap: $spacing-m;
     justify-content: space-between;
 
-    h2 {
-        flex: 1 1 auto;
+    .resource-titles {
+        flex: 1 1 0;
         min-width: 0;
+    }
+
+    &.has-yiddish-title {
+        h2 {
+            margin-bottom: $spacing-s;
+            line-height: 1.2;
+        }
     }
 }
 
+.resource-classification {
+    flex: 0 1 auto;
+    margin-bottom: $spacing-l;
+    max-width: 40%;
+    min-width: 0;
+    text-align: right;
+}
+
 .resource-type {
-    flex: 0 0 auto;
-    margin: 0 0 $spacing-l;
+    margin: 0;
+}
+
+.resource-parent-links {
+    font-size: .8 * $base-font-size;
+    line-height: 1.4;
+    list-style: none;
+    margin: $spacing-s 0 0;
+    overflow-wrap: anywhere;
+    padding: 0;
+
+    li + li {
+        margin-top: $spacing-s;
+    }
+}
+
+.resource-parent-label {
+    font-weight: bold;
 }
 
 .resource-class-badge {
@@ -1650,6 +1681,22 @@ a.resource-class-badge {
 @media screen and (max-width:640px) {
 
     /* @group ----- Work detail ----- */
+
+    .resource-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0;
+
+        h2,
+        .work-title-yiddish {
+            margin-bottom: $spacing-s;
+        }
+    }
+
+    .resource-classification {
+        max-width: 100%;
+        text-align: left;
+    }
 
     .work-view {
         margin-top: 0;

@@ -120,8 +120,9 @@ $renderFields = function ($subject, array $fields) use ($escape, $valueList, $is
 };
 
 // Full metadata for standalone records; Work previews use the first two sections.
-$titlesSectionLabel = $translate('Titles and text');
+$titlesSectionLabel = $translate('Titles and Content');
 $holdingsSectionLabel = $translate('Holdings and access');
+$notesSectionLabel = $translate('Notes and bibliography');
 $witnessSections = [
     $titlesSectionLabel => [
         'yido:manuscriptName' => $translate('Manuscript name'),
@@ -184,18 +185,12 @@ $witnessSections = [
         'yido:callNumber' => $translate('Shelfmarks'),
         'yido:digitalCopy' => $translate('Digital copies'),
     ],
-    $translate('Notes and bibliography') => [
+    $notesSectionLabel => [
         'yido:remarks' => $translate('Remarks'),
         'yido:reprintOf' => $translate('Reprint of'),
         'yido:researchLiterature' => $translate('Research literature'),
     ],
 ];
-
-if ($isContainedWork) {
-    $witnessSections[$titlesSectionLabel] = [
-        'yido:shortTitleYiddish' => $translate('Title (Yiddish)'),
-    ] + $witnessSections[$titlesSectionLabel];
-}
 
 $contents = $valueList($resource, 'yido:content');
 
@@ -205,72 +200,61 @@ $contextFields = [
     'yido:place' => $translate('Place'),
 ];
 
-// A collection context (for example a Genizah) links to this witness through yido:content. Resolve public incoming relations, with an API fallback when
-// subjectValues() does not expose the relation in a resource-page block.
-$contexts = [];
-$incomingValues = $resource->subjectValues();
-foreach (($incomingValues['yido:content'] ?? []) as $subjectValue) {
-    $context = $subjectValue->resource();
-    if ($context && $context->isPublic()) {
-        $contexts[$context->id()] = $context;
-    }
-}
-if (!$contexts) {
-    $contextResults = $this->api()->search('items', [
-        'property' => [[
-            'property' => 'yido:content',
-            'type' => 'res',
-            'text' => $resource->id(),
-        ]],
-    ])->getContent();
-    foreach ($contextResults as $context) {
-        if ($context->isPublic()) {
-            $contexts[$context->id()] = $context;
+// Omeka groups incoming values by display label. Index the source items by
+// property term instead, respecting the site's incoming-resource filter.
+$siteId = $this->siteSetting('exclude_resources_not_in_site') ? $this->currentSite()->id() : null;
+$incomingValues = [];
+foreach ($resource->subjectValues(null, null, null, null, $siteId) as $subjectValues) {
+    foreach ($subjectValues as $subjectValueData) {
+        $subjectValue = $subjectValueData['val'];
+        $source = $subjectValue->resource();
+        if ($source && $source->isPublic() && 'items' === $source->resourceName()) {
+            $incomingValues[$subjectValue->property()->term()][$source->id()] = $source;
         }
     }
 }
+$incomingItems = function ($term) use ($resource, $incomingValues, $siteId) {
+    if (!empty($incomingValues[$term])) {
+        return $incomingValues[$term];
+    }
+    // Resource-page blocks may omit subject values; retain an API fallback.
+    $query = [
+        'is_public' => true,
+        'property' => [[
+            'property' => $term,
+            'type' => 'res',
+            'text' => $resource->id(),
+        ]],
+    ];
+    if ($siteId) {
+        $query['site_id'] = $siteId;
+    }
+    $items = [];
+    foreach ($this->api()->search('items', $query)->getContent() as $source) {
+        if ($source->isPublic()) {
+            $items[$source->id()] = $source;
+        }
+    }
+    return $items;
+};
 
-// For an individual text, incoming content relations identify its containing
-// manuscript or printed book. Keep these apart from the collection contexts
-// of whole records.
-$containers = [];
+// A collection context (for example a Genizah) links through yido:content.
+$contexts = $incomingItems('yido:content');
+$reprints = $incomingItems('yido:reprintOf');
+
+// Some texts identify their parent only through isPartOf. Add those to Contents
+// without duplicating outgoing content entries or losing their annotations.
+$incomingContents = $incomingItems('yido:isPartOf');
+foreach ($contents as $contentValue) {
+    $contentResource = $contentValue->valueResource();
+    if ($contentResource) {
+        unset($incomingContents[$contentResource->id()]);
+    }
+}
+
+// Parent navigation lives beneath the class badge, outside this metadata view.
 if ($isContainedWork) {
-    foreach ($contexts as $context) {
-        $containerClass = $context->resourceClass();
-        if ($containerClass && $containedWorkClasses[$resourceClassTerm] === $containerClass->term()) {
-            $containers[$context->id()] = $context;
-        }
-    }
     $contexts = [];
-}
-
-// Works link to their witnesses through the transmission properties. Follow
-// the incoming relation so the return link stays in sync with Omeka's data.
-$workRelation = in_array($resourceClassTerm, ['yido:Manuscript', 'yido:SingleWorkInManuscript'], true)
-    ? 'yido:manuscripts'
-    : 'yido:printedEditions';
-$works = [];
-foreach (($incomingValues[$workRelation] ?? []) as $subjectValue) {
-    $work = $subjectValue->resource();
-    $workClass = $work ? $work->resourceClass() : null;
-    if ($work && $work->isPublic() && $workClass && 'yido:Work' === $workClass->term()) {
-        $works[$work->id()] = $work;
-    }
-}
-if (!$works) {
-    $workResults = $this->api()->search('items', [
-        'property' => [[
-            'property' => $workRelation,
-            'type' => 'res',
-            'text' => $resource->id(),
-        ]],
-    ])->getContent();
-    foreach ($workResults as $work) {
-        $workClass = $work->resourceClass();
-        if ($work->isPublic() && $workClass && 'yido:Work' === $workClass->term()) {
-            $works[$work->id()] = $work;
-        }
-    }
 }
 
 // Structured fields are removed from the generic fallback to avoid duplicate output. The title fields are already represented by the page heading.
@@ -282,6 +266,20 @@ foreach ($witnessSections as $sectionFields) {
 $valueData = $values instanceof Traversable ? iterator_to_array($values, false) : $values;
 $otherValues = [];
 foreach ($valueData as $propertyData) {
+    if ($isContainedWork && 'yido:isPartOf' === $propertyData['property']->term()) {
+        // Omit the links moved to the heading. Keep literal, unexpected, and
+        // annotated values available through the normal metadata fallback.
+        $propertyData['values'] = array_filter($propertyData['values'], static function ($value) use ($containedWorkClasses, $resourceClassTerm) {
+            $parent = $value->valueResource();
+            $parentClass = $parent ? $parent->resourceClass() : null;
+            return !$parent || !$parent->isPublic() || 'items' !== $parent->resourceName()
+                || !$parentClass || $parentClass->term() !== $containedWorkClasses[$resourceClassTerm]
+                || $value->valueAnnotation();
+        });
+        if (!$propertyData['values']) {
+            continue;
+        }
+    }
     if (!in_array($propertyData['property']->term(), $handledTerms, true)) {
         $otherValues[] = $propertyData;
     }
@@ -308,38 +306,13 @@ foreach ($valueData as $propertyData) {
 
         <?php foreach ($witnessSections as $sectionLabel => $sectionFields): ?>
             <?php $hasSectionValues = $hasAnyValues($resource, $sectionFields); ?>
-            <?php $showWorks = $works && $sectionLabel === $titlesSectionLabel; ?>
-            <?php $showContainers = $containers && $sectionLabel === $titlesSectionLabel; ?>
             <?php $showContexts = $contextsInHoldings && $contexts && $sectionLabel === $holdingsSectionLabel; ?>
-            <?php if ($hasSectionValues || $showWorks || $showContainers || $showContexts): ?>
+            <?php $showReprints = $reprints && $sectionLabel === $notesSectionLabel; ?>
+            <?php if ($hasSectionValues || $showContexts || $showReprints): ?>
             <section class="witness-section">
                 <h3><?php echo $escape($sectionLabel); ?></h3>
                 <dl class="work-field-grid">
                     <?php echo $renderFields($resource, $sectionFields); ?>
-                    <?php if ($showContainers): ?>
-                    <div class="work-field">
-                        <dt><?php echo $escape($translate('Contained in')); ?></dt>
-                        <dd>
-                            <ul class="work-value-list">
-                                <?php foreach ($containers as $container): ?>
-                                <li><span class="work-value"><a href="<?php echo $escape($container->url()); ?>"><?php echo $escape($container->displayTitle(null, $lang)); ?></a></span></li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </dd>
-                    </div>
-                    <?php endif; ?>
-                    <?php if ($showWorks): ?>
-                    <div class="work-field">
-                        <dt><?php echo $escape($translate('Work')); ?></dt>
-                        <dd>
-                            <ul class="work-value-list">
-                                <?php foreach ($works as $work): ?>
-                                <li><span class="work-value"><a href="<?php echo $escape($work->url()); ?>"><?php echo $escape($work->displayTitle(null, $lang)); ?></a></span></li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </dd>
-                    </div>
-                    <?php endif; ?>
                     <?php if ($showContexts): ?>
                         <?php foreach ($contexts as $context): ?>
                         <?php
@@ -356,11 +329,23 @@ foreach ($valueData as $propertyData) {
                         </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
+                    <?php if ($showReprints): ?>
+                    <div class="work-field">
+                        <dt><?php echo $escape($translate('Reprints')); ?></dt>
+                        <dd>
+                            <ul class="work-value-list">
+                                <?php foreach ($reprints as $reprint): ?>
+                                <li><span class="work-value"><a href="<?php echo $escape($reprint->url()); ?>"><?php echo $escape($reprint->displayTitle(null, $lang)); ?></a></span></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </dd>
+                    </div>
+                    <?php endif; ?>
                 </dl>
             </section>
             <?php endif; ?>
 
-            <?php if ($sectionLabel === $titlesSectionLabel && $contents): ?>
+            <?php if ($sectionLabel === $titlesSectionLabel && ($contents || $incomingContents)): ?>
             <section class="witness-section witness-contents">
                 <h3><?php echo $escape($translate('Contents')); ?></h3>
                 <ul class="work-value-list">
@@ -374,6 +359,9 @@ foreach ($valueData as $propertyData) {
                         </div>
                         <?php endif; ?>
                     </li>
+                    <?php endforeach; ?>
+                    <?php foreach ($incomingContents as $contentResource): ?>
+                    <li><span class="work-value"><a href="<?php echo $escape($contentResource->url()); ?>"><?php echo $escape($contentResource->displayTitle(null, $lang)); ?></a></span></li>
                     <?php endforeach; ?>
                 </ul>
             </section>

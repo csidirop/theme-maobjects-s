@@ -1,0 +1,99 @@
+<?php
+/** Parent navigation beneath the class badge on the four witness classes. */
+$escape = $this->plugin('escapeHtml');
+$translate = $this->plugin('translate');
+$lang = $this->lang();
+$resourceClass = $resource->resourceClass();
+$classTerm = $resourceClass ? $resourceClass->term() : null;
+$workRelations = [
+    'yido:Manuscript' => 'yido:manuscripts',
+    'yido:PrintedBook' => 'yido:printedEditions',
+    'yido:SingleWorkInManuscript' => 'yido:manuscripts',
+    'yido:SingleWorkInPrintedBook' => 'yido:printedEditions',
+];
+if (!isset($workRelations[$classTerm])) {
+    return;
+}
+
+$containerClasses = [
+    'yido:SingleWorkInManuscript' => 'yido:Manuscript',
+    'yido:SingleWorkInPrintedBook' => 'yido:PrintedBook',
+];
+$matchesClass = static function ($candidate, $expectedClass) {
+    $candidateClass = $candidate ? $candidate->resourceClass() : null;
+    return $candidate && $candidate->isPublic() && 'items' === $candidate->resourceName()
+        && $candidateClass && $candidateClass->term() === $expectedClass;
+};
+
+// subjectValues() groups rows by display label, not by property term.
+$siteId = $this->siteSetting('exclude_resources_not_in_site') ? $this->currentSite()->id() : null;
+$incoming = [];
+foreach ($resource->subjectValues(null, null, null, null, $siteId) as $subjectValues) {
+    foreach ($subjectValues as $subjectValueData) {
+        $value = $subjectValueData['val'];
+        $source = $value->resource();
+        if ($source && $source->isPublic() && 'items' === $source->resourceName()) {
+            $incoming[$value->property()->term()][$source->id()] = $source;
+        }
+    }
+}
+$incomingItems = function ($term) use ($resource, $incoming, $siteId) {
+    if (!empty($incoming[$term])) {
+        return $incoming[$term];
+    }
+    $query = [
+        'is_public' => true,
+        'property' => [[
+            'property' => $term,
+            'type' => 'res',
+            'text' => $resource->id(),
+        ]],
+    ];
+    if ($siteId) {
+        $query['site_id'] = $siteId;
+    }
+    return $this->api()->search('items', $query)->getContent();
+};
+
+$parentGroups = [];
+if (isset($containerClasses[$classTerm])) {
+    $containers = [];
+    $containerValues = $resource->value('yido:isPartOf', ['all' => true]);
+    $containerValues = is_array($containerValues) ? $containerValues : ($containerValues ? [$containerValues] : []);
+    foreach ($containerValues as $value) {
+        $container = $value->valueResource();
+        if ($matchesClass($container, $containerClasses[$classTerm])) {
+            $containers[$container->id()] = $container;
+        }
+    }
+    foreach ($incomingItems('yido:content') as $container) {
+        if ($matchesClass($container, $containerClasses[$classTerm])) {
+            $containers[$container->id()] = $container;
+        }
+    }
+    if ($containers) {
+        $parentGroups[$translate('Contained in')] = $containers;
+    }
+}
+
+// Work relationships are always stored on the Work, using its transmission
+// properties. Do not infer them from a witness's content links.
+$works = [];
+foreach ($incomingItems($workRelations[$classTerm]) as $work) {
+    if ($matchesClass($work, 'yido:Work')) {
+        $works[$work->id()] = $work;
+    }
+}
+if ($works) {
+    $parentGroups[$translate('Work')] = $works;
+}
+?>
+<?php if ($parentGroups): ?>
+<ul class="resource-parent-links">
+    <?php foreach ($parentGroups as $label => $parents): ?>
+        <?php foreach ($parents as $parent): ?>
+    <li><span class="resource-parent-label"><?php echo $escape($label); ?>:</span> <a href="<?php echo $escape($parent->url()); ?>"><?php echo $escape($parent->displayTitle(null, $lang)); ?></a></li>
+        <?php endforeach; ?>
+    <?php endforeach; ?>
+</ul>
+<?php endif; ?>

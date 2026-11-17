@@ -7,19 +7,46 @@
  * records identify themselves as Work, Printed Book, Genizah, and so on.
  */
 $translate = $this->plugin('translate');
+$escape = $this->plugin('escapeHtml');
 $this->headLink()->appendStylesheet($this->assetUrl('css/resource-page-blocks.css', 'Omeka'));
 $this->htmlElement('body')->appendAttribute('class', 'item resource show');
 $filterLocale = (bool) $this->siteSetting('filter_locale_values');
 $lang = $this->lang();
 $valueLang = $filterLocale ? [$lang, ''] : null;
 $resourceClass = $item->resourceClass();
+$yiddishTitleProperties = [
+    'yido:Work' => 'yido:workTitleHebrew',
+    'yido:PrintedBook' => 'yido:shortTitleYiddish',
+    'yido:Manuscript' => 'yido:shortTitleYiddish',
+    'yido:SingleWorkInPrintedBook' => 'yido:shortTitleYiddish',
+    'yido:SingleWorkInManuscript' => 'yido:shortTitleYiddish',
+];
+$yiddishTitleProperty = $resourceClass ? ($yiddishTitleProperties[$resourceClass->term()] ?? null) : null;
+$yiddishTitles = $yiddishTitleProperty ? $item->value($yiddishTitleProperty, ['all' => true]) : [];
+$yiddishTitles = is_array($yiddishTitles) ? $yiddishTitles : ($yiddishTitles ? [$yiddishTitles] : []);
+$yiddishTitles = array_values(array_filter($yiddishTitles, static function ($title) {
+    return trim((string) $title->value()) !== '';
+}));
 ?>
-<div class="resource-heading">
-    <?php echo $this->pageTitle($item->displayTitle(null, $valueLang), 2); ?>
+<div class="resource-heading<?php echo $yiddishTitles ? ' has-yiddish-title' : ''; ?>">
+    <div class="resource-titles">
+        <?php echo $this->pageTitle($item->displayTitle(null, $valueLang), 2); ?>
+        <?php if ($yiddishTitles): ?>
+        <p class="work-title-yiddish" lang="yi" dir="rtl">
+            <?php foreach ($yiddishTitles as $index => $title): ?>
+                <?php echo $index ? '<span aria-hidden="true"> · </span>' : ''; ?>
+                <?php echo $escape($title->value()); ?>
+            <?php endforeach; ?>
+        </p>
+        <?php endif; ?>
+    </div>
     <?php if ($resourceClass): ?>
-    <p class="resource-type">
-        <?php echo $this->partial('common/resource-class-badge', ['resource' => $item]); ?>
-    </p>
+    <div class="resource-classification">
+        <p class="resource-type">
+            <?php echo $this->partial('common/resource-class-badge', ['resource' => $item]); ?>
+        </p>
+        <?php echo $this->partial('common/resource-parent-links', ['resource' => $item]); ?>
+    </div>
     <?php endif; ?>
 </div>
 <?php if (!$resourceClass): ?>

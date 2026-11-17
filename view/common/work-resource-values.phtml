@@ -8,7 +8,7 @@
  *
  * This partial is called from resource-values.phtml instead of replacing the
  * complete item show template. Omeka can therefore continue to render its
- * configured resource-page blocks (item sets, media, linked resources, etc.)
+ * configured resource-page blocks (item sets, media, etc.)
  * around this domain-specific presentation.
  */
 $escape = $this->plugin('escapeHtml');
@@ -131,7 +131,7 @@ $workFields = [
 // the linked manuscript or printed book's own page. A field is only printed
 // when the linked record contains a public value for the term.
 $witnessPreviewSections = [
-    $translate('Titles and text') => [
+    $translate('Titles and Content') => [
         'yido:shortTitleAlt' => $translate('Alternative title'),
         'yido:shortTitleYiddishAlt' => $translate('Alternative title (Yiddish)'),
         'yido:incipit' => $translate('Incipit'),
@@ -160,7 +160,6 @@ $witnessPreviewSections = [
 ];
 
 // Read Work-level content and resolve its two explicit witness relations.
-$workTitleYiddish = $valueList($resource, 'yido:workTitleHebrew');
 $alternativeTitles = $valueList($resource, 'yido:alternativeWorkTitle');
 $alternativeTitlesYiddish = $valueList($resource, 'yido:alternativeWorkTitleHebrew');
 $descriptions = $valueList($resource, 'yido:shortDescription');
@@ -227,16 +226,6 @@ $witnessGroups = [
 ?>
 
 <div class="work-view">
-    <?php // Add the Hebrew-script title as a visual counterpart to Omeka's page title. ?>
-    <?php if ($workTitleYiddish): ?>
-    <p class="work-title-yiddish" lang="yi" dir="rtl">
-        <?php foreach ($workTitleYiddish as $index => $title): ?>
-            <?php echo $index ? '<span aria-hidden="true"> · </span>' : ''; ?>
-            <?php echo $escape($title->value()); ?>
-        <?php endforeach; ?>
-    </p>
-    <?php endif; ?>
-
     <?php // Present short Work facts before the longer descriptive sections. ?>
     <?php if ($hasAnyValues($resource, $workFields) || $workCollections): ?>
     <dl class="work-facts">

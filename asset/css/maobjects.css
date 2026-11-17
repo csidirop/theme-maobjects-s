@@ -1109,15 +1109,45 @@ input[type=reset][aria-disabled=true] {
     gap: 12px;
     justify-content: space-between;
   }
-  .resource-heading h2 {
-    flex: 1 1 auto;
+  .resource-heading .resource-titles {
+    flex: 1 1 0;
     min-width: 0;
+  }
+  .resource-heading.has-yiddish-title h2 {
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+}
+@media screen {
+  .resource-classification {
+    flex: 0 1 auto;
+    margin-bottom: 24px;
+    max-width: 40%;
+    min-width: 0;
+    text-align: right;
   }
 }
 @media screen {
   .resource-type {
-    flex: 0 0 auto;
-    margin: 0 0 24px;
+    margin: 0;
+  }
+}
+@media screen {
+  .resource-parent-links {
+    font-size: 14.4px;
+    line-height: 1.4;
+    list-style: none;
+    margin: 6px 0 0;
+    overflow-wrap: anywhere;
+    padding: 0;
+  }
+  .resource-parent-links li + li {
+    margin-top: 6px;
+  }
+}
+@media screen {
+  .resource-parent-label {
+    font-weight: bold;
   }
 }
 @media screen {
@@ -1530,6 +1560,21 @@ input[type=reset][aria-disabled=true] {
 }
 @media screen and (max-width: 640px) {
   /* @group ----- Work detail ----- */
+  .resource-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0;
+  }
+  .resource-heading h2,
+.resource-heading .work-title-yiddish {
+    margin-bottom: 6px;
+  }
+
+  .resource-classification {
+    max-width: 100%;
+    text-align: left;
+  }
+
   .work-view {
     margin-top: 0;
   }
