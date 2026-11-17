@@ -8,7 +8,7 @@ Paths below are relative to the theme root.
 | --- | --- |
 | [view/common/resource-values.phtml](view/common/resource-values.phtml) | Chooses the view based on the item's resource class. |
 | [view/common/work-resource-values.phtml](view/common/work-resource-values.phtml) | Work metadata and transmission previews. |
-| [view/common/witness-resource-values.phtml](view/common/witness-resource-values.phtml) | Full Manuscript and Printed Book metadata. |
+| [view/common/witness-resource-values.phtml](view/common/witness-resource-values.phtml) | Full metadata for Manuscripts, Printed Books, and Single Works within either type. |
 | [view/common/resource-values-list.phtml](view/common/resource-values-list.phtml) | Standard metadata output, including the fallback. |
 | [asset/sass/_maobjects.scss](asset/sass/_maobjects.scss) | Custom styling, including mobile rules. |
 
@@ -30,5 +30,9 @@ The links come from Omeka metadata; item IDs are not hardcoded in the views.
 | Work → Manuscript | `yido:manuscripts` |
 | Work → Printed Book | `yido:printedEditions` |
 | Genizah → Printed Book | `yido:content` |
+| Manuscript → Single Work in Manuscript | `yido:content` |
+| Printed Book → Single Work in Printed Book | `yido:content` |
 
 Manuscript and Printed Book pages follow the incoming Work relationship and show a **Work** link at the end of **Titles and text**. Printed Books also show the linked Genizah title inside the **Holdings and access** grid. Its full metadata stays on the Genizah's own page. Incoming links use public records, with an API lookup fallback when Omeka's `subjectValues()` is empty.
+
+Manuscript names appear under **Titles and text**. Content values appear in a separate **Contents** section: linked texts open their full record, literal values remain plain text, and annotations such as page ranges are shown beside the entry. Single Work in Manuscript and Single Work in Printed Book pages use the shared metadata sections and show **Contained in** when linked to their parent manuscript or book. A **Work** link appears only when there is a direct relationship to a Work record.

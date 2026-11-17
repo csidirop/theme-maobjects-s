@@ -1512,6 +1512,39 @@ a.resource-class-badge {
     padding: $spacing-l;
 }
 
+.resource.show .work-view .contents-annotation {
+    display: inline-block;
+    margin-left: $spacing-m;
+    color: $dark-gray;
+    font-size: .875 * $base-font-size;
+
+    dl {
+        margin: 0;
+    }
+
+    .property {
+        display: flex;
+        align-items: baseline;
+        gap: $spacing-s;
+        margin: 0;
+    }
+
+    dt,
+    dd.value {
+        margin: 0;
+        padding: 0;
+        width: auto;
+        text-align: left;
+        font-size: inherit;
+        line-height: inherit;
+        color: inherit;
+    }
+
+    dt {
+        font-weight: normal;
+    }
+}
+
 .work-field-grid {
     display: grid;
     gap: $spacing-l;

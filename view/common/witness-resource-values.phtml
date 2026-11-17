@@ -1,6 +1,6 @@
 <?php
 /**
- * Structured metadata view for a standalone manuscript or printed book.
+ * Structured metadata view for a manuscript, printed book, or contained text.
  *
  * The Work page presents these resources inside transmission accordions. This
  * partial gives their own item pages the same editorial grouping and visual
@@ -11,7 +11,14 @@ $escape = $this->plugin('escapeHtml');
 $translate = $this->plugin('translate');
 $lang = $this->lang();
 $resourceClass = $resource->resourceClass();
+$resourceClassTerm = $resourceClass ? $resourceClass->term() : null;
+$containedWorkClasses = [
+    'yido:SingleWorkInManuscript' => 'yido:Manuscript',
+    'yido:SingleWorkInPrintedBook' => 'yido:PrintedBook',
+];
+$isContainedWork = isset($containedWorkClasses[$resourceClassTerm]);
 $contextsInHoldings = $resourceClass && 'yido:PrintedBook' === $resourceClass->term();
+$showValueAnnotations = $this->fallbackSetting('show_value_annotations', ['site'], true);
 
 $this->htmlElement('body')->appendAttribute('class', 'witness-show');
 
@@ -28,7 +35,7 @@ $isRtlTerm = static function ($term) {
 };
 
 // Retain Omeka's data-type rendering, adding the adaptations used in the Work accordion for booleans, resource links, and Hebrew-script values.
-$renderValue = function ($value, $rtl = false) use ($escape, $translate, $lang) {
+$renderValue = function ($value, $rtl = false, $includeAnnotations = true) use ($escape, $translate, $lang, $showValueAnnotations) {
     if ('boolean' === $value->type()) {
         $isTrue = in_array(strtolower(trim((string) $value->value())), ['1', 'true'], true);
         $label = $translate($isTrue ? 'Yes' : 'No');
@@ -61,7 +68,23 @@ $renderValue = function ($value, $rtl = false) use ($escape, $translate, $lang) 
         $attributes .= ' dir="rtl"';
     }
 
-    return sprintf('<span class="work-value"%s>%s</span>', $attributes, $html);
+    $valueHtml = sprintf('<span class="work-value"%s>%s</span>', $attributes, $html);
+    $annotation = $value->valueAnnotation();
+    if ($annotation && $showValueAnnotations && $includeAnnotations) {
+        $expanded = 'expanded' === $showValueAnnotations;
+        $toggleLabel = $escape($translate($expanded ? 'Collapse' : 'Expand'));
+        $annotationLabel = $escape($translate('Has annotation'));
+        $valueHtml .= sprintf(
+            ' <a href="#" class="%s" aria-label="%s"><span class="has-annotation o-icon-annotation" role="img" title="%s" aria-label="%s"></span></a><div class="collapsible annotation">%s</div>',
+            $expanded ? 'collapse' : 'expand',
+            $toggleLabel,
+            $annotationLabel,
+            $annotationLabel,
+            $annotation->displayValues()
+        );
+    }
+
+    return $valueHtml;
 };
 
 $hasAnyValues = static function ($subject, array $fields) use ($valueList) {
@@ -101,6 +124,7 @@ $titlesSectionLabel = $translate('Titles and text');
 $holdingsSectionLabel = $translate('Holdings and access');
 $witnessSections = [
     $titlesSectionLabel => [
+        'yido:manuscriptName' => $translate('Manuscript name'),
         'yido:shortTitleAlt' => $translate('Alternative title'),
         'yido:shortTitleYiddishAlt' => $translate('Alternative title (Yiddish)'),
         'yido:incipit' => $translate('Incipit'),
@@ -111,6 +135,8 @@ $witnessSections = [
         'yido:languages' => $translate('Languages'),
     ],
     $translate('Creation and publication') => [
+        'yido:creator' => $translate('Creator'),
+        'yido:creatorYiddish' => $translate('Creator (Yiddish)'),
         'yido:publisher' => $translate('Printer / publisher'),
         'yido:publisherYiddish' => $translate('Printer / publisher (Yiddish)'),
         'yido:placeOfPublication' => $translate('Place of publication'),
@@ -148,7 +174,9 @@ $witnessSections = [
         'yido:illustrations' => $translate('Illustrations'),
         'yido:capitalLetters' => $translate('Initials / capital letters'),
         'yido:glosses' => $translate('Glosses'),
+        'yido:marginalia' => $translate('Marginalia'),
         'yido:rubrications' => $translate('Rubrications'),
+        'yido:specialFeatures' => $translate('Special features'),
     ],
     $holdingsSectionLabel => [
         'yido:institution' => $translate('Institutions'),
@@ -157,12 +185,19 @@ $witnessSections = [
         'yido:digitalCopy' => $translate('Digital copies'),
     ],
     $translate('Notes and bibliography') => [
-        'yido:specialFeatures' => $translate('Special features'),
         'yido:remarks' => $translate('Remarks'),
         'yido:reprintOf' => $translate('Reprint of'),
         'yido:researchLiterature' => $translate('Research literature'),
     ],
 ];
+
+if ($isContainedWork) {
+    $witnessSections[$titlesSectionLabel] = [
+        'yido:shortTitleYiddish' => $translate('Title (Yiddish)'),
+    ] + $witnessSections[$titlesSectionLabel];
+}
+
+$contents = $valueList($resource, 'yido:content');
 
 $contextFields = [
     'yido:origin' => $translate('Origin'),
@@ -195,9 +230,23 @@ if (!$contexts) {
     }
 }
 
+// For an individual text, incoming content relations identify its containing
+// manuscript or printed book. Keep these apart from the collection contexts
+// of whole records.
+$containers = [];
+if ($isContainedWork) {
+    foreach ($contexts as $context) {
+        $containerClass = $context->resourceClass();
+        if ($containerClass && $containedWorkClasses[$resourceClassTerm] === $containerClass->term()) {
+            $containers[$context->id()] = $context;
+        }
+    }
+    $contexts = [];
+}
+
 // Works link to their witnesses through the transmission properties. Follow
 // the incoming relation so the return link stays in sync with Omeka's data.
-$workRelation = $resourceClass && 'yido:Manuscript' === $resourceClass->term()
+$workRelation = in_array($resourceClassTerm, ['yido:Manuscript', 'yido:SingleWorkInManuscript'], true)
     ? 'yido:manuscripts'
     : 'yido:printedEditions';
 $works = [];
@@ -225,7 +274,7 @@ if (!$works) {
 }
 
 // Structured fields are removed from the generic fallback to avoid duplicate output. The title fields are already represented by the page heading.
-$handledTerms = ['dcterms:title', 'yido:shortTitle', 'yido:shortTitleYiddish'];
+$handledTerms = ['dcterms:title', 'yido:shortTitle', 'yido:shortTitleYiddish', 'yido:content'];
 foreach ($witnessSections as $sectionFields) {
     $handledTerms = array_merge($handledTerms, array_keys($sectionFields));
 }
@@ -260,12 +309,25 @@ foreach ($valueData as $propertyData) {
         <?php foreach ($witnessSections as $sectionLabel => $sectionFields): ?>
             <?php $hasSectionValues = $hasAnyValues($resource, $sectionFields); ?>
             <?php $showWorks = $works && $sectionLabel === $titlesSectionLabel; ?>
+            <?php $showContainers = $containers && $sectionLabel === $titlesSectionLabel; ?>
             <?php $showContexts = $contextsInHoldings && $contexts && $sectionLabel === $holdingsSectionLabel; ?>
-            <?php if ($hasSectionValues || $showWorks || $showContexts): ?>
+            <?php if ($hasSectionValues || $showWorks || $showContainers || $showContexts): ?>
             <section class="witness-section">
                 <h3><?php echo $escape($sectionLabel); ?></h3>
                 <dl class="work-field-grid">
                     <?php echo $renderFields($resource, $sectionFields); ?>
+                    <?php if ($showContainers): ?>
+                    <div class="work-field">
+                        <dt><?php echo $escape($translate('Contained in')); ?></dt>
+                        <dd>
+                            <ul class="work-value-list">
+                                <?php foreach ($containers as $container): ?>
+                                <li><span class="work-value"><a href="<?php echo $escape($container->url()); ?>"><?php echo $escape($container->displayTitle(null, $lang)); ?></a></span></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </dd>
+                    </div>
+                    <?php endif; ?>
                     <?php if ($showWorks): ?>
                     <div class="work-field">
                         <dt><?php echo $escape($translate('Work')); ?></dt>
@@ -295,6 +357,25 @@ foreach ($valueData as $propertyData) {
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </dl>
+            </section>
+            <?php endif; ?>
+
+            <?php if ($sectionLabel === $titlesSectionLabel && $contents): ?>
+            <section class="witness-section witness-contents">
+                <h3><?php echo $escape($translate('Contents')); ?></h3>
+                <ul class="work-value-list">
+                    <?php foreach ($contents as $contentValue): ?>
+                    <li>
+                        <?php echo $renderValue($contentValue, false, false); ?>
+                        <?php $contentAnnotation = $contentValue->valueAnnotation(); ?>
+                        <?php if ($contentAnnotation && $showValueAnnotations): ?>
+                        <div class="contents-annotation">
+                            <?php echo $contentAnnotation->displayValues(); ?>
+                        </div>
+                        <?php endif; ?>
+                    </li>
+                    <?php endforeach; ?>
+                </ul>
             </section>
             <?php endif; ?>
         <?php endforeach; ?>
