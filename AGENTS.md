@@ -19,11 +19,13 @@ for changing them.
 - `view/common/`: shared partials, navigation, footer, media, and metadata output.
 - `view/omeka/site/`: item and item-set browse overrides.
 - `view/hierarchy/`: templates for the Hierarchy module.
-- `asset/sass/`: stylesheet sources. `style.scss` imports the partials;
-  `_base.scss` contains shared variables, `_ubma.scss` contains Mannheim styling,
-  and `_mobile.scss` contains mobile overrides.
-- `asset/css/style.css`: compiled, tracked stylesheet; regenerate it after Sass
-  changes and include the relevant output in the change.
+- `asset/sass/`: stylesheet sources. `style.scss` imports the original Center Row
+  partials, including `_base.scss` for shared variables and `_mobile.scss` for
+  upstream mobile styles. `maobjects.scss` imports `_maobjects.scss` for Mannheim
+  colors, mixins, and all project overrides, including mobile adjustments.
+- `asset/css/style.css` and `asset/css/maobjects.css`: compiled, tracked
+  stylesheets, loaded in that order. Regenerate them after Sass changes and
+  include the relevant output in the change.
 - `asset/js/`: theme behavior in `centerrow.js` and `browse.js`, plus the bundled
   accessible mega-menu plugin.
 - `asset/img/`, `asset/fonts/`, and `asset/css/lightgallery.min.css`: branding and
@@ -42,18 +44,19 @@ Gulp build also requires the `sass` package, which is currently absent from
 an explicit dependency fix when that is part of the task; do not silently
 rewrite dependency files during unrelated work.
 
-Use the local Gulp executable so commands do not depend on a global installation
-or implicitly download tooling:
+Use the local Gulp CLI through Node so commands do not depend on a global
+installation, executable npm shims, or implicitly downloaded tooling:
 
 ```sh
-./node_modules/.bin/gulp css
-./node_modules/.bin/gulp css:watch
+node node_modules/gulp/bin/gulp.js css
+node node_modules/gulp/bin/gulp.js css:watch
 ```
 
 The first command builds CSS once; the second watches Sass files. Edit Sass
-sources rather than applying lasting changes directly to generated CSS. Inspect
-the generated diff for unrelated changes. There is no `start` script, despite
-the inherited README's `npm start` instruction.
+sources rather than applying lasting changes directly to generated CSS. Keep
+MAObjects S styling in `_maobjects.scss` and leave the original Center Row
+partials free of project overrides. Inspect the generated diff for unrelated
+changes. There is no `start` script.
 
 ## Implementation guidance
 
@@ -82,7 +85,7 @@ placeholder, not a useful validation command. Select checks for the change:
 - PHP templates: run `php -l path/to/changed-template.phtml` for each changed file.
 - JavaScript: run `node --check path/to/changed-script.js`, then exercise the
   affected browser behavior.
-- Sass: run the one-off Gulp CSS build and review `asset/css/style.css`.
+- Sass: run the one-off Gulp CSS build and review both generated stylesheets.
 - Theme behavior: use an available Omeka S installation to check affected pages
   at desktop and mobile widths. As relevant, check navigation/search, browse
   grid/list toggles and pagination, resource metadata and Boolean display,

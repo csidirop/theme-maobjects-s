@@ -12,15 +12,21 @@ For more advanced use, such as customizing the theme with Sass, you'll need to i
 
 For those dipping their toes into customizing sites with CSS, the [CSS Editor](https://omeka.org/s/modules/CSSEditor/) module allows site administrators to write style overrides.
 
-For advanced CSS and Sass users, Center Row provides variables for easily customizing typography, spacing, and colors in `asset/sass/_base.scss`.
+The Sass sources build two stylesheets, loaded in this order:
+
+* `asset/sass/style.scss` builds `asset/css/style.css` from the original Center Row partials (`_normalize.scss`, `_base.scss`, `_screen.scss`, and `_mobile.scss`). Keep project customizations out of these files.
+* `asset/sass/maobjects.scss` builds `asset/css/maobjects.css` from `_maobjects.scss`, which contains the Mannheim colors, mixins, and theme overrides, including mobile adjustments. It imports the shared variables from `_base.scss` without duplicating the original CSS rules.
+
+Add MAObjects S styling to `asset/sass/_maobjects.scss` and rebuild both stylesheets. Commit the generated CSS alongside its Sass sources.
 
 ### Sass Tasks
 
 Run these commands within the theme's root directory.
 
-* **npm start**: While this task runs, it watches for changes to sass files and recompiles the CSS.
-* **gulp css**: This is the one-off task for compiling the current Sass/CSS.
-  * **gulp css:watch**: This task watches for changes in the Sass, then compiles the CSS.
+* **node node_modules/gulp/bin/gulp.js css**: Compile both stylesheets once.
+* **node node_modules/gulp/bin/gulp.js css:watch**: Watch the Sass sources and recompile both stylesheets when they change.
+
+The build requires `sass` in addition to the declared npm dependencies. It is currently available in the local development environment but is not declared in `package.json` or `package-lock.json`.
 
 ## Theme Configuration
 
