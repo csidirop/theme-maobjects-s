@@ -1,0 +1,7 @@
+<?php if ($links): ?>
+<ul class="footer-links">
+    <?php foreach ($links as $link): ?>
+    <li><a href="<?php echo $this->escapeHtmlAttr($link['href']); ?>"><?php echo $this->escapeHtml($link['label']); ?></a></li>
+    <?php endforeach; ?>
+</ul>
+<?php endif; ?>

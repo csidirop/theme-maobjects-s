@@ -1,23 +1,107 @@
-<footer role="contentinfo" class="uma-footer">
-  <div class="footer-inner">
-    <div class="footer-nav footer-nav-flat">
-      <ul>
-        <li><a href="page/imprint">Impressum</a></li>
-        <li><a href="https://www.uni-mannheim.de/datenschutzerklaerung/">Datenschutzerklärung</a></li>
-      </ul>
+<?php
+$escape = $this->plugin('escapeHtml');
+$escapeAttr = $this->plugin('escapeHtmlAttr');
+$translate = $this->plugin('translate');
+$footerLinks = $this->plugin('FooterLinks');
+$logos = [];
+$logoDefaults = [
+    'primary' => [
+        'file' => 'img/logos/UM_Logo_DE_k.svg',
+        'label' => '',
+        'alt' => $translate('University of Mannheim'),
+        'url' => 'https://www.uni-mannheim.de',
+    ],
+    'secondary' => [
+        'file' => 'img/logos/UB_d_w.svg',
+        'label' => $translate('Hosted by'),
+        'alt' => $translate('Mannheim University Library'),
+        'url' => 'https://www.bib.uni-mannheim.de',
+    ],
+];
+foreach ($logoDefaults as $slot => $default) {
+    $key = 'footer_logo_' . $slot;
+    if (!$this->themeSetting($key . '_show', true)) {
+        continue;
+    }
+    $customLogo = $this->themeSettingAssetUrl($key);
+    $logos[] = [
+        'src' => $customLogo ?: $this->assetUrl($default['file']),
+        'label' => $this->themeSetting($key . '_label', $default['label']),
+        'alt' => $this->themeSetting($key . '_alt', '') ?: ($customLogo ? $translate('Logo') : $default['alt']),
+        'url' => $footerLinks->resolveUrl($this->themeSetting($key . '_url', $default['url'])),
+    ];
+}
+
+$sections = [];
+for ($index = 1; $index <= 3; $index++) {
+    $title = trim((string) $this->themeSetting('footer_section_' . $index . '_title', ''));
+    $links = $footerLinks($this->themeSetting('footer_section_' . $index . '_links', ''));
+    if ($title !== '' || $links) {
+        $sections[] = ['title' => $title, 'links' => $links];
+    }
+}
+$defaultLegalLinks = json_encode('https://www.uni-mannheim.de/datenschutzerklaerung/')
+    . ':' . json_encode($translate('Privacy statement'));
+$legalLinks = $footerLinks($this->themeSetting('footer_legal_links', $defaultLegalLinks));
+$socialLinks = [];
+foreach (['instagram' => 'Instagram', 'facebook' => 'Facebook', 'linkedin' => 'LinkedIn',
+    'tiktok' => 'TikTok', 'youtube' => 'YouTube', 'mastodon' => 'Mastodon'] as $platform => $label) {
+    $url = $footerLinks->resolveUrl($this->themeSetting('footer_social_' . $platform, ''));
+    if (preg_match('~^https?://~i', $url)) {
+        $socialLinks[] = ['platform' => $platform, 'label' => $label, 'url' => $url];
+    }
+}
+$footerText = (string) $this->themeSetting('footer', '');
+$hasFooterText = preg_match('/[^\s\x{00a0}]/u', html_entity_decode(strip_tags($footerText), ENT_QUOTES, 'UTF-8'))
+    || preg_match('/<(?:img|svg|iframe|video|audio|object|hr)\b/i', $footerText);
+$hasMainContent = $logos || $sections || $hasFooterText;
+?>
+<?php if ($hasMainContent || $legalLinks || $socialLinks): ?>
+<footer role="contentinfo" class="uma-footer<?php if ($this->themeSetting('footer_use_gradient')) echo ' uma-footer-gradient'; ?>">
+    <div class="footer-inner">
+        <?php if ($logos || $sections): ?>
+        <div class="footer-main">
+            <?php if ($logos): ?>
+            <div class="footer-branding">
+                <?php foreach ($logos as $logo): ?>
+                <div class="footer-branding-item">
+                    <?php if ($logo['label'] !== ''): ?>
+                    <span class="footer-branding-label"><?php echo $escape($logo['label']); ?></span>
+                    <?php endif; ?>
+                    <?php if ($logo['url']): ?><a href="<?php echo $escapeAttr($logo['url']); ?>"><?php endif; ?>
+                    <img src="<?php echo $escapeAttr($logo['src']); ?>" alt="<?php echo $escapeAttr($logo['alt']); ?>" />
+                    <?php if ($logo['url']): ?></a><?php endif; ?>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
+            <?php foreach ($sections as $section): ?>
+            <div class="footer-section">
+                <?php if ($section['title'] !== ''): ?>
+                <h2><?php echo $escape($section['title']); ?></h2>
+                <?php endif; ?>
+                <?php echo $this->partial('common/footer-links', ['links' => $section['links']]); ?>
+            </div>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
+        <?php if ($hasFooterText): ?>
+        <div class="footer-text"><?php echo $footerText; ?></div>
+        <?php endif; ?>
+        <?php if ($legalLinks || $socialLinks): ?>
+        <div class="footer-legal<?php if ($hasMainContent) echo ' footer-legal-separated'; ?>">
+            <?php echo $this->partial('common/footer-links', ['links' => $legalLinks]); ?>
+            <?php if ($socialLinks): ?>
+            <ul class="footer-social" aria-label="<?php echo $escapeAttr($translate('Social media')); ?>">
+                <?php foreach ($socialLinks as $link): ?>
+                <li><a href="<?php echo $escapeAttr($link['url']); ?>" aria-label="<?php echo $escapeAttr($link['label']); ?>" rel="me">
+                    <img src="<?php echo $escapeAttr($this->assetUrl('img/footer/social/' . $link['platform'] . '.svg')); ?>" alt="" width="24" height="24" />
+                </a></li>
+                <?php endforeach; ?>
+            </ul>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
     </div>
-    <div class="logos">
-      <div class="logo1">
-        <a href="https://www.uni-mannheim.de">
-          <img class="uni-logo" src="<?= $this->assetUrl(('img/logos/UM_Logo_DE_k.svg')); ?>" alt="Logo Uni Mannheim" title="Logo Uni Mannheim" />
-        </a>
-      </div>
-      <div class="logo2">
-        <span class="hosted">Hosted by<br /></span>
-        <a href="https://www.bib.uni-mannheim.de">
-          <img class="ub-logo" src="<?= $this->assetUrl(('img/logos/UB_d_w.svg')); ?>" alt="Logo UB Mannheim" title="Logo UB Mannheim" />
-        </a>
-      </div>
-    </div>
-  </div>
 </footer>
+<?php endif; ?>

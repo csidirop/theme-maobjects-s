@@ -86,10 +86,9 @@ $userBar = $this->userBar();
         <div id="content" role="main">
             <?php echo $this->content; ?>
         </div>
-
-        <!-- FOOTER -->
-        <?php echo $this->partial('common/footer.phtml') ?>
     </div>
+    <!-- FOOTER -->
+    <?php echo $this->partial('common/footer.phtml'); ?>
     <script>
         jQuery(document).ready(function () {
             CenterRow.mobileMenu();
