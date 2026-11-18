@@ -28,6 +28,12 @@ select {
   font-weight: 400;
 }
 
+// Center Row uses an inset shadow for select borders; retain a visible border
+// because the Mannheim form styling removes that shadow.
+select {
+    border: 1px solid $gray;
+}
+
 button,
 .button {
      @include button_blau;

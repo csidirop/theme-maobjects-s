@@ -102,14 +102,19 @@ td {
 
 ::-webkit-input-placeholder {
     font-style: italic;
+    color: $dark-gray;
+    opacity: 1;
 }
 ::-moz-placeholder {
     font-style: italic;
+    color: $dark-gray;
 }
 :-ms-input-placeholder {
     font-style: italic;
+    color: $dark-gray;
 }
 :-moz-placeholder {
+    color: $dark-gray;
     font-style: italic;
 }
 
@@ -123,7 +128,8 @@ select {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    border: 1px solid $gray;
+    border: 0;
+    box-shadow: 0 0 0 1px $gray inset;
     border-radius: 2px;
     font-size: $base-font-size;
     line-height: $base-line-height;
@@ -143,7 +149,7 @@ button,
 .button,
 input[type="submit"] {
     background-color: $gray;
-    color: $dark-gray;
+    color: #000;
     border: 0;
     cursor: pointer;
     padding: $spacing-s;
@@ -196,15 +202,18 @@ textarea {
 .field {
     margin-bottom: $spacing-l;
     display: flex;
-    flex-wrap: wrap;
     width: 100%;
 }
 
 .field .field-meta {
     width: 25%;
-    padding-right: $spacing-l;
     text-align: right;
-    line-height: 1.5 * $base-line-height;
+    padding: .375rem 0;
+}
+
+.field .field-meta label,
+.field .field-meta .label {
+    font-weight: bold;
 }
 
 .field-description {
@@ -221,7 +230,6 @@ textarea {
 
 .field .inputs {
     width: 75%;
-    padding-left: $spacing-l;
 }
 
 .field .collapsible {
@@ -231,8 +239,8 @@ textarea {
 }
 
 .field .inputs ~ *,
-form input[type="submit"] {
-    margin-left: calc(25% + #{$spacing-l});
+#advanced-search [type="submit"] {
+    margin-left: calc(25% + #{$spacing-m});
     margin-top: $spacing-m;
 }
 
@@ -257,9 +265,15 @@ form input[type="submit"] {
     display: none;
 }
 
+#advanced-search .multi-value .field-meta {
+    position: relative;
+    padding-right: 2 * $spacing-l;
+}
+
 #advanced-search .add-value {
-    display: block;
-    margin-left: auto;
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
 #advanced-search .remove-value {
@@ -267,7 +281,6 @@ form input[type="submit"] {
     position: relative;
     width: 1.5 * $spacing-l;
     height: 1.5 * $spacing-l;
-    margin-left: $spacing-s;
 
     &:before {
         text-indent: 0;
@@ -395,7 +408,7 @@ header nav a {
 }
 
 .site-title img {
-    max-height: (3 * $spacing-l);
+    max-height: (2 * $spacing-l);
     max-width: 100%;
 }
 
@@ -459,7 +472,7 @@ header nav a {
     bottom: 0;
     position: absolute;
     border-bottom: 0;
-    color: darken($gray, 15%);
+    color: $dark-gray;
     padding: 0;
 }
 
@@ -1042,6 +1055,15 @@ footer {
 .lg-toolbar {
     width: 100%;
     text-align: right;
+}
+
+a.expand,
+a.collapse {
+    text-decoration: none;
+    display: inline-block;
+    min-height: $spacing-l;
+    min-width: $spacing-l;
+    text-align: center;
 }
 
 .expand:after,
