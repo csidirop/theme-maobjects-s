@@ -1,85 +1,257 @@
 // Custom styling for the MAObjects S theme.
 
-// Colors: Uni Mannheim
+// Current Classic Mannheim palette and shared interface sizes.
 $uni-blau: #00325d;
 $uni-blau-hell: #abb8ca;
+$surface-muted: #f6f6f6;
+$control-border: mix($uni-blau, $uni-blau-hell, 35%);
+$control-height: 2.5rem;
+$font-family-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
 
 @mixin button_blau {
-    border: 0.1875rem solid $uni-blau;
+    border: .1875rem solid $uni-blau;
     color: white;
     background: $uni-blau;
     border-radius: .5rem;
-    transition: all .2s ease-out;
+    transition: background-color .2s ease-out, border-color .2s ease-out,
+        color .2s ease-out;
 }
 
 @mixin button_blau_hover {
-    border: 0.1875rem solid $uni-blau-hell;
+    border-color: $uni-blau-hell;
     color: $uni-blau;
     background: white;
-    border-radius: .5rem;
 }
 
-// BASIC STYLING:
-form input,
-select {
-  border-radius: .625rem;
-  background-color: #f6f6f6;
-  box-shadow: none;
-  font-weight: 400;
-}
-
-// Center Row uses an inset shadow for select borders; retain a visible border
-// because the Mannheim form styling removes that shadow.
-select {
-    border: 1px solid $gray;
-}
-
-button,
-.button {
-     @include button_blau;
-
-     &:hover {
-        @include button_blau_hover;
-     }
-}
-
-// Navigation (Item, Browse, Collection?):
-nav.pagination .button {
-    @include button_blau;
-    box-shadow: unset;
-    line-height: 30px;
-
-    &:hover {
-        @include button_blau_hover;
-    }
-
-    &.inactive {
-        cursor: not-allowed;
-        pointer-events: none;
-        background: #f6f6f6;
-        border-color: $gray;
-    }
+// TYPOGRAPHY AND LINKS:
+html {
+    font-family: $font-family-sans;
 }
 
 body {
-    // Font styling:
-    font-family: myriad-pro, sans-serif !important;
+    font-family: inherit;
     color: $uni-blau;
+    line-height: 1.5;
 
     a {
         color: $uni-blau;
-        text-decoration: underline solid lightgray .1875rem;
-        text-underline-offset: .3em;
+        text-decoration: underline solid $uni-blau-hell 2px;
+        text-underline-offset: .2em;
 
         &:hover {
             color: $uni-blau;
-            text-decoration: underline solid $uni-blau-hell .1875rem;
+            text-decoration-color: $uni-blau;
+            text-decoration-style: solid;
+        }
+
+        &:focus {
+            outline-color: $uni-blau;
+        }
+    }
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: $uni-blau;
+    line-height: 1.25;
+}
+
+#content {
+    h1, h2, h3, h4, h5, h6 {
+        margin: 1.5rem 0 .75rem;
+        overflow-wrap: anywhere;
+
+        &:first-child {
+            margin-top: 0;
         }
     }
 
-    #wrap {
-        padding-bottom: unset;
+    h1 {
+        font-size: 2rem;
+        text-align: left;
     }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    h3 {
+        font-size: 1.25rem;
+    }
+
+    h4 {
+        font-size: 1.125rem;
+    }
+
+    h5 {
+        font-size: 1rem;
+    }
+
+    h6 {
+        font-size: .9375rem;
+    }
+
+    p {
+        margin: 1.25rem 0;
+
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+    .property > dt,
+    .media-list > dt {
+        color: $uni-blau;
+    }
+}
+
+body .secondary-nav .active a {
+    color: $uni-blau;
+    text-decoration-color: $uni-blau;
+}
+
+// Keep keyboard focus visible, including links outside the header/footer.
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+    outline: 2px solid $uni-blau;
+    outline-offset: 3px;
+}
+
+// FORM CONTROLS:
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+input:not([type]),
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="url"],
+input[type="tel"],
+input[type="search"],
+input[type="number"],
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"],
+input[type="month"],
+input[type="week"],
+select,
+textarea {
+    max-width: 100%;
+    min-width: 0;
+    min-height: $control-height;
+    height: $control-height;
+    padding: .5rem .75rem;
+    border: 1px solid $control-border;
+    border-radius: .5rem;
+    background-color: $surface-muted;
+    box-shadow: none;
+    color: $uni-blau;
+    line-height: 1.25;
+
+    &:focus {
+        border-color: $uni-blau;
+        background-color: white;
+    }
+
+    &:disabled {
+        color: $dark-gray;
+        cursor: not-allowed;
+    }
+}
+
+select {
+    padding-right: 2rem;
+    background-position: right .75rem center;
+}
+
+select[multiple],
+textarea {
+    height: auto;
+    min-height: 6rem;
+    line-height: 1.5;
+}
+
+select[multiple] {
+    padding-right: .75rem;
+    background-image: none;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    accent-color: $uni-blau;
+}
+
+button,
+.button,
+a.button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+    @include button_blau;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .375rem;
+    min-height: $control-height;
+    padding: .375rem .75rem;
+    line-height: 1.25;
+    vertical-align: middle;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+        @include button_blau_hover;
+        text-decoration: none;
+    }
+
+    &:disabled,
+    &.inactive,
+    &[aria-disabled="true"] {
+        background: $surface-muted;
+        color: $dark-gray;
+        border-color: $gray;
+        box-shadow: none;
+        cursor: default;
+        pointer-events: none;
+    }
+}
+
+nav.pagination .button {
+    min-height: $control-height;
+    padding: .375rem .75rem;
+    line-height: 1.25;
+    box-shadow: none;
+}
+
+.pagination form {
+    vertical-align: middle;
+}
+
+.pagination .row-count {
+    line-height: $control-height;
+}
+
+.layout-toggle button {
+    width: $control-height;
+    padding: .375rem;
+}
+
+.sitewide-search-form {
+    align-items: center;
+    gap: .5rem;
+}
+
+// LightGallery has a dark background and its own icon font and controls.
+.lg-outer :focus-visible {
+    outline-color: white;
 }
 
 // HEADER:
@@ -552,6 +724,14 @@ body > .uma-footer {
     line-height: 1.5;
     overflow-wrap: anywhere;
 
+    h1, h2, h3, h4, h5, h6 {
+        color: white;
+    }
+
+    :focus-visible {
+        outline-color: white;
+    }
+
     &.uma-footer-gradient {
         background: linear-gradient(180deg, #0a4479 0%, $uni-blau 100%);
     }
@@ -750,7 +930,7 @@ body > .uma-footer {
 
         // Alternating row colors:
         &:nth-of-type(odd) {
-            background-color: #f6f6f6;
+            background-color: $surface-muted;
         }
 
         &:nth-of-type(even) {

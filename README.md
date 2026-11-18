@@ -19,6 +19,10 @@ The Sass sources build two stylesheets, loaded in this order:
 
 Add MAObjects S styling to `asset/sass/_maobjects.scss` and rebuild both stylesheets. Commit the generated CSS alongside its Sass sources.
 
+MAObjects S uses the current Classic Mannheim palette (`#00325d` and `#abb8ca`), with shared link, heading, form, button, and keyboard-focus styles. Body text stays at 18 pixels with a 1.5 line height; standard form controls share a 2.5rem minimum height. Header quick search and footer typography retain their own compact sizes.
+
+Text uses a local system sans-serif stack starting with `system-ui`, followed by platform fonts and Arial/Noto/Liberation Sans fallbacks. It does not require Myriad Pro, a font service, or a university stylesheet. Bundled upstream font files and third-party notices are retained; icon fonts and monospace code retain their own font families.
+
 ### Sass Tasks
 
 Run these commands within the theme's root directory.
