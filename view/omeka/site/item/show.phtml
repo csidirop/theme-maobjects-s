@@ -53,6 +53,14 @@ $yiddishTitles = array_values(array_filter($yiddishTitles, static function ($tit
 <h3><?php echo $translate('Item'); ?></h3>
 <?php endif; ?>
 <?php $this->trigger('view.show.before'); ?>
-<?php echo $this->resourcePageBlocks($item)->getBlocks(); ?>
+<?php
+$blocks = $this->resourcePageBlocks($item)->getBlocksArray();
+if (array_key_exists('values', $blocks)) {
+    // Collection memberships now accompany the metadata's Further information.
+    // Keep Omeka's standalone item-set block when the values block is absent.
+    unset($blocks['itemSets']);
+}
+echo implode('', $blocks);
+?>
 <?php $this->trigger('view.show.after'); ?>
 <?php echo $this->partial('common/metadata-formats', ['resources' => $item]); ?>

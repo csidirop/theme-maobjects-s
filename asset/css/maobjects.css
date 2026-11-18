@@ -1175,11 +1175,6 @@ input[type=reset][aria-disabled=true] {
   }
 }
 @media screen {
-  .work-show .item-sets {
-    display: none;
-  }
-}
-@media screen {
   .work-view {
     --work-border: #d7dce7;
     --work-panel: #f6f7fa;
@@ -1578,10 +1573,54 @@ input[type=reset][aria-disabled=true] {
   }
 }
 @media screen {
-  .work-other-metadata {
-    border-top: 1px solid var(--work-border);
+  .resource-further-information {
+    border-top: 1px solid var(--work-border, #d7dce7);
     margin-top: 48px;
+    max-width: 72rem;
     padding-top: 12px;
+  }
+}
+@media screen {
+  .resource.show dl.resource-collections {
+    align-items: baseline;
+    border: 0;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 16.2px;
+    gap: 0.35rem 0.75rem;
+    margin: 0 0 12px;
+    padding: 0;
+    width: 100%;
+  }
+  .resource.show dl.resource-collections dt {
+    color: #676767;
+    font-size: inherit;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    width: auto;
+  }
+  .resource.show dl.resource-collections dt::after {
+    content: ":";
+  }
+  .resource.show dl.resource-collections dd {
+    flex: 1 1 16rem;
+    margin: 0;
+    min-width: 0;
+    padding: 0;
+    width: auto;
+  }
+}
+@media screen {
+  .resource-collection-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+    list-style: none;
+    margin: 0;
+    overflow-wrap: anywhere;
+    padding: 0;
   }
 }
 @media screen and (max-width: 640px) {

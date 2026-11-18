@@ -177,20 +177,6 @@ if ($filterLocale) {
 $manuscripts = $resourceValues($resource, 'yido:manuscripts');
 $prints = $resourceValues($resource, 'yido:printedEditions');
 
-// Omeka item sets serve two different purposes in this project. A set whose class matches the current item (for example the "Works" set with class
-// yido:Work) is a technical grouping and duplicates the resource-class badge.
-// Other sets are meaningful collection memberships and belong in the compact introductory facts instead of Omeka's generic item-set block at page end.
-$workCollections = [];
-$workResourceClass = $resource->resourceClass();
-$workResourceClassTerm = $workResourceClass ? $workResourceClass->term() : null;
-foreach ($resource->itemSets() as $itemSet) {
-    $itemSetClass = $itemSet->resourceClass();
-    if ($itemSetClass && $itemSetClass->term() === $workResourceClassTerm) {
-        continue;
-    }
-    $workCollections[$itemSet->id()] = $itemSet;
-}
-
 // Values used in the custom sections must not appear a second time in the generic fallback. Any current or future Work property not listed here is
 // retained below under "Further information" instead of being silently lost.
 $handledWorkTerms = [
@@ -238,21 +224,9 @@ $witnessGroups = [
 
 <div class="work-view">
     <?php // Present short Work facts before the longer descriptive sections. ?>
-    <?php if ($hasAnyValues($resource, $workFields) || $workCollections): ?>
+    <?php if ($hasAnyValues($resource, $workFields)): ?>
     <dl class="work-facts">
         <?php echo $renderFields($resource, $workFields); ?>
-        <?php if ($workCollections): ?>
-        <div class="work-field work-collections">
-            <dt><?php echo $escape($translate(count($workCollections) === 1 ? 'Collection' : 'Collections')); ?></dt>
-            <dd>
-                <ul class="work-value-list">
-                    <?php foreach ($workCollections as $itemSet): ?>
-                    <li><a href="<?php echo $escape($itemSet->url()); ?>"><?php echo $escape($itemSet->displayTitle(null, $lang)); ?></a></li>
-                    <?php endforeach; ?>
-                </ul>
-            </dd>
-        </div>
-        <?php endif; ?>
     </dl>
     <?php endif; ?>
 
@@ -378,10 +352,8 @@ $witnessGroups = [
     <?php endif; ?>
 
     <?php // Preserve unrecognized/new Work metadata through the standard theme renderer. ?>
-    <?php if ($otherWorkValues): ?>
-    <section class="work-section work-other-metadata" aria-labelledby="work-other-metadata-heading">
-        <h3 id="work-other-metadata-heading"><?php echo $escape($translate('Further information')); ?></h3>
-        <?php echo $this->partial('common/resource-values-list', ['values' => $otherWorkValues]); ?>
-    </section>
-    <?php endif; ?>
+    <?php echo $this->partial('common/resource-further-information', [
+        'resource' => $resource,
+        'values' => $otherWorkValues,
+    ]); ?>
 </div>

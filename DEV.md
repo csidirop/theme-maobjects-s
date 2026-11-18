@@ -10,6 +10,7 @@ Paths below are relative to the theme root.
 | [view/common/work-resource-values.phtml](view/common/work-resource-values.phtml) | Work metadata and transmission previews. |
 | [view/common/witness-resource-values.phtml](view/common/witness-resource-values.phtml) | Full metadata for Manuscripts, Printed Books, and Single Works within either type. |
 | [view/common/resource-values-list.phtml](view/common/resource-values-list.phtml) | Standard metadata output, including the fallback. |
+| [view/common/resource-further-information.phtml](view/common/resource-further-information.phtml) | Additional metadata and compact collection memberships for all item classes. |
 | [view/common/resource-parent-links.phtml](view/common/resource-parent-links.phtml) | Parent navigation beneath the item class badge. |
 | [view/common/resource-page-block-layout/linked-resources.phtml](view/common/resource-page-block-layout/linked-resources.phtml) | Hides the generic incoming-links block for the five custom item classes. |
 | [view/omeka/site/item/show.phtml](view/omeka/site/item/show.phtml) | Main item title, Yiddish title, and resource-class badge. |
@@ -47,3 +48,5 @@ Manuscript names appear under **Titles and Content**. Content values appear in a
 The generic **Linked resources** block is hidden for Work, Manuscript, Printed Book, and both Single Work classes. Other classes and item sets keep Omeka's normal block. When adding a new incoming relationship for these five classes, add it to their custom view too: incoming links do not use the **Further information** fallback. The site setting to exclude incoming resources outside the current site is respected.
 
 Yiddish titles appear directly below the main item title, with right-to-left text direction. Work pages use `yido:workTitleHebrew`; Manuscripts, Printed Books, and their Single Works use `yido:shortTitleYiddish`. Empty titles are omitted; alternative Yiddish titles stay in **Titles and Content**.
+
+All item classes show collection memberships under **Further information** at the end of their metadata. The section appears when either additional metadata or a meaningful collection membership exists. Technical sets matching the item's class, and the Works / Printed Books browse sets used by the class badge, are omitted. Collection titles respect locale filtering and the site setting to exclude resources outside the site. Removing the Item sets block from the resource-page configuration hides memberships; if Values is removed instead, Omeka's standalone Item sets block remains available. Genizah and other contextual relationships keep their existing placement.

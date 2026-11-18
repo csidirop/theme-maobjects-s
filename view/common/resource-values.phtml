@@ -53,6 +53,7 @@ if ($resource && class_exists('AdvancedResourceTemplate\Api\Representation\Resou
 
 if (!$groups) {
     echo $this->partial('common/resource-values-list', ['values' => $values]);
+    echo $this->partial('common/resource-further-information', ['resource' => $resource]);
     return;
 }
 
@@ -87,3 +88,4 @@ $translate = $this->plugin('translate');
     </div>
     <?php endif; ?>
 </div>
+<?php echo $this->partial('common/resource-further-information', ['resource' => $resource]); ?>

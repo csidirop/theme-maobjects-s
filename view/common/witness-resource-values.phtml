@@ -378,11 +378,9 @@ foreach ($valueData as $propertyData) {
             <?php endif; ?>
         <?php endforeach; ?>
 
-        <?php if ($otherValues): ?>
-        <section class="witness-section witness-other-metadata">
-            <h3><?php echo $escape($translate('Further information')); ?></h3>
-            <?php echo $this->partial('common/resource-values-list', ['values' => $otherValues]); ?>
-        </section>
-        <?php endif; ?>
+        <?php echo $this->partial('common/resource-further-information', [
+            'resource' => $resource,
+            'values' => $otherValues,
+        ]); ?>
     </div>
 </div>

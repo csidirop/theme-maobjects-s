@@ -1,0 +1,67 @@
+<?php
+/** Additional metadata and collection memberships at the end of an item record. */
+$escape = $this->plugin('escapeHtml');
+$translate = $this->plugin('translate');
+$values = $values ?? [];
+$collections = [];
+
+// The theme includes itemSets by default. Respect an administrator's explicit
+// block configuration, including removal of the collection membership block.
+$blockConfig = $this->themeSetting('resource_page_blocks');
+$showCollections = !$blockConfig || in_array('itemSets', $blockConfig['items']['main'] ?? [], true);
+if ($resource && 'items' === $resource->resourceName() && $showCollections) {
+    $resourceClass = $resource->resourceClass();
+    $classTerm = $resourceClass ? $resourceClass->term() : null;
+    // Match the technical browse sets used by resource-class-badge.phtml.
+    $browseItemSetTitles = [
+        'yido:Work' => 'Works',
+        'yido:PrintedBook' => 'Printed Books',
+    ];
+    $browseTitle = $browseItemSetTitles[$classTerm] ?? null;
+    $siteItemSetIds = null;
+    if ($this->siteSetting('exclude_resources_not_in_site')) {
+        $siteItemSetIds = [];
+        foreach ($this->currentSite()->siteItemSets() as $siteItemSet) {
+            $siteItemSetIds[] = $siteItemSet->itemSet()->id();
+        }
+    }
+    foreach ($resource->itemSets() as $itemSet) {
+        if ($siteItemSetIds !== null && !in_array($itemSet->id(), $siteItemSetIds, true)) {
+            continue;
+        }
+        $itemSetClass = $itemSet->resourceClass();
+        if (($itemSetClass && $itemSetClass->term() === $classTerm)
+            || ($browseTitle !== null && $itemSet->displayTitle() === $browseTitle)
+        ) {
+            continue;
+        }
+        $collections[$itemSet->id()] = $itemSet;
+    }
+}
+
+if (!$values && !$collections) {
+    return;
+}
+
+$filterLocale = (bool) $this->siteSetting('filter_locale_values');
+$valueLang = $filterLocale ? [$this->lang(), ''] : null;
+$headingId = 'resource-further-information-' . $resource->id();
+?>
+<section class="resource-further-information" aria-labelledby="<?php echo $escape($headingId); ?>">
+    <h3 id="<?php echo $escape($headingId); ?>"><?php echo $escape($translate('Further information')); ?></h3>
+    <?php if ($collections): ?>
+    <dl class="resource-collections">
+        <dt><?php echo $escape($translate(count($collections) === 1 ? 'Collection' : 'Collections')); ?></dt>
+        <dd>
+            <ul class="resource-collection-links">
+                <?php foreach ($collections as $itemSet): ?>
+                <li><a href="<?php echo $escape($itemSet->url()); ?>"><?php echo $escape($itemSet->displayTitle(null, $valueLang)); ?></a></li>
+                <?php endforeach; ?>
+            </ul>
+        </dd>
+    </dl>
+    <?php endif; ?>
+    <?php if ($values): ?>
+        <?php echo $this->partial('common/resource-values-list', ['values' => $values]); ?>
+    <?php endif; ?>
+</section>

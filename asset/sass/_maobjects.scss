@@ -1292,12 +1292,6 @@ a.resource-class-badge {
 
 // WORK DETAIL VIEW:
 
-// The meaningful memberships are rendered with the introductory Work facts;
-// hide Omeka's later generic block (including the duplicate technical set).
-.work-show .item-sets {
-    display: none;
-}
-
 .work-view {
     --work-border: #d7dce7;
     --work-panel: #f6f7fa;
@@ -1699,10 +1693,55 @@ a.resource-class-badge {
     }
 }
 
-.work-other-metadata {
-    border-top: 1px solid var(--work-border);
+.resource-further-information {
+    border-top: 1px solid var(--work-border, #d7dce7);
     margin-top: 2 * $spacing-l;
+    max-width: 72rem;
     padding-top: $spacing-m;
+}
+
+.resource.show dl.resource-collections {
+    align-items: baseline;
+    border: 0;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: .9 * $base-font-size;
+    gap: .35rem .75rem;
+    margin: 0 0 $spacing-m;
+    padding: 0;
+    width: 100%;
+
+    dt {
+        color: $dark-gray;
+        font-size: inherit;
+        line-height: 1.5;
+        margin: 0;
+        padding: 0;
+        text-align: left;
+        width: auto;
+
+        &::after {
+            content: ":";
+        }
+    }
+
+    dd {
+        flex: 1 1 16rem;
+        margin: 0;
+        min-width: 0;
+        padding: 0;
+        width: auto;
+    }
+}
+
+.resource-collection-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem 1rem;
+    list-style: none;
+    margin: 0;
+    overflow-wrap: anywhere;
+    padding: 0;
 }
 
 @media screen and (max-width:640px) {
