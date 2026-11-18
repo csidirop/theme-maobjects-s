@@ -51,13 +51,14 @@ select {
   }
   body a {
     color: #232e58;
-    text-decoration: none;
-    border-bottom: 0.1875rem solid lightgray;
+    -webkit-text-decoration: underline solid lightgray 0.1875rem;
+            text-decoration: underline solid lightgray 0.1875rem;
+    text-underline-offset: 0.3em;
   }
   body a:hover {
     color: #232e58;
-    border-color: #abb8ca;
-    text-decoration: none;
+    -webkit-text-decoration: underline solid #abb8ca 0.1875rem;
+            text-decoration: underline solid #abb8ca 0.1875rem;
   }
   body #wrap {
     padding-bottom: unset;
@@ -74,6 +75,7 @@ select {
   }
   header nav .nav-item > a {
     border: none;
+    text-decoration: none;
   }
   header nav .nav-item > a:hover {
     text-decoration: none;
@@ -88,6 +90,7 @@ select {
   }
   footer a {
     border-bottom: none;
+    text-decoration: none;
   }
   footer li {
     float: left;
