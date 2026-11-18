@@ -31,13 +31,19 @@ Install the locked development dependencies with `npm ci` before building. Sass 
 ## Theme Configuration
 
 * **Logo**: Upload an image asset to use as a logo in place of a text site title.
+* **Header subtitle / position**: Optional plain text below or beside the logo or site title. The site title is used as the logo's alternative text.
+* **Header search**: Keep the Omeka S search form behind a search toggle (default), show an advanced item-search link, or hide header search. The toggle respects the site's search settings and any module override of the core search partial.
 * **Banner**: Upload an image asset to use a banner that sits above the main content area of every view.
-* **Banner height**: The maximum banner image height in pixels.
-* **Banner height for mobile devices**: The maximum banner image height in pixels at narrower viewport widths.
+* **Banner height**: The banner container height, for example `300px` or `15rem`. Supported values are nonnegative lengths in `px`, `em`, `rem`, `vh`, `vw`, `vmin`, `vmax`, or `%`, plus `0` and `auto`. Leave empty for natural image height. Invalid values are ignored; CSS functions such as `calc()` are not supported.
+* **Banner height for mobile devices**: The height at widths up to 640 pixels, using the same values. Leave empty to inherit the desktop height, or use `auto` for natural image height.
 * **Banner position**: Where to anchor the banner image within its container: centered, stuck to the top, or stuck to the bottom.
-* **Top navigation depth**: If the main navigation is set to display child pages, this setting controls how many navigation levels to display. Setting this to '0' shows all levels.
+* **Banner alternative text**: Describe meaningful banner content, or leave empty for a decorative image.
+* **Banner visibility**: All pages (default), homepage only, all except the homepage, or hidden. The homepage is the site's configured homepage, falling back to its first linked page as Omeka S does.
+* **Top navigation depth**: Maximum number of menu levels. `0` shows all levels, `1` shows only top-level links, and `2` includes their children. Accessible parent pages remain linked even when deeper descendants are excluded.
 * **Footer**: Configure branding, up to three link columns, optional HTML content, legal links, social icons, and a gradient background. See [Footer configuration](#footer-configuration).
 * **Boolean value display**: Display Boolean metadata as True/False, Yes/No, or accessible checkmark/X icons.
+
+The header keeps the navigation configured under the site's **Navigation** tab. At widths up to 800 pixels, a **Menu** button opens navigation below the branding. Dropdowns retain a direct link to their parent page. Escape closes a dropdown and returns focus to its trigger; a second Escape closes the mobile menu. Search focuses the query field on opening and returns focus to its button on Escape. Navigation and search remain available without JavaScript.
 
 ### Footer Configuration
 

@@ -8,9 +8,6 @@ $this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1')
 $this->headTitle($siteTitle)->setSeparator(' · ');
 $this->headTitle()->append($this->setting('installation_title', 'Omeka S'));
 $this->headLink()->prependStylesheet($this->assetUrl('css/iconfonts.css', 'Omeka'));
-// $this->headLink()->appendStylesheet("https://www.uni-mannheim.de/typo3conf/ext/uma_site/Resources/Public/Icons/sprite.css");
-// $this->headLink()->appendStylesheet("https://www.uni-mannheim.de/typo3conf/ext/uma_site/Resources/Public/Css/app.css");
-// dont load for now. not sure if we need that overload
 $this->headLink()->appendStylesheet($this->assetUrl('css/style.css'));
 $this->headLink()->appendStylesheet($this->assetUrl('css/maobjects.css'));
 $this->headScript()->prependFile($this->assetUrl('js/centerrow.js'));
@@ -18,10 +15,6 @@ $this->headScript()->prependFile($this->assetUrl('js/jquery-accessibleMegaMenu.j
 $this->headScript()->prependFile($this->assetUrl('js/global.js', 'Omeka'));
 $this->headScript()->prependFile($this->assetUrl('vendor/jquery/jquery.min.js', 'Omeka'));
 $this->jsTranslate();
-$banner = $this->themeSettingAssetUrl('banner');
-$bannerHeight = $this->themeSetting('banner_height');
-$bannerHeightMobile = $this->themeSetting('banner_height_mobile');
-$bannerPosition = $this->themeSetting('banner_position');
 $this->trigger('view.layout');
 $userBar = $this->userBar();
 ?>
@@ -34,19 +27,6 @@ $userBar = $this->userBar();
         <?php echo $this->headLink(); ?>
         <?php echo $this->headStyle(); ?>
         <?php echo $this->headScript(); ?>
-        <style>
-            .banner {
-                height: <?php echo (isset($bannerHeight) && ($bannerHeight !== '')) ? $bannerHeight: 'auto'  ?>;
-                align-items: <?php echo (isset($bannerPosition) && ($bannerPosition !== '')) ? str_replace('_','-', $bannerPosition) : 'center'; ?>;
-            }
-            <?php if ($bannerHeightMobile !== ''): ?>
-                @media screen and (max-width:640px) {
-                    .banner {
-                        height: <?php echo (isset($bannerHeightMobile) && ($bannerHeightMobile !== '')) ? $bannerHeightMobile : 'initial'; ?>;
-                    }
-                }
-            <?php endif; ?>
-        </style>
     </head>
 
     <?php echo $this->htmlElement('body'); ?>
@@ -56,31 +36,7 @@ $userBar = $this->userBar();
     <!-- SITE -->
     <div id="wrap">
         <!-- HEADER -->
-        <header>
-            <h1>
-                <a href="<?php echo $site->url(); ?>" class="site-title">
-                    <?php if ($this->themeSetting('logo')): ?>
-                        <img src="<?php echo $this->themeSettingAssetUrl('logo'); ?>"
-                            alt="<?php echo $escape($siteTitle); ?>" />
-                    <?php else: ?>
-                        <?php echo $escape($siteTitle); ?>
-                    <?php endif; ?>
-                </a>
-            </h1>
-            <div id="search-container">
-                <?php echo $this->partial('common/search-form'); ?>
-                <button type="button" class="search-toggle" title="<?php echo $translate('Toggle search'); ?>"><span
-                        class="sr-only"><?php echo $translate('Toggle search'); ?></span><span class="icon"
-                        aria-hidden="true"></span></button>
-            </div>
-            <?php echo $site->publicNav()->menu()->setPartial('common/accessible-mega-menu.phtml')->renderPartial(); ?>
-
-            <?php if ($banner): ?>
-                <div class="banner">
-                    <img src="<?php echo $this->themeSettingAssetUrl('banner'); ?>" title="Banner">
-                </div>
-            <?php endif; ?>
-        </header>
+        <?php echo $this->partial('common/header.phtml', ['site' => $site]); ?>
 
         <!-- MAIN CONTENT -->
         <div id="content" role="main">
@@ -89,10 +45,4 @@ $userBar = $this->userBar();
     </div>
     <!-- FOOTER -->
     <?php echo $this->partial('common/footer.phtml'); ?>
-    <script>
-        jQuery(document).ready(function () {
-            CenterRow.mobileMenu();
-            CenterRow.megaMenu();
-        });
-    </script>
 </body></html>

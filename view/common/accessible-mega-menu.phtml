@@ -1,30 +1,36 @@
- <?php
+<?php
 /* @var $container Laminas\Navigation\Navigation */
 $container = $this->container;
+$depth = max(0, (int) $this->themeSetting('nav_depth'));
+$escapeAttr = $this->plugin('escapeHtmlAttr');
+$domain = $this->navigation($container)->getTranslatorTextDomain();
 ?>
-<nav>
-<ul class="navigation">
-    <?php foreach ($container as $page): ?>
-        <?php if (!$this->navigation()->accept($page)) continue; ?>
-        <?php $hasChildren = $page->hasPages() ?>
-        <?php $navDepth = $this->themeSetting('nav_depth'); ?>
-        <li class="<?php if ($page->isActive()) echo 'active' ?>">
-            <a href="<?php echo ($hasChildren) ? '#' : $page->getHref(); ?>"><?php echo $this->escapeHtml($this->translate($page->getLabel(), $this->navigation($container)->getTranslatorTextDomain())); ?></a>
-            <?php 
-            if ($hasChildren) {
-                $access = false;
-                foreach ($page->getPages() as $child) {
-                    if ($this->navigation()->accept($child) && $child->get("separator") !== true) {
-                        $access = true;
-                    }
+<nav class="site-navigation" id="site-navigation" aria-label="<?php echo $escapeAttr($this->translate('Main navigation')); ?>">
+    <ul class="navigation" id="site-navigation-list">
+        <?php foreach ($container as $page): ?>
+        <?php
+        if (!$this->navigation()->accept($page)) continue;
+        if ($page->get('separator') === true) continue;
+        $hasChildren = false;
+        if ($depth === 0 || $depth > 1) {
+            foreach ($page->getPages() as $child) {
+                if ($this->navigation()->accept($child) && $child->get('separator') !== true) {
+                    $hasChildren = true;
+                    break;
                 }
-                echo '<div class="sub-nav first"><ul><li class="sub-nav-group">';
-                echo '<a href="' . $page->getHref() . '" class="parent">' . $this->escapeHtml($this->translate($page->getLabel(), $this->navigation($container)->getTranslatorTextDomain())) . '</a>';
-                echo ($access) ? $this->partial('common/sub-navigation', ['container'=> $container, 'children' => $page->getPages(), 'level' => 1]) : '';
-                echo '</li></ul></div>';
             }
-            ?>
+        }
+        $label = $this->escapeHtml($this->translate($page->getLabel(), $domain));
+        ?>
+        <li<?php if ($page->isActive(true)) echo ' class="active"'; ?>>
+            <a href="<?php echo $escapeAttr($page->getHref()); ?>"<?php if (!$hasChildren && $page->getTarget()): ?> target="<?php echo $escapeAttr($page->getTarget()); ?>"<?php if ($page->getTarget() === '_blank') echo ' rel="noopener"'; ?><?php endif; ?>><?php echo $label; ?></a>
+            <?php if ($hasChildren): ?>
+            <div class="sub-nav first">
+                <a class="parent" href="<?php echo $escapeAttr($page->getHref()); ?>"<?php if ($page->getTarget()): ?> target="<?php echo $escapeAttr($page->getTarget()); ?>"<?php if ($page->getTarget() === '_blank') echo ' rel="noopener"'; ?><?php endif; ?>><?php echo $label; ?></a>
+                <?php echo $this->partial('common/sub-navigation', ['container' => $container, 'children' => $page->getPages(), 'level' => 2]); ?>
+            </div>
+            <?php endif; ?>
         </li>
-    <?php endforeach; ?>
-</ul>
+        <?php endforeach; ?>
+    </ul>
 </nav>
