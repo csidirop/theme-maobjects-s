@@ -93,6 +93,20 @@ On browse pages, **Metadata formats (this page)** contains exactly the displayed
 
 Omeka S 4.0 introduced configurable resource pages. Center Row supports block configuration for items, item sets, and media show pages. Each of those views contains a single main configurable region.
 
+### Holdings and access
+
+Work, Manuscript, and Printed Book item pages display `yido:institution`,
+`yido:place`, and `yido:callNumber` as a table when all three properties have
+the same nonzero number of values. Values are paired by their saved order:
+the first institution belongs to the first place and first shelfmark, and so on.
+Editors must maintain this correspondence; matching counts alone cannot verify it.
+
+Enter multiple shelfmarks for one institution in a single value, for example
+`M 8; R 10`. If a property is missing or the counts differ, the theme retains
+the separate metadata lists rather than guessing relationships. Digital copies
+and collection context continue to render separately. On narrow screens, each
+holding stacks its institution above its place and shelfmarks.
+
 ## Copyright
 Center Row is Copyright © 2016-present Corporation for Digital Scholarship, Vienna, Virginia, USA http://digitalscholar.org
 

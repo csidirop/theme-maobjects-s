@@ -1581,6 +1581,48 @@ a.resource-class-badge {
     grid-column: 1 / -1;
 }
 
+.holdings-cell-label {
+    display: none;
+}
+
+.work-view .holdings-table {
+    border: 0;
+    border-collapse: collapse;
+    margin: 0;
+    table-layout: fixed;
+    width: 100%;
+
+    th,
+    td {
+        border: 0;
+        overflow-wrap: anywhere;
+        padding: $spacing-s $spacing-m;
+        text-align: left;
+        vertical-align: top;
+        width: 25%;
+
+        &:first-child {
+            padding-left: 0;
+            width: 50%;
+        }
+
+        &:last-child {
+            padding-right: 0;
+        }
+    }
+
+    th {
+        color: $uni-blau;
+        font-size: .85 * $base-font-size;
+        line-height: 1.35;
+    }
+
+    td {
+        font-size: .9em;
+        line-height: 1.5;
+    }
+}
+
 .resource.show .work-view .work-field {
     min-width: 0;
 
@@ -1774,6 +1816,57 @@ a.resource-class-badge {
 
     .work-field-grid {
         grid-template-columns: minmax(0, 1fr);
+    }
+
+    .work-view .holdings-table {
+        border: 0;
+        display: block;
+        min-width: 0;
+
+        thead {
+            clip: rect(0, 0, 0, 0);
+            height: 1px;
+            overflow: hidden;
+            position: absolute;
+            white-space: nowrap;
+            width: 1px;
+        }
+
+        tbody {
+            display: block;
+        }
+
+        tbody tr {
+            display: grid;
+            gap: $spacing-m;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            padding: $spacing-m 0;
+
+            &:first-child {
+                padding-top: 0;
+            }
+        }
+
+        td {
+            border: 0;
+            display: block;
+            min-width: 0;
+            padding: 0;
+            width: auto;
+
+            &:first-child {
+                grid-column: 1 / -1;
+                width: auto;
+            }
+        }
+
+        .holdings-cell-label {
+            display: block;
+            font-size: .85 * $base-font-size;
+            font-weight: bold;
+            line-height: 1.35;
+            margin-bottom: .2rem;
+        }
     }
 
     .witness-card-content,

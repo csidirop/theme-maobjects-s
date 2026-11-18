@@ -47,7 +47,7 @@ $isRtlTerm = static function ($term) {
 
 // Render the value with Omeka's data-type renderer wherever possible. Boolean and resource values need small theme-specific adaptations: 
 // accessible state icons for the former and site-context links for the latter.
-$renderValue = function ($value, $rtl = false) use ($escape, $translate, $lang) {
+$renderValue = function ($value, $rtl = false, $includeAnnotations = false) use ($escape, $translate, $lang, $showValueAnnotations) {
     if ('boolean' === $value->type()) {
         $isTrue = in_array(strtolower(trim((string) $value->value())), ['1', 'true'], true);
         $label = $translate($isTrue ? 'Yes' : 'No');
@@ -81,7 +81,22 @@ $renderValue = function ($value, $rtl = false) use ($escape, $translate, $lang) 
         $attributes .= ' dir="rtl"';
     }
 
-    return sprintf('<span class="work-value"%s>%s</span>', $attributes, $html);
+    $valueHtml = sprintf('<span class="work-value"%s>%s</span>', $attributes, $html);
+    $annotation = $includeAnnotations ? $value->valueAnnotation() : null;
+    if ($annotation && $showValueAnnotations) {
+        $expanded = 'expanded' === $showValueAnnotations;
+        $annotationLabel = $escape($translate('Has annotation'));
+        $valueHtml .= sprintf(
+            ' <a href="#" class="%s" aria-label="%s"><span class="has-annotation o-icon-annotation" role="img" title="%s" aria-label="%s"></span></a><div class="collapsible annotation">%s</div>',
+            $expanded ? 'collapse' : 'expand',
+            $escape($translate($expanded ? 'Collapse' : 'Expand')),
+            $annotationLabel,
+            $annotationLabel,
+            $annotation->displayValues()
+        );
+    }
+
+    return $valueHtml;
 };
 
 // Field groups should disappear when none of their configured terms has data.
@@ -98,7 +113,7 @@ $hasAnyValues = static function ($subject, array $terms) use ($valueList) {
 // Render a semantic description-list fragment from an ordered term => label
 // map. Keeping this in one helper makes Work and witness fields use identical
 // markup and accessibility behavior.
-$renderFields = function ($subject, array $fields) use ($escape, $valueList, $isRtlTerm, $renderValue) {
+$renderFields = function ($subject, array $fields, $includeAnnotations = false) use ($escape, $valueList, $isRtlTerm, $renderValue) {
     ob_start();
     foreach ($fields as $term => $label) {
         $propertyValues = $valueList($subject, $term);
@@ -112,7 +127,7 @@ $renderFields = function ($subject, array $fields) use ($escape, $valueList, $is
             <dd>
                 <ul class="work-value-list">
                     <?php foreach ($propertyValues as $propertyValue): ?>
-                    <li><?php echo $renderValue($propertyValue, $isRtlTerm($term)); ?></li>
+                    <li><?php echo $renderValue($propertyValue, $isRtlTerm($term), $includeAnnotations); ?></li>
                     <?php endforeach; ?>
                 </ul>
             </dd>
@@ -128,6 +143,13 @@ $workFields = [
     'yido:originalLanguageOfTheWork' => $translate('Original language'),
     'yido:creator' => $translate('Creator'),
     'yido:creatorYiddish' => $translate('Creator (Yiddish)'),
+];
+
+$holdingsFields = [
+    'yido:institution' => $translate('Institutions'),
+    'yido:place' => $translate('Places'),
+    'yido:callNumber' => $translate('Shelfmarks'),
+    'yido:digitalCopy' => $translate('Digital copies'),
 ];
 
 // Keep transmission previews to these two sections. Full metadata remains on
@@ -193,6 +215,7 @@ $handledWorkTerms = [
     'yido:printedEditions',
     'yido:researchLiterature',
 ];
+$handledWorkTerms = array_merge($handledWorkTerms, array_keys($holdingsFields));
 
 // AdvancedResourceTemplate may provide a Traversable rather than an array. Normalize it before filtering out the properties handled above.
 $valueData = $values instanceof Traversable ? iterator_to_array($values, false) : $values;
@@ -326,6 +349,25 @@ $witnessGroups = [
         </details>
         <?php endforeach; ?>
     </section>
+
+    <?php if ($hasAnyValues($resource, $holdingsFields)): ?>
+    <section class="work-section work-holdings" aria-labelledby="work-holdings-heading">
+        <h3 id="work-holdings-heading"><?php echo $escape($translate('Holdings and access')); ?></h3>
+        <dl class="work-field-grid">
+            <?php echo $this->partial('common/holdings-fields', [
+                'resource' => $resource,
+                'fields' => $holdingsFields,
+                'valueList' => $valueList,
+                'renderValue' => function ($value) use ($renderValue) {
+                    return $renderValue($value, false, true);
+                },
+                'renderFields' => function ($subject, $fields) use ($renderFields) {
+                    return $renderFields($subject, $fields, true);
+                },
+            ]); ?>
+        </dl>
+    </section>
+    <?php endif; ?>
 
     <?php if ($researchLiterature): ?>
     <section class="work-section work-bibliography" aria-labelledby="work-research-literature-heading">

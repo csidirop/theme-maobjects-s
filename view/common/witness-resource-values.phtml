@@ -322,7 +322,17 @@ foreach ($valueData as $propertyData) {
             <section class="witness-section<?php echo $sectionLabel === $featuresSectionLabel ? ' witness-features' : ''; ?>">
                 <h3><?php echo $escape($sectionLabel); ?></h3>
                 <dl class="work-field-grid">
-                    <?php echo $renderFields($resource, $sectionFields); ?>
+                    <?php if ($sectionLabel === $holdingsSectionLabel && in_array($resourceClassTerm, ['yido:Manuscript', 'yido:PrintedBook'], true)): ?>
+                        <?php echo $this->partial('common/holdings-fields', [
+                            'resource' => $resource,
+                            'fields' => $sectionFields,
+                            'valueList' => $valueList,
+                            'renderValue' => $renderValue,
+                            'renderFields' => $renderFields,
+                        ]); ?>
+                    <?php else: ?>
+                        <?php echo $renderFields($resource, $sectionFields); ?>
+                    <?php endif; ?>
                     <?php if ($showContexts): ?>
                         <?php foreach ($contexts as $context): ?>
                         <?php

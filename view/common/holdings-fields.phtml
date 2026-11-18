@@ -1,0 +1,68 @@
+<?php
+/**
+ * Pair holdings by their editorial order only when all three lists match.
+ * Keep ambiguous or incomplete metadata in its existing field layout.
+ * Receives the parent view's value and field renderers to preserve data types,
+ * links, and value annotations.
+ */
+$escape = $this->plugin('escapeHtml');
+$translate = $this->plugin('translate');
+$holdingTerms = ['yido:institution', 'yido:place', 'yido:callNumber'];
+$columns = [];
+foreach ($holdingTerms as $term) {
+    $columns[$term] = array_values($valueList($resource, $term));
+}
+$counts = array_map('count', $columns);
+if (!$counts['yido:institution'] || count(array_unique($counts)) !== 1) {
+    echo $renderFields($resource, $fields);
+    return;
+}
+
+// Filter cells after pairing: removing values first would shift later entries
+// into the wrong institution's row. Entirely hidden rows can be omitted.
+$filterLocale = (bool) $this->siteSetting('filter_locale_values');
+$lang = $this->lang();
+$rows = [];
+for ($index = 0; $index < $counts['yido:institution']; ++$index) {
+    $row = [];
+    foreach ($columns as $term => $column) {
+        $value = $column[$index];
+        $valueLang = (string) $value->lang();
+        $row[$term] = !$filterLocale || $valueLang === '' || strcasecmp($valueLang, $lang) === 0
+            ? $value : null;
+    }
+    if (array_filter($row)) {
+        $rows[] = $row;
+    }
+}
+?>
+<?php if ($rows): ?>
+<div class="work-field work-field-full-width">
+    <dt class="sr-only"><?php echo $escape($translate('Holdings')); ?></dt>
+    <dd>
+        <table class="holdings-table" role="table">
+            <caption class="sr-only"><?php echo $escape($translate('Institutions, places and shelfmarks')); ?></caption>
+            <thead role="rowgroup">
+                <tr role="row">
+                    <?php foreach ($holdingTerms as $term): ?>
+                    <th scope="col" role="columnheader"><?php echo $escape($fields[$term]); ?></th>
+                    <?php endforeach; ?>
+                </tr>
+            </thead>
+            <tbody role="rowgroup">
+                <?php foreach ($rows as $row): ?>
+                <tr role="row">
+                    <?php foreach ($row as $term => $value): ?>
+                    <td role="cell">
+                        <span class="holdings-cell-label" aria-hidden="true"><?php echo $escape($fields[$term]); ?></span>
+                        <?php echo $value ? $renderValue($value) : '&mdash;'; ?>
+                    </td>
+                    <?php endforeach; ?>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </dd>
+</div>
+<?php endif; ?>
+<?php echo $renderFields($resource, array_diff_key($fields, $columns)); ?>

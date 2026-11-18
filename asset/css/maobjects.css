@@ -1464,6 +1464,47 @@ input[type=reset][aria-disabled=true] {
   }
 }
 @media screen {
+  .holdings-cell-label {
+    display: none;
+  }
+}
+@media screen {
+  .work-view .holdings-table {
+    border: 0;
+    border-collapse: collapse;
+    margin: 0;
+    table-layout: fixed;
+    width: 100%;
+  }
+  .work-view .holdings-table th,
+.work-view .holdings-table td {
+    border: 0;
+    overflow-wrap: anywhere;
+    padding: 6px 12px;
+    text-align: left;
+    vertical-align: top;
+    width: 25%;
+  }
+  .work-view .holdings-table th:first-child,
+.work-view .holdings-table td:first-child {
+    padding-left: 0;
+    width: 50%;
+  }
+  .work-view .holdings-table th:last-child,
+.work-view .holdings-table td:last-child {
+    padding-right: 0;
+  }
+  .work-view .holdings-table th {
+    color: #00325d;
+    font-size: 15.3px;
+    line-height: 1.35;
+  }
+  .work-view .holdings-table td {
+    font-size: 0.9em;
+    line-height: 1.5;
+  }
+}
+@media screen {
   .resource.show .work-view .work-field {
     min-width: 0;
   }
@@ -1650,6 +1691,50 @@ input[type=reset][aria-disabled=true] {
 
   .work-field-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .work-view .holdings-table {
+    border: 0;
+    display: block;
+    min-width: 0;
+  }
+  .work-view .holdings-table thead {
+    clip: rect(0, 0, 0, 0);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+  .work-view .holdings-table tbody {
+    display: block;
+  }
+  .work-view .holdings-table tbody tr {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 12px 0;
+  }
+  .work-view .holdings-table tbody tr:first-child {
+    padding-top: 0;
+  }
+  .work-view .holdings-table td {
+    border: 0;
+    display: block;
+    min-width: 0;
+    padding: 0;
+    width: auto;
+  }
+  .work-view .holdings-table td:first-child {
+    grid-column: 1/-1;
+    width: auto;
+  }
+  .work-view .holdings-table .holdings-cell-label {
+    display: block;
+    font-size: 15.3px;
+    font-weight: bold;
+    line-height: 1.35;
+    margin-bottom: 0.2rem;
   }
 
   .witness-card-content,
