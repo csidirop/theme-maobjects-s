@@ -1,0 +1,23 @@
+<?php
+$escape = $this->plugin('escapeHtml');
+$showThumbnail = $showThumbnail ?? true;
+$showHeading = $showHeading ?? true;
+$showBody = $showBody ?? true;
+$resourceClasses = ['items' => 'item', 'item_sets' => 'item-set', 'media' => 'media'];
+$linkContent = '';
+if ($showThumbnail) {
+    $image = $this->thumbnail($resource, 'medium', ['alt' => $showHeading ? '' : (string) $heading]);
+    if ($image !== '') {
+        $linkContent .= '<span class="resource-thumbnail">' . $image . '</span>';
+    }
+}
+if ($showHeading) {
+    $linkContent .= '<span class="resource-name">' . $escape($heading) . '</span>';
+}
+?>
+<li class="resource <?php echo $resourceClasses[$resource->resourceName()] ?? 'resource'; ?>">
+    <?php if ($linkContent !== '') echo $resource->linkRaw($linkContent, null, ['class' => 'resource-link']); ?>
+    <?php if ($showBody && $body): ?>
+    <div class="description"><?php echo $escape($body); ?></div>
+    <?php endif; ?>
+</li>

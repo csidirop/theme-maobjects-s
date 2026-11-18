@@ -1,0 +1,12 @@
+<?php
+$escapeAttr = $this->plugin('escapeHtmlAttr');
+$translate = $this->plugin('translate');
+$persist = $persist ?? true;
+$tag = $persist ? 'form' : 'div';
+?>
+<<?php echo $tag; ?> class="layout-toggle" aria-label="<?php echo $escapeAttr($translate('Display layout')); ?>"<?php if ($persist): ?> method="get" action=""<?php else: ?> role="group" hidden<?php endif; ?>>
+    <?php if ($persist) echo $this->queryToHiddenInputs(['browse_layout', 'sort_by_default', 'sort_order_default']); ?>
+    <?php foreach (['grid' => 'Grid', 'list' => 'List'] as $value => $label): ?>
+    <button type="<?php echo $persist ? 'submit' : 'button'; ?>" name="browse_layout" value="<?php echo $value; ?>" class="<?php echo $value; ?> o-icon-<?php echo $value; ?>" aria-label="<?php echo $escapeAttr($translate($label)); ?>" title="<?php echo $escapeAttr($translate($label)); ?>" aria-pressed="<?php echo $layout === $value ? 'true' : 'false'; ?>"></button>
+    <?php endforeach; ?>
+</<?php echo $tag; ?>>

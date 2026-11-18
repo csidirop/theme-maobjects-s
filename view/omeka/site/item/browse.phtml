@@ -1,14 +1,13 @@
 <?php
 $escape = $this->plugin('escapeHtml');
 $translate = $this->plugin('translate');
-$thumbnail = $this->plugin('thumbnail');
 $filterLocale = (bool) $this->siteSetting('filter_locale_values');
 $lang = $this->lang();
 $valueLang = $filterLocale ? [$lang, ''] : null;
 
 $this->headScript()->appendFile($this->assetUrl('js/browse.js'));
-if(isset($itemSet)) {
-    $this->headLink()->prependStylesheet($this->assetUrl('css/resource-page-blocks', 'Omeka'));
+if (isset($itemSet)) {
+    $this->headLink()->prependStylesheet($this->assetUrl('css/resource-page-blocks.css', 'Omeka'));
 }
 $this->htmlElement('body')->appendAttribute('class', 'item resource browse');
 
@@ -22,6 +21,7 @@ $query = $this->params()->fromQuery();
     <div class="resource-metadata">
         <?php echo $this->resourcePageBlocks($itemSet)->getBlocks(); ?>
     </div>
+    <?php echo $this->partial('common/metadata-formats', ['resources' => $itemSet]); ?>
     <?php echo $this->pageTitle($translate('Items'), 3); ?>
 <?php else: ?>
     <?php echo $this->pageTitle($translate('Items'), 2); ?>
@@ -29,19 +29,14 @@ $query = $this->params()->fromQuery();
 
 <?php echo $this->searchFilters(); ?>
 
-<?php 
-    $layoutSetting = $this->themeSetting('browse_layout', 'grid');
-    $gridState = ($layoutSetting == 'togglegrid') ? 'disabled' : '';
-    $listState = ($layoutSetting == 'togglelist') ? 'disabled': '';
-    $currentLayout = (strpos($layoutSetting, 'grid') !== false) ? 'grid' : 'list';
+<?php
+$browseLayout = $this->plugin('BrowseLayout');
+$layout = $browseLayout();
+$currentLayout = $layout['layout'];
 ?>
+<div class="browse-results" data-browse-results>
 <div class="browse-controls">
-    <?php if (strpos($layoutSetting, 'toggle') !== false): ?>
-    <div class="layout-toggle">
-        <button type="button" aria-label="<?php echo $translate('Grid'); ?>" title="<?php echo $translate('Grid'); ?>" class="grid o-icon-grid" <?php echo $gridState; ?>></button>
-        <button type="button" aria-label="<?php echo $translate('List'); ?>" title="<?php echo $translate('List'); ?>" class="list o-icon-list" <?php echo $listState; ?>></button>        
-    </div>
-    <?php endif; ?>
+    <?php if ($layout['toggle']) echo $this->partial('common/browse-layout-toggle', ['layout' => $currentLayout]); ?>
     <?php echo $this->hyperlink($translate('Advanced search'), $this->url('site/resource', ['controller' => 'item', 'action' => 'search'], ['query' => $query], true), ['class' => 'advanced-search']); ?>
     <?php echo $this->pagination(); ?>
     <?php echo $this->browse()->renderSortSelector('items'); ?>
@@ -53,22 +48,16 @@ $query = $this->params()->fromQuery();
     $bodyTerm = $this->siteSetting('browse_body_property_term');
     ?>    
     <?php foreach ($items as $item): ?>
-    <li class="item resource">
-        <?php
-        $heading = $headingTerm ? $item->value($headingTerm, ['default' => $translate('[Untitled]'), 'lang' => $valueLang]) : $item->displayTitle(null, $valueLang);
-        $body = $bodyTerm ? $item->value($bodyTerm, ['lang' => $valueLang]) : $item->displayDescription(null, $valueLang);
-        $linkContent = sprintf('%s<span class="resource-name">%s</span>',
-            $thumbnail($item, 'medium'),
-            $escape($heading));
-        echo $item->linkRaw($linkContent, null, ['class' => 'resource-link']);
-        ?>
-        <?php if ($body): ?>
-        <div class="description"><?php echo $escape($body); ?></div>
-        <?php endif; ?>
-    </li>
+    <?php
+    $heading = $headingTerm ? $item->value($headingTerm, ['default' => $translate('[Untitled]'), 'lang' => $valueLang]) : $item->displayTitle(null, $valueLang);
+    $body = $bodyTerm ? $item->value($bodyTerm, ['lang' => $valueLang]) : $item->displayDescription(null, $valueLang);
+    echo $this->partial('common/browse-card', ['resource' => $item, 'heading' => $heading, 'body' => $body]);
+    ?>
     <?php endforeach; ?>
 </ul>
 <div class="browse-controls">
     <?php echo $this->pagination(); ?>
 </div>
 <?php $this->trigger('view.browse.after'); ?>
+<?php echo $this->partial('common/metadata-formats', ['resources' => $items]); ?>
+</div>

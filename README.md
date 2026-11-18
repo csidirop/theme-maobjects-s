@@ -44,6 +44,8 @@ Install the locked development dependencies with `npm ci` before building. Sass 
 * **Banner alternative text**: Describe meaningful banner content, or leave empty for a decorative image.
 * **Banner visibility**: All pages (default), homepage only, all except the homepage, or hidden. The homepage is the site's configured homepage, falling back to its first linked page as Omeka S does.
 * **Top navigation depth**: Maximum number of menu levels. `0` shows all levels, `1` shows only top-level links, and `2` includes their children. Accessible parent pages remain linked even when deeper descendants are excluded.
+* **Layout for Browse Pages**: Fixed grid/list, or a toggle with either default. Toggle choices are stored in the `browse_layout` URL parameter and survive reload, sorting, and both pagination controls. Fixed modes retain the configured layout. Page previews switch independently while JavaScript is available.
+* **Show metadata output links**: Show native API representations for items, item sets, media, and the current page of browse results. Enabled by default; disable it when another module already supplies output controls. See [Metadata output](#metadata-output).
 * **Footer**: Configure branding, up to three link columns, optional HTML content, legal links, social icons, and a gradient background. See [Footer configuration](#footer-configuration).
 * **Boolean value display**: Display Boolean metadata as True/False, Yes/No, or accessible checkmark/X icons.
 
@@ -74,6 +76,18 @@ Link columns and legal links use one `"url":"label"` pair per line:
 A leading slash resolves within the **current Omeka S site**, including its installation subdirectory. `/page/imprint` therefore works from home, item, browse, and nested page URLs. Use full URLs for other sites. When copying Classic configuration, change paths such as `/imprint` to `/page/imprint` and verify that the pages exist and are public. Links are not automatically checked for destination availability.
 
 Legacy Classic lists containing HTML line breaks and encoded quotes are accepted. Escape a quotation mark inside a label as `\"`, for example `"/page/about":"About \"Our project\""`. Invalid entries, unsupported schemes, network-relative URLs (`//example.org`), and paths that traverse outside the site are omitted. The bundled social SVGs are reused from the Classic MAObjects theme; their source is recorded alongside the assets.
+
+### Browse presentation
+
+Items, item sets, Hierarchy item results, and browse-preview blocks share card and thumbnail styling. Grid cards reflow with the available width. Lists use alternating backgrounds with thumbnails beside titles and descriptions; missing thumbnails leave readable text without an empty image slot. Preview component choices and locale filtering are preserved.
+
+The grid/list switch uses stable values independently of translated button labels. In toggle mode, ordinary browse pages also support switching without JavaScript through a GET form. With JavaScript, focus stays on the selected button, its pressed state is announced, and both pagination controls and the sorting form retain the choice and existing filters. Item sets now expose the native sort form for ID, title, creation date, and modification date. Preview switches affect only their own block and are hidden when JavaScript is unavailable.
+
+### Metadata output
+
+The [native Omeka S API](https://omeka.org/s/docs/developer/api/rest_api/) supports JSON-LD. Omeka S 4.1+ also supports RDF/XML, Turtle, N3, and N-Triples; the theme only offers those extra formats on supported versions. These links use public API access and require no export module.
+
+On browse pages, **Metadata formats (this page)** contains exactly the displayed resource IDs, including filtered and item-set results. It is a page-sized dataset; empty results show no output links. Individual resource pages link to that resource's API representation. These outputs contain metadata, not the original uploaded files. Citations, CSV/bulk exports, and Classic RSS/Atom endpoints are separate integrations.
 
 ## Resource Page Configuration
 
