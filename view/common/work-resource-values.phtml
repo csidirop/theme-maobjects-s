@@ -14,6 +14,8 @@
 $escape = $this->plugin('escapeHtml');
 $translate = $this->plugin('translate');
 $lang = $this->lang();
+$filterLocale = (bool) $this->siteSetting('filter_locale_values');
+$showValueAnnotations = $this->fallbackSetting('show_value_annotations', ['site'], true);
 
 $this->htmlElement('body')->appendAttribute('class', 'work-show');
 
@@ -103,8 +105,9 @@ $renderFields = function ($subject, array $fields) use ($escape, $valueList, $is
         if (!$propertyValues) {
             continue;
         }
+        $isBooleanField = count($propertyValues) === 1 && 'boolean' === reset($propertyValues)->type();
         ?>
-        <div class="work-field">
+        <div class="work-field<?php echo $isBooleanField ? ' work-field-boolean' : ''; ?>">
             <dt><?php echo $escape($label); ?></dt>
             <dd>
                 <ul class="work-value-list">
@@ -164,6 +167,13 @@ $alternativeTitles = $valueList($resource, 'yido:alternativeWorkTitle');
 $alternativeTitlesYiddish = $valueList($resource, 'yido:alternativeWorkTitleHebrew');
 $descriptions = $valueList($resource, 'yido:shortDescription');
 $descriptionSources = $valueList($resource, 'yido:shortDescriptionSource');
+$researchLiterature = $valueList($resource, 'yido:researchLiterature');
+if ($filterLocale) {
+    $researchLiterature = array_filter($researchLiterature, static function ($value) use ($lang) {
+        $valueLang = (string) $value->lang();
+        return $valueLang === '' || strcasecmp($valueLang, $lang) === 0;
+    });
+}
 $manuscripts = $resourceValues($resource, 'yido:manuscripts');
 $prints = $resourceValues($resource, 'yido:printedEditions');
 
@@ -195,6 +205,7 @@ $handledWorkTerms = [
     'yido:shortDescriptionSource',
     'yido:manuscripts',
     'yido:printedEditions',
+    'yido:researchLiterature',
 ];
 
 // AdvancedResourceTemplate may provide a Traversable rather than an array. Normalize it before filtering out the properties handled above.
@@ -341,6 +352,30 @@ $witnessGroups = [
         </details>
         <?php endforeach; ?>
     </section>
+
+    <?php if ($researchLiterature): ?>
+    <section class="work-section work-bibliography" aria-labelledby="work-research-literature-heading">
+        <h3 id="work-research-literature-heading"><?php echo $escape($translate('Research literature')); ?></h3>
+        <ul class="work-value-list work-research-literature">
+            <?php foreach ($researchLiterature as $reference): ?>
+            <li>
+                <?php echo $renderValue($reference); ?>
+                <?php if (!$reference->isPublic()): ?>
+                <span class="o-icon-private" role="img" title="<?php echo $escape($translate('Private')); ?>" aria-label="<?php echo $escape($translate('Private')); ?>"></span>
+                <?php endif; ?>
+                <?php $annotation = $reference->valueAnnotation(); ?>
+                <?php if ($annotation && $showValueAnnotations): ?>
+                <a href="#" class="<?php echo 'expanded' === $showValueAnnotations ? 'collapse' : 'expand'; ?>" aria-label="<?php echo $escape($translate('expanded' === $showValueAnnotations ? 'Collapse' : 'Expand')); ?>">
+                    <span class="has-annotation o-icon-annotation" role="img" title="<?php echo $escape($translate('Has annotation')); ?>" aria-label="<?php echo $escape($translate('Has annotation')); ?>"></span>
+                </a>
+                <div class="collapsible annotation"><?php echo $annotation->displayValues(); ?></div>
+                <?php endif; ?>
+                <?php $this->trigger('view.show.value', ['value' => $reference]); ?>
+            </li>
+            <?php endforeach; ?>
+        </ul>
+    </section>
+    <?php endif; ?>
 
     <?php // Preserve unrecognized/new Work metadata through the standard theme renderer. ?>
     <?php if ($otherWorkValues): ?>

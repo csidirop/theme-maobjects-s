@@ -1464,6 +1464,11 @@ input[type=reset][aria-disabled=true] {
   }
 }
 @media screen {
+  .work-field-grid > .work-field-full-width {
+    grid-column: 1/-1;
+  }
+}
+@media screen {
   .resource.show .work-view .work-field {
     min-width: 0;
   }
@@ -1481,6 +1486,21 @@ input[type=reset][aria-disabled=true] {
     margin: 0;
     padding: 0;
     width: 100%;
+  }
+}
+@media screen {
+  .resource.show .work-view .work-field-boolean dt {
+    display: inline;
+    margin: 0 0.5rem 0 0;
+    width: auto;
+  }
+  .resource.show .work-view .work-field-boolean dd {
+    display: inline;
+    width: auto;
+  }
+  .resource.show .work-view .work-field-boolean .work-value-list,
+.resource.show .work-view .work-field-boolean li {
+    display: inline;
   }
 }
 @media screen {
@@ -1508,9 +1528,15 @@ input[type=reset][aria-disabled=true] {
     overflow-wrap: anywhere;
   }
   .work-value-list li + li {
-    border-top: 1px solid var(--work-border);
     margin-top: 0.35rem;
     padding-top: 0.35rem;
+  }
+}
+@media screen {
+  .work-value-list.work-research-literature {
+    font-size: 0.9em;
+    list-style: disc;
+    padding-inline-start: 1.25em;
   }
 }
 @media screen {

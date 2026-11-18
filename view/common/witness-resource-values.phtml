@@ -96,18 +96,27 @@ $hasAnyValues = static function ($subject, array $fields) use ($valueList) {
     return false;
 };
 
-$renderFields = function ($subject, array $fields) use ($escape, $valueList, $isRtlTerm, $renderValue) {
+// Give longer descriptive fields the full row within the metadata grid.
+$fullWidthTerms = ['yido:specialFeatures', 'yido:researchLiterature', 'yido:remarks'];
+$renderFields = function ($subject, array $fields) use ($escape, $valueList, $isRtlTerm, $renderValue, $fullWidthTerms) {
     ob_start();
     foreach ($fields as $term => $label) {
         $propertyValues = $valueList($subject, $term);
         if (!$propertyValues) {
             continue;
         }
+        $fieldClasses = ['work-field'];
+        if (in_array($term, $fullWidthTerms, true)) {
+            $fieldClasses[] = 'work-field-full-width';
+        }
+        if (count($propertyValues) === 1 && 'boolean' === reset($propertyValues)->type()) {
+            $fieldClasses[] = 'work-field-boolean';
+        }
         ?>
-        <div class="work-field">
+        <div class="<?php echo implode(' ', $fieldClasses); ?>">
             <dt><?php echo $escape($label); ?></dt>
             <dd>
-                <ul class="work-value-list">
+                <ul class="work-value-list<?php echo 'yido:researchLiterature' === $term ? ' work-research-literature' : ''; ?>">
                     <?php foreach ($propertyValues as $propertyValue): ?>
                     <li><?php echo $renderValue($propertyValue, $isRtlTerm($term)); ?></li>
                     <?php endforeach; ?>
@@ -121,6 +130,7 @@ $renderFields = function ($subject, array $fields) use ($escape, $valueList, $is
 
 // Full metadata for standalone records; Work previews use the first two sections.
 $titlesSectionLabel = $translate('Titles and Content');
+$featuresSectionLabel = $translate('Features');
 $holdingsSectionLabel = $translate('Holdings and access');
 $notesSectionLabel = $translate('Notes and bibliography');
 $witnessSections = [
@@ -170,7 +180,7 @@ $witnessSections = [
         'yido:numberOfColumns' => $translate('Columns'),
         'yido:numberOfLines' => $translate('Lines per page'),
     ],
-    $translate('Features') => [
+    $featuresSectionLabel => [
         'yido:catchwords' => $translate('Catchwords'),
         'yido:illustrations' => $translate('Illustrations'),
         'yido:capitalLetters' => $translate('Initials / capital letters'),
@@ -309,7 +319,7 @@ foreach ($valueData as $propertyData) {
             <?php $showContexts = $contextsInHoldings && $contexts && $sectionLabel === $holdingsSectionLabel; ?>
             <?php $showReprints = $reprints && $sectionLabel === $notesSectionLabel; ?>
             <?php if ($hasSectionValues || $showContexts || $showReprints): ?>
-            <section class="witness-section">
+            <section class="witness-section<?php echo $sectionLabel === $featuresSectionLabel ? ' witness-features' : ''; ?>">
                 <h3><?php echo $escape($sectionLabel); ?></h3>
                 <dl class="work-field-grid">
                     <?php echo $renderFields($resource, $sectionFields); ?>

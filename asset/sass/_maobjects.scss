@@ -1583,6 +1583,10 @@ a.resource-class-badge {
     margin: 0;
 }
 
+.work-field-grid > .work-field-full-width {
+    grid-column: 1 / -1;
+}
+
 .resource.show .work-view .work-field {
     min-width: 0;
 
@@ -1601,6 +1605,24 @@ a.resource-class-badge {
         margin: 0;
         padding: 0;
         width: 100%;
+    }
+}
+
+.resource.show .work-view .work-field-boolean {
+    dt {
+        display: inline;
+        margin: 0 .5rem 0 0;
+        width: auto;
+    }
+
+    dd {
+        display: inline;
+        width: auto;
+    }
+
+    .work-value-list,
+    li {
+        display: inline;
     }
 }
 
@@ -1632,10 +1654,15 @@ a.resource-class-badge {
     }
 
     li + li {
-        border-top: 1px solid var(--work-border);
         margin-top: .35rem;
         padding-top: .35rem;
     }
+}
+
+.work-value-list.work-research-literature {
+    font-size: .9em;
+    list-style: disc;
+    padding-inline-start: 1.25em;
 }
 
 .work-value[dir="rtl"] {
