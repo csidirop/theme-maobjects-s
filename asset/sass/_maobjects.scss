@@ -1101,6 +1101,16 @@ body > .uma-footer {
             text-decoration-skip-ink: none;
         }
 
+        // Keep the RTL subtitle beneath the title and aligned with the card text.
+        .resource-title-yiddish {
+            display: block;
+            margin-top: .25rem;
+            font-size: 1.05em;
+            line-height: 1.4;
+            text-align: left;
+            unicode-bidi: isolate;
+        }
+
         .description {
             display: flow-root;
             margin-top: .5rem;

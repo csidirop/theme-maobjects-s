@@ -12,6 +12,8 @@ if (isset($itemSet)) {
 $this->htmlElement('body')->appendAttribute('class', 'item resource browse');
 
 $query = $this->params()->fromQuery();
+// Adjust displayed filters without changing the query used by browse controls.
+$filterQuery = $query;
 ?>
 <?php if (isset($itemSet)): ?>
 <?php $this->htmlElement('body')->appendAttribute('class', 'item-set show');
@@ -24,10 +26,29 @@ $query = $this->params()->fromQuery();
     <?php echo $this->partial('common/metadata-formats', ['resources' => $itemSet]); ?>
     <?php echo $this->pageTitle($translate('Items'), 3); ?>
 <?php else: ?>
-    <?php echo $this->pageTitle($translate('Items'), 2); ?>
+    <?php
+    $browseTitle = $translate('Items');
+    // Only a single template can supply the heading for the whole result list.
+    $templateIds = (array) ($query['resource_template_id'] ?? []);
+    $templateId = reset($templateIds);
+    if (count($templateIds) === 1 && is_scalar($templateId)
+        && ctype_digit((string) $templateId) && (int) $templateId > 0
+    ) {
+        $templates = $this->api()->search('resource_templates', ['id' => (int) $templateId, 'limit' => 1])->getContent();
+        if ($templates) {
+            $template = reset($templates);
+            $resourceClass = $template->resourceClass();
+            // Prefer the readable class name over a versioned template label.
+            $browseTitle = $resourceClass ? $translate($resourceClass->label()) : $template->label();
+            // The heading already identifies this template; keep other filters.
+            unset($filterQuery['resource_template_id']);
+        }
+    }
+    echo $this->pageTitle($browseTitle, 2);
+    ?>
 <?php endif; ?>
 
-<?php echo $this->searchFilters(); ?>
+<?php echo $this->searchFilters(null, $filterQuery); ?>
 
 <?php
 $browseLayout = $this->plugin('BrowseLayout');

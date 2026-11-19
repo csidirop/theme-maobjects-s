@@ -1004,6 +1004,14 @@ input[type=reset][aria-disabled=true] {
     -webkit-text-decoration-skip-ink: none;
             text-decoration-skip-ink: none;
   }
+  .browse-results > .resource-list .resource-title-yiddish {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 1.05em;
+    line-height: 1.4;
+    text-align: left;
+    unicode-bidi: isolate;
+  }
   .browse-results > .resource-list .description {
     display: flow-root;
     margin-top: 0.5rem;

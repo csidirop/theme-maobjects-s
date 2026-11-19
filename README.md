@@ -45,7 +45,7 @@ Install the locked development dependencies with `npm ci` before building. Sass 
 * **Banner visibility**: All pages (default), homepage only, all except the homepage, or hidden. The homepage is the site's configured homepage, falling back to its first linked page as Omeka S does.
 * **Top navigation depth**: Maximum number of menu levels. `0` shows all levels, `1` shows only top-level links, and `2` includes their children. Accessible parent pages remain linked even when deeper descendants are excluded.
 * **Layout for Browse Pages**: Fixed grid/list, or a toggle with either default. Toggle choices are stored in the `browse_layout` URL parameter and survive reload, sorting, and both pagination controls. Fixed modes retain the configured layout. Page previews switch independently while JavaScript is available.
-* **Show metadata output links**: Show native API representations for items, item sets, media, and the current page of browse results. Enabled by default; disable it when another module already supplies output controls. See [Metadata output](#metadata-output).
+* **Show metadata output links**: Show native API representations on individual item, item-set, and media pages. Browse and search results hide these links. Enabled by default; disable it when another module already supplies output controls. See [Metadata output](#metadata-output).
 * **Footer**: Configure branding, up to three link columns, optional HTML content, legal links, social icons, and a gradient background. See [Footer configuration](#footer-configuration).
 * **Boolean value display**: Display Boolean metadata as True/False, Yes/No, or accessible checkmark/X icons.
 
@@ -79,7 +79,13 @@ Legacy Classic lists containing HTML line breaks and encoded quotes are accepted
 
 ### Browse presentation
 
+Item browse pages filtered to a single resource template use its resource class label (for example, "Work") as the page heading, falling back to the template label when no class is assigned. The duplicate template search-filter label is omitted; other active filters remain visible. Unfiltered pages retain the "Items" heading, and item-set pages retain their collection title.
+
 Items, item sets, Hierarchy item results, and browse-preview blocks share card and thumbnail styling. Grid cards reflow with the available width. Lists use alternating backgrounds with thumbnails beside titles and descriptions; missing thumbnails leave readable text without an empty image slot. Preview component choices and locale filtering are preserved.
+
+Card descriptions are limited to 300 characters, including an ellipsis, and end at a word boundary where possible.
+
+When available, item cards show the Yiddish title beneath the main title, using the same properties as item detail pages and right-to-left text direction. Both titles link to the record; hiding headings in a browse-preview block hides both.
 
 The grid/list switch uses stable values independently of translated button labels. In toggle mode, ordinary browse pages also support switching without JavaScript through a GET form. With JavaScript, focus stays on the selected button, its pressed state is announced, and both pagination controls and the sorting form retain the choice and existing filters. Item sets now expose the native sort form for ID, title, creation date, and modification date. Preview switches affect only their own block and are hidden when JavaScript is unavailable.
 
@@ -87,7 +93,7 @@ The grid/list switch uses stable values independently of translated button label
 
 The [native Omeka S API](https://omeka.org/s/docs/developer/api/rest_api/) supports JSON-LD. Omeka S 4.1+ also supports RDF/XML, Turtle, N3, and N-Triples; the theme only offers those extra formats on supported versions. These links use public API access and require no export module.
 
-On browse pages, **Metadata formats (this page)** contains exactly the displayed resource IDs, including filtered and item-set results. It is a page-sized dataset; empty results show no output links. Individual resource pages link to that resource's API representation. These outputs contain metadata, not the original uploaded files. Citations, CSV/bulk exports, and Classic RSS/Atom endpoints are separate integrations.
+**Metadata formats** appears on individual resource pages and links to that resource's API representation. It is hidden for browse and search result lists, including Hierarchy results. These outputs contain metadata, not the original uploaded files. Citations, CSV/bulk exports, and Classic RSS/Atom endpoints are separate integrations.
 
 ## Resource Page Configuration
 

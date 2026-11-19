@@ -1,9 +1,13 @@
 <?php
+// Arrays represent result lists; only individual resources show output links.
+if (is_array($resources)) {
+    return;
+}
 $metadataFormats = $this->plugin('MetadataFormats');
 $links = $metadataFormats($resources);
 $escape = $this->plugin('escapeHtml');
 $escapeAttr = $this->plugin('escapeHtmlAttr');
-$label = $this->translate(is_array($resources) ? 'Metadata formats (this page)' : 'Metadata formats');
+$label = $this->translate('Metadata formats');
 ?>
 <?php if ($links): ?>
 <nav class="metadata-formats" aria-label="<?php echo $escapeAttr($label); ?>">

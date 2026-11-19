@@ -3,6 +3,12 @@ $escape = $this->plugin('escapeHtml');
 $showThumbnail = $showThumbnail ?? true;
 $showHeading = $showHeading ?? true;
 $showBody = $showBody ?? true;
+// Reserve one of the 300 characters for the ellipsis and avoid splitting words.
+$description = (string) ($body ?? '');
+if (mb_strlen($description, 'UTF-8') > 300) {
+    $description = mb_substr($description, 0, 299, 'UTF-8');
+    $description = rtrim(preg_replace('/\s+\S*$/u', '', $description)) . '…';
+}
 $resourceClasses = ['items' => 'item', 'item_sets' => 'item-set', 'media' => 'media'];
 $linkContent = '';
 if ($showThumbnail) {
@@ -13,11 +19,37 @@ if ($showThumbnail) {
 }
 if ($showHeading) {
     $linkContent .= '<span class="resource-name">' . $escape($heading) . '</span>';
+    if ('items' === $resource->resourceName()) {
+        // Use the same title properties as the item detail heading.
+        $yiddishTitleProperties = [
+            'yido:Work' => 'yido:workTitleHebrew',
+            'yido:PrintedBook' => 'yido:shortTitleYiddish',
+            'yido:Manuscript' => 'yido:shortTitleYiddish',
+            'yido:SingleWorkInPrintedBook' => 'yido:shortTitleYiddish',
+            'yido:SingleWorkInManuscript' => 'yido:shortTitleYiddish',
+        ];
+        $resourceClass = $resource->resourceClass();
+        $titleProperty = $resourceClass ? ($yiddishTitleProperties[$resourceClass->term()] ?? null) : null;
+        $yiddishTitles = [];
+        if ($titleProperty) {
+            $titleValues = $resource->value($titleProperty, ['all' => true]);
+            $titleValues = is_array($titleValues) ? $titleValues : ($titleValues ? [$titleValues] : []);
+            foreach ($titleValues as $title) {
+                if (trim((string) $title->value()) !== '') {
+                    $yiddishTitles[] = $title->value();
+                }
+            }
+        }
+        if ($yiddishTitles) {
+            // Keep both titles in one link, with explicit direction for Yiddish.
+            $linkContent .= '<span class="resource-title-yiddish" lang="yi" dir="rtl">' . $escape(implode(' · ', $yiddishTitles)) . '</span>';
+        }
+    }
 }
 ?>
 <li class="resource <?php echo $resourceClasses[$resource->resourceName()] ?? 'resource'; ?>">
     <?php if ($linkContent !== '') echo $resource->linkRaw($linkContent, null, ['class' => 'resource-link']); ?>
     <?php if ($showBody && $body): ?>
-    <div class="description"><?php echo $escape($body); ?></div>
+    <div class="description"><?php echo $escape($description); ?></div>
     <?php endif; ?>
 </li>
