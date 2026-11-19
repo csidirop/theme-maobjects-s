@@ -25,6 +25,8 @@ The named sections use explicit field lists, so a new property needs a code chan
 - For the short Work facts, edit `$workFields` in `work-resource-values.phtml`.  Add newly rendered Work properties to `$handledWorkTerms` too, so they do not repeat under “Further information.” Only mark properties as handled when the custom view actually renders them.
 - Transmission previews show only **Titles and Content** and **Creation and publication**. Their field list is `$witnessPreviewSections` in the Work view. Change the full record and preview lists separately when needed.
 
+Creator values from `dcterms:creator` appear under **Creation and publication** on witness records and in their Work-page transmission previews.
+
 ## Linked records
 
 The links come from Omeka metadata; item IDs are not hardcoded in the views.
