@@ -696,9 +696,7 @@ input[type=reset][aria-disabled=true] {
     background: linear-gradient(180deg, #0a4479 0%, #00325d 100%);
   }
   body > .uma-footer .footer-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 3rem 24px 2rem;
+    padding: 3rem clamp(20px, 2vw, 32px) 2rem;
   }
   body > .uma-footer .footer-main {
     display: grid;

@@ -55,7 +55,7 @@ The header keeps the navigation configured under the site's **Navigation** tab. 
 
 Open the site's **Theme → Edit theme settings**. Footer settings are grouped under Branding, Link columns, and Legal and social links. They apply independently to each site.
 
-The footer uses a full-width background with content aligned to the main page. Columns stack on small screens. The theme uses the current Classic Mannheim blue (`#00325d`); **Use footer gradient background** adds the Classic-style gradient.
+The footer background and content rows span the full available width, with responsive side gutters. Columns stack on small screens. The theme uses the current Classic Mannheim blue (`#00325d`); **Use footer gradient background** adds the Classic-style gradient.
 
 * **Logos**: The two bundled institutional logos remain visible by default. Upload an asset to replace either one, or uncheck **Show footer logo** to hide it. Clearing an uploaded asset restores the bundled logo. Each slot has an optional label, alternative text, and destination; clear the destination for an unlinked logo. When replacing a logo, update its alternative text and destination as well.
 * **Link columns**: Configure up to three titles and link lists. Empty columns are omitted. Titles and link labels are plain text.
