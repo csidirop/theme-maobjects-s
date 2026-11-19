@@ -1219,7 +1219,9 @@ body > .uma-footer {
 // ITEM TYPE:
 // Replace Omeka's generic "Item" heading with a compact resource-class label
 // that identifies the catalogue record as a Work, Printed Book, Genizah, etc.
-.resource-heading {
+// Scope custom typography and spacing to #content so the shared heading and
+// paragraph rules do not override the compact item layout.
+#content .resource-heading {
     align-items: baseline;
     display: flex;
     gap: $spacing-m;
@@ -1246,7 +1248,7 @@ body > .uma-footer {
     text-align: right;
 }
 
-.resource-type {
+#content .resource-type {
     margin: 0;
 }
 
@@ -1292,7 +1294,7 @@ a.resource-class-badge {
 
 // WORK DETAIL VIEW:
 
-.work-view {
+#content .work-view {
     --work-border: #d7dce7;
     --work-panel: #f6f7fa;
     --work-panel-strong: #e8ebf2;
@@ -1330,7 +1332,7 @@ a.resource-class-badge {
     }
 }
 
-.work-title-yiddish {
+#content .work-title-yiddish {
     font-size: 1.35 * $base-font-size;
     line-height: 1.4;
     margin: 0 0 $spacing-l;
@@ -1361,7 +1363,7 @@ a.resource-class-badge {
     }
 }
 
-.work-alternative-titles p {
+#content .work-alternative-titles p {
     margin-bottom: $spacing-m;
 }
 
@@ -1500,7 +1502,7 @@ a.resource-class-badge {
     max-width: 80rem;
 }
 
-.standalone-witness-content {
+#content .standalone-witness-content {
     border: 1px solid var(--work-border);
     border-radius: .35rem;
 
@@ -1727,7 +1729,7 @@ a.resource-class-badge {
     color: #8b2727;
 }
 
-.witness-record-link {
+#content .witness-record-link {
     margin: (1.5 * $spacing-l) 0 0;
 
     a::after {
@@ -1790,7 +1792,7 @@ a.resource-class-badge {
 
     /* @group ----- Work detail ----- */
 
-    .resource-heading {
+    #content .resource-heading {
         align-items: flex-start;
         flex-direction: column;
         gap: 0;
@@ -1806,11 +1808,11 @@ a.resource-class-badge {
         text-align: left;
     }
 
-    .work-view {
+    #content .work-view {
         margin-top: 0;
     }
 
-    .work-title-yiddish {
+    #content .work-title-yiddish {
         font-size: 1.15 * $base-font-size;
     }
 

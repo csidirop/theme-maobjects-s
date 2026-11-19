@@ -19,14 +19,14 @@ $showValueAnnotations = $this->fallbackSetting('show_value_annotations', ['site'
 
 $this->htmlElement('body')->appendAttribute('class', 'work-show');
 
-// Omeka's value() method returns either one ValueRepresentation, an array, or null depending on the options and 
+// Omeka's value() method returns either one ValueRepresentation, an array, or null depending on the options and
 //available data. Normalize that result so all later rendering code can iterate over it safely.
 $valueList = static function ($subject, $term) {
     $values = $subject->value($term, ['all' => true]);
     return is_array($values) ? $values : ($values ? [$values] : []);
 };
 
-// Resolve resource-valued properties such as yido:printedEditions to the linked ItemRepresentation objects. 
+// Resolve resource-valued properties such as yido:printedEditions to the linked ItemRepresentation objects.
 //Keying by ID also prevents accidental duplicates when a relation occurs more than once.
 $resourceValues = static function ($subject, $term) use ($valueList) {
     $resources = [];
@@ -39,13 +39,13 @@ $resourceValues = static function ($subject, $term) use ($valueList) {
     return array_values($resources);
 };
 
-// The current vocabulary data does not consistently store language tags on Hebrew-script values. 
+// The current vocabulary data does not consistently store language tags on Hebrew-script values.
 //Recognize the vocabulary terms so these values still receive an explicit language and right-to-left direction in the HTML.
 $isRtlTerm = static function ($term) {
     return (bool) preg_match('/(?:Yiddish|Hebrew)$/', $term);
 };
 
-// Render the value with Omeka's data-type renderer wherever possible. Boolean and resource values need small theme-specific adaptations: 
+// Render the value with Omeka's data-type renderer wherever possible. Boolean and resource values need small theme-specific adaptations:
 // accessible state icons for the former and site-context links for the latter.
 $renderValue = function ($value, $rtl = false, $includeAnnotations = false) use ($escape, $translate, $lang, $showValueAnnotations) {
     if ('boolean' === $value->type()) {
