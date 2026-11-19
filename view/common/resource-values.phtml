@@ -52,7 +52,7 @@ if ($resource && class_exists('AdvancedResourceTemplate\Api\Representation\Resou
 }
 
 if (!$groups) {
-    echo $this->partial('common/resource-values-list', ['values' => $values]);
+    echo $this->partial('common/resource-values-list', ['values' => $values, 'markUnsorted' => $resource !== null]);
     echo $this->partial('common/resource-further-information', ['resource' => $resource]);
     return;
 }
@@ -84,7 +84,7 @@ $translate = $this->plugin('translate');
     <?php if ($otherValues): ?>
     <div class="property-group">
         <h3><?php echo $escape($translate('Other metadata')); ?></h3>
-        <?php echo $this->partial('common/resource-values-list', ['values' => $otherValues]); ?>
+        <?php echo $this->partial('common/resource-values-list', ['values' => $otherValues, 'markUnsorted' => true]); ?>
     </div>
     <?php endif; ?>
 </div>

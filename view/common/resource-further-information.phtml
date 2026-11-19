@@ -62,6 +62,6 @@ $headingId = 'resource-further-information-' . $resource->id();
     </dl>
     <?php endif; ?>
     <?php if ($values): ?>
-        <?php echo $this->partial('common/resource-values-list', ['values' => $values]); ?>
+        <?php echo $this->partial('common/resource-values-list', ['values' => $values, 'markUnsorted' => true]); ?>
     <?php endif; ?>
 </section>

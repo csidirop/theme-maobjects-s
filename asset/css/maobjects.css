@@ -1622,6 +1622,97 @@ input[type=reset][aria-disabled=true] {
   }
 }
 @media screen {
+  .resource.show #content > .resource-values,
+.resource.show #content .resource-metadata > .resource-values,
+.resource.show #content .property-group > .resource-values,
+.resource.show #content .resource-further-information > .resource-values {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    margin: 0;
+  }
+  .resource.show #content > .resource-values > .property,
+.resource.show #content .resource-metadata > .resource-values > .property,
+.resource.show #content .property-group > .resource-values > .property,
+.resource.show #content .resource-further-information > .resource-values > .property {
+    display: block;
+    min-width: 0;
+    margin: 0;
+  }
+  .resource.show #content > .resource-values > .property > dt,
+.resource.show #content .resource-metadata > .resource-values > .property > dt,
+.resource.show #content .property-group > .resource-values > .property > dt,
+.resource.show #content .resource-further-information > .resource-values > .property > dt {
+    color: #00325d;
+    font-size: 15.3px;
+    font-weight: bold;
+    line-height: 1.35;
+    margin: 0 0 0.2rem;
+    padding: 0;
+    text-align: left;
+    width: 100%;
+  }
+  .resource.show #content > .resource-values > .property > dd.value,
+.resource.show #content .resource-metadata > .resource-values > .property > dd.value,
+.resource.show #content .property-group > .resource-values > .property > dd.value,
+.resource.show #content .resource-further-information > .resource-values > .property > dd.value {
+    border: 0;
+    font-size: 18px;
+    line-height: 1.5;
+    margin: 0;
+    overflow-wrap: anywhere;
+    padding: 0;
+    width: 100%;
+  }
+  .resource.show #content > .resource-values > .property > dd.value + dd.value,
+.resource.show #content .resource-metadata > .resource-values > .property > dd.value + dd.value,
+.resource.show #content .property-group > .resource-values > .property > dd.value + dd.value,
+.resource.show #content .resource-further-information > .resource-values > .property > dd.value + dd.value {
+    margin-top: 0.35rem;
+    padding-top: 0.35rem;
+  }
+  .resource.show #content > .resource-values > .property > dd.value p,
+.resource.show #content .resource-metadata > .resource-values > .property > dd.value p,
+.resource.show #content .property-group > .resource-values > .property > dd.value p,
+.resource.show #content .resource-further-information > .resource-values > .property > dd.value p {
+    font-size: inherit;
+    line-height: inherit;
+  }
+  .resource.show #content > .resource-values > .property > dd.value .resource-link,
+.resource.show #content .resource-metadata > .resource-values > .property > dd.value .resource-link,
+.resource.show #content .property-group > .resource-values > .property > dd.value .resource-link,
+.resource.show #content .resource-further-information > .resource-values > .property > dd.value .resource-link {
+    float: none;
+    max-width: 100%;
+    margin: 0;
+  }
+}
+@media screen and (max-width: 640px) {
+  .resource.show #content > .resource-values,
+.resource.show #content .resource-metadata > .resource-values,
+.resource.show #content .property-group > .resource-values,
+.resource.show #content .resource-further-information > .resource-values {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media screen {
+  .metadata-unsorted-marker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1em;
+    height: 1em;
+    margin-inline-start: 0.4em;
+    background: #fff0db;
+    border: 1px solid #e6a055;
+    border-radius: 50%;
+    color: #8a4300;
+    font-weight: bold;
+    line-height: 1;
+    vertical-align: middle;
+  }
+}
+@media screen {
   .resource.show dl.resource-collections {
     align-items: baseline;
     border: 0;

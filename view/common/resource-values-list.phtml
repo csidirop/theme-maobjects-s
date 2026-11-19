@@ -22,6 +22,7 @@ $filterLocale = (bool) $this->fallbackSetting('filter_locale_values', ['site'], 
 $showValueAnnotations = (bool) $this->fallbackSetting('show_value_annotations', ['site'], true);
 $booleanValueDisplay = $this->themeSetting('boolean_value_display', 'true_false');
 $lang = $this->lang();
+$markUnsorted = !empty($markUnsorted) && $this->userIsAllowed('Omeka\Controller\Admin\Item', 'edit');
 
 // AdvancedResourceTemplate may supply an iterator when properties have
 // multiple labels. Normalize it without retaining duplicate term keys.
@@ -57,7 +58,7 @@ $renderBoolean = function ($value) use ($booleanValueDisplay, $escape, $translat
 };
 ?>
 <?php if (count($values) > 0): ?>
-<dl>
+<dl class="resource-values">
 <?php
 foreach ($values as $term => $propertyData):
     $propertyValues = $propertyData['values'];
@@ -80,6 +81,9 @@ foreach ($values as $term => $propertyData):
     <div class="property">
         <dt>
         <?php echo $escape($propertyLabel); ?>
+        <?php if ($markUnsorted): ?>
+        <span class="metadata-unsorted-marker" role="img" title="<?php echo $escape($translate('Not yet grouped')); ?>" aria-label="<?php echo $escape($translate('Not yet grouped')); ?>">!</span>
+        <?php endif; ?>
         <?php if ($propertyTerm !== null): ?>
         <span class="field-term">(<?php echo $escape($propertyTerm); ?>)</span>
         <?php endif; ?>

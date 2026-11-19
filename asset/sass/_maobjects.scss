@@ -1744,6 +1744,83 @@ a.resource-class-badge {
     padding-top: $spacing-m;
 }
 
+// Give standard metadata the same label/value layout as the custom fields.
+// Target the outer lists so nested value annotations retain their own layout.
+.resource.show #content {
+    > .resource-values,
+    .resource-metadata > .resource-values,
+    .property-group > .resource-values,
+    .resource-further-information > .resource-values {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: $spacing-l;
+        margin: 0;
+
+        > .property {
+            display: block;
+            min-width: 0;
+            margin: 0;
+
+            > dt {
+                color: $uni-blau;
+                font-size: .85 * $base-font-size;
+                font-weight: bold;
+                line-height: 1.35;
+                margin: 0 0 .2rem;
+                padding: 0;
+                text-align: left;
+                width: 100%;
+            }
+
+            > dd.value {
+                border: 0;
+                font-size: $base-font-size;
+                line-height: 1.5;
+                margin: 0;
+                overflow-wrap: anywhere;
+                padding: 0;
+                width: 100%;
+
+                + dd.value {
+                    margin-top: .35rem;
+                    padding-top: .35rem;
+                }
+
+                p {
+                    font-size: inherit;
+                    line-height: inherit;
+                }
+
+                .resource-link {
+                    float: none;
+                    max-width: 100%;
+                    margin: 0;
+                }
+            }
+        }
+
+        @media screen and (max-width: 640px) {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+}
+
+.metadata-unsorted-marker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1em;
+    height: 1em;
+    margin-inline-start: .4em;
+    background: #fff0db;
+    border: 1px solid #e6a055;
+    border-radius: 50%;
+    color: #8a4300;
+    font-weight: bold;
+    line-height: 1;
+    vertical-align: middle;
+}
+
 .resource.show dl.resource-collections {
     align-items: baseline;
     border: 0;
