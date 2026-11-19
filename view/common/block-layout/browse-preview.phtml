@@ -2,28 +2,23 @@
 $this->headScript()->appendFile($this->assetUrl('js/browse.js'));
 $translate = $this->plugin('translate');
 $escape = $this->plugin('escapeHtml');
-$layoutSetting = $this->themeSetting('browse_layout', 'grid');
-$gridState = ($layoutSetting == 'togglegrid') ? 'disabled' : '';
-$listState = ($layoutSetting == 'togglelist') ? 'disabled': '';
-$currentLayout = (strpos($layoutSetting, 'grid') !== false) ? 'grid' : 'list';
+$browseLayout = $this->plugin('BrowseLayout');
+$layout = $browseLayout(false);
+$currentLayout = $layout['layout'];
 $resources = $this->resources;
 $resourceCount = count($resources);
 ?>
-<div class="preview-block browse">
+<div class="preview-block browse browse-results" data-browse-results data-layout-persist="false">
 
 <?php if ($this->heading): ?>
 <h2><?php echo $escape($this->heading); ?></h2>
 <?php endif; ?>
 
-<?php if (strpos($layoutSetting, 'toggle') !== false): ?>
+<?php if ($layout['toggle']): ?>
 <div class="browse-controls">
-    <div class="layout-toggle">
-        <button type="button" aria-label="<?php echo $translate('Grid'); ?>" title="<?php echo $translate('Grid'); ?>" class="grid o-icon-grid" <?php echo $gridState; ?>></button>
-        <button type="button" aria-label="<?php echo $translate('List'); ?>" title="<?php echo $translate('List'); ?>" class="list o-icon-list" <?php echo $listState; ?>></button>        
-    </div>
+    <?php echo $this->partial('common/browse-layout-toggle', ['layout' => $currentLayout, 'persist' => false]); ?>
 </div>
 <?php endif; ?>
-
 
 <ul class="resource-list preview <?php echo $currentLayout; ?> resource-count-<?php echo $resourceCount; ?>">
 <?php
@@ -40,24 +35,11 @@ $valueLang = $filterLocale ? [$lang, ''] : null;
 foreach ($resources as $resource):
     $heading = $headingTerm ? $resource->value($headingTerm, ['default' => $translate('[Untitled]'), 'lang' => $valueLang]) : $resource->displayTitle(null, $valueLang);
     $body = $bodyTerm ? $resource->value($bodyTerm, ['lang' => $valueLang]) : $resource->displayDescription(null, $valueLang);
+    echo $this->partial('common/browse-card', [
+        'resource' => $resource, 'heading' => $heading, 'body' => $body,
+        'showThumbnail' => $showThumbnail, 'showHeading' => $showHeading, 'showBody' => $showBody,
+    ]);
 ?>
-    <li class="<?php echo $this->resourceType; ?> resource">
-        <?php
-        $linkContent = '';
-        if ($showThumbnail):
-            $linkContent .= $this->thumbnail($resource, 'medium', ['title' => $heading, 'class' => 'thumbnail']);
-        endif;
-        if ($showHeading):
-            $linkContent .= '<span class="resource-name">' . $escape($heading) . '</span>';
-        endif;
-        if ($linkContent !== ''):
-            echo $resource->linkRaw($linkContent, null, ['class' => 'resource-link']);
-        endif;
-        if ($showBody && $body):
-            echo '<div class="description">' . $escape($body) . '</div>';
-        endif;
-        ?>
-    </li>
 <?php endforeach; ?>
 </ul>
 

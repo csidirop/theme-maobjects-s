@@ -1,63 +1,140 @@
-if (!CenterRow) {
-    var CenterRow = {};
-}
+var CenterRow = window.CenterRow || {};
 
 (function($) {
+    var mobileWidth = window.matchMedia('(max-width: 800px)');
 
-    CenterRow.megaMenu = function (menuSelector, customMenuOptions) {
-        if (typeof menuSelector === 'undefined') {
-            menuSelector = 'header nav';
-        }
+    function closePanels(header) {
+        header.find('.site-navigation .sub-nav').removeClass('open').attr('aria-hidden', 'true');
+        header.find('.site-navigation [aria-expanded]').removeClass('open').attr('aria-expanded', 'false');
+    }
 
-        var menuOptions = {
-            /* prefix for generated unique id attributes, which are required
-             to indicate aria-owns, aria-controls and aria-labelledby */
-            uuidPrefix: "accessible-megamenu",
-
-            /* css class used to define the megamenu styling */
-            menuClass: "nav-menu",
-
-            /* css class for a top-level navigation item in the megamenu */
-            topNavItemClass: "nav-item",
-
-            /* css class for a megamenu panel */
-            panelClass: "sub-nav",
-
-            /* css class for a group of items within a megamenu panel */
-            panelGroupClass: "sub-nav-group",
-
-            /* css class for the hover state */
-            hoverClass: "hover",
-
-            /* css class for the focus state */
-            focusClass: "focus",
-
-            /* css class for the open state */
-            openClass: "open",
-
-            openOnMouseover: true,
-        };
-
-        $.extend(menuOptions, customMenuOptions);
-
-        $(menuSelector).accessibleMegaMenu(menuOptions);
+    CenterRow.megaMenu = function(menuSelector, customMenuOptions) {
+        var options = $.extend({
+            uuidPrefix: 'accessible-megamenu',
+            menuClass: 'nav-menu',
+            topNavItemClass: 'nav-item',
+            panelClass: 'sub-nav',
+            panelGroupClass: 'sub-nav-group',
+            hoverClass: 'hover',
+            focusClass: 'focus',
+            openClass: 'open',
+            openOnMouseover: window.matchMedia('(hover: hover) and (pointer: fine)').matches
+        }, customMenuOptions);
+        $(menuSelector || '.site-header .site-navigation').accessibleMegaMenu(options);
     };
 
     CenterRow.mobileMenu = function() {
-        $('header').on('click', '.menu-button', function(e) {
-            e.preventDefault();
-            $('header nav > ul').toggleClass('open');
+        $('.site-header').each(function() {
+            var header = $(this);
+            var button = header.find('.menu-button');
+            var nav = header.find('.site-navigation');
+            if (header.data('mobileMenuReady') || !nav.data('plugin_accessibleMegaMenu')) {
+                return;
+            }
+            header.data('mobileMenuReady', true).addClass('menu-enhanced');
+            button.prop('hidden', false);
+
+            function closeMenu(restoreFocus) {
+                header.removeClass('menu-open');
+                button.attr('aria-expanded', 'false');
+                closePanels(header);
+                if (restoreFocus) {
+                    button.trigger('focus');
+                }
+            }
+
+            button.on('click.maobjects', function() {
+                var open = button.attr('aria-expanded') !== 'true';
+                closeMenu(false);
+                if (open) {
+                    header.addClass('menu-open');
+                    button.attr('aria-expanded', 'true');
+                    nav.find('a').first().trigger('focus');
+                }
+            });
+
+            // Handle Escape before the menu plugin schedules its own focus move.
+            this.addEventListener('keydown', function(event) {
+                if (event.key !== 'Escape' || !nav[0].contains(event.target)) {
+                    return;
+                }
+                var panel = nav.find('.sub-nav.open').first();
+                if (panel.length) {
+                    var parent = panel.siblings('a').first();
+                    closePanels(header);
+                    parent.trigger('focus');
+                } else if (mobileWidth.matches && header.hasClass('menu-open')) {
+                    closeMenu(true);
+                } else {
+                    return;
+                }
+                event.preventDefault();
+                event.stopPropagation();
+            }, true);
+
+            $(document).on('click.maobjectsMenu', function(event) {
+                if (mobileWidth.matches && !header[0].contains(event.target)) {
+                    closeMenu(false);
+                }
+            });
+            mobileWidth.addEventListener('change', function() {
+                var focused = nav[0].contains(document.activeElement);
+                var buttonFocused = document.activeElement === button[0];
+                closeMenu(mobileWidth.matches && focused);
+                if (!mobileWidth.matches && buttonFocused) {
+                    nav.find('a').first().trigger('focus');
+                }
+            });
+        });
+    };
+
+    CenterRow.headerSearch = function() {
+        $('.site-header #search-container').each(function() {
+            var container = $(this);
+            var button = container.find('.search-toggle');
+            var panel = container.find('#header-search-panel');
+            if (container.data('searchReady')) {
+                return;
+            }
+            container.data('searchReady', true).addClass('search-enhanced');
+            panel.prop('hidden', true);
+            button.prop('hidden', false);
+
+            function closeSearch(restoreFocus) {
+                panel.prop('hidden', true);
+                button.attr('aria-expanded', 'false');
+                if (restoreFocus) {
+                    button.trigger('focus');
+                }
+            }
+
+            button.on('click.maobjects', function() {
+                var open = panel.prop('hidden');
+                panel.prop('hidden', !open);
+                button.attr('aria-expanded', String(open));
+                if (open) {
+                    closePanels(container.closest('.site-header'));
+                    panel.find('input:not([type="hidden"]), select, textarea').first().trigger('focus');
+                }
+            });
+            container.on('keydown.maobjects', function(event) {
+                if (event.key === 'Escape' && !panel.prop('hidden')) {
+                    closeSearch(true);
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            });
+            $(document).on('click.maobjectsSearch focusin.maobjectsSearch', function(event) {
+                if (!container[0].contains(event.target)) {
+                    closeSearch(false);
+                }
+            });
         });
     };
 
     $(document).ready(function() {
-        $('#search-form').addClass('closed');
-
-        $('header').on('click', '.search-toggle', function() {
-            $('#search-form').toggleClass('closed open');
-            if ($('#search-form').hasClass('open')) {
-                $('#fulltext-search').focus();
-            }
-        });
+        CenterRow.megaMenu();
+        CenterRow.mobileMenu();
+        CenterRow.headerSearch();
     });
-})(jQuery)
+})(jQuery);

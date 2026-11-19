@@ -1,66 +1,26 @@
 <?php
-
-$navDepthSetting = $this->themeSetting('nav_depth');
-
+$depth = max(0, (int) $this->themeSetting('nav_depth'));
+$escapeAttr = $this->plugin('escapeHtmlAttr');
+$domain = $this->navigation($container)->getTranslatorTextDomain();
 ?>
-
-<?php if ($navDepthSetting == 0 || $level <= $navDepthSetting):?>
-    <ul>
-        <?php foreach ($children as $child): ?>
-            <?php $hasChildren = $child->hasPages() ?>
-            <?php if (!$this->navigation()->accept($child)) continue; ?>
-            <?php if ($child->get("separator") === true): ?>
-                <li class="divider"></li>
-            <?php
-                continue;
-            endif;
-            ?>
-
-            <?php if (!$hasChildren): ?>
-                <li class="<?php if ($child->isActive()) echo ' active' ?>">
-                    <a
-
-                        href="<?php echo $child->getHref() ?>"
-                        <?php if ($child->getTarget() != ""): ?>
-                            target="<?php echo $child->getTarget(); ?>"
-                        <?php endif; ?>
-                        >
-                            <?php if ($child->get("icon") !== ""): ?>
-                            <span class="<?php echo $child->get("icon"); ?>"></span>
-                        <?php endif; ?>
-                        <?php echo $this->escapeHtml($this->translate($child->getLabel(), $this->navigation($container)->getTranslatorTextDomain())); ?>
-                    </a>
-                </li>
-            <?php else:?>
-
-                <?php
-                    //check if access is allowed at least one item
-                    $access = false;
-                    foreach ($child->getPages() as $grandChild) {
-                        if ($this->navigation()->accept($grandChild) && $grandChild->get("separator") !== true) {
-                            $access = true;
-                        }
-                    }
-                    if ($access) :
-                        ?>
-
-                    <li<?php if ($child->isActive()) echo ' class="active"' ?>>
-                        <a
-                            href="<?php echo $child->getHref() ?>"
-                            <?php if ($child->getTarget() != ""): ?>
-                                target="<?php echo $child->getTarget(); ?>"
-                            <?php endif; ?> >
-                                <?php if ($child->get("icon") !== ""): ?>
-                                <span class="<?php echo $child->get("icon"); ?>"></span>
-                            <?php endif; ?>
-                            <?php echo $this->escapeHtml($this->translate($child->getLabel(),$this->navigation($container)->getTranslatorTextDomain())); ?>
-                        </a>
-                        <?php if ($hasChildren && ($navDepthSetting == 0 || $level < $navDepthSetting)): ?>
-                            <?php echo $this->partial('common/sub-navigation', ['container'=> $container, 'children' => $child->getPages(), 'level' => ($level + 1)]); ?>
-                        <?php endif; ?>
-                    </li>
-                <?php endif; ?>
+<?php if ($depth === 0 || $level <= $depth): ?>
+<ul>
+    <?php foreach ($children as $child): ?>
+    <?php if (!$this->navigation()->accept($child)) continue; ?>
+    <?php if ($child->get('separator') === true): ?>
+    <li class="divider" role="separator"></li>
+    <?php continue; endif; ?>
+    <li<?php if ($child->isActive(true)) echo ' class="active"'; ?>>
+        <a href="<?php echo $escapeAttr($child->getHref()); ?>"<?php if ($child->getTarget()): ?> target="<?php echo $escapeAttr($child->getTarget()); ?>"<?php if ($child->getTarget() === '_blank') echo ' rel="noopener"'; ?><?php endif; ?>>
+            <?php if ($child->get('icon')): ?>
+            <span class="<?php echo $escapeAttr($child->get('icon')); ?>" aria-hidden="true"></span>
             <?php endif; ?>
-        <?php endforeach; ?>
-    </ul>
+            <?php echo $this->escapeHtml($this->translate($child->getLabel(), $domain)); ?>
+        </a>
+        <?php if ($child->hasPages() && ($depth === 0 || $level < $depth)): ?>
+        <?php echo $this->partial('common/sub-navigation', ['container' => $container, 'children' => $child->getPages(), 'level' => $level + 1]); ?>
+        <?php endif; ?>
+    </li>
+    <?php endforeach; ?>
+</ul>
 <?php endif; ?>

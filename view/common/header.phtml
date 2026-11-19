@@ -1,0 +1,57 @@
+<?php
+$escape = $this->plugin('escapeHtml');
+$escapeAttr = $this->plugin('escapeHtmlAttr');
+$translate = $this->plugin('translate');
+$logo = $this->themeSettingAssetUrl('logo');
+$subtitle = trim((string) $this->themeSetting('logo_text'));
+$position = $this->themeSetting('logo_text_position') === 'beside' ? 'beside' : 'below';
+$searchMode = $this->themeSetting('header_search_mode') ?: 'toggle';
+$headerBanner = $this->plugin('HeaderBanner');
+$banner = $headerBanner($site);
+?>
+<header class="site-header">
+    <div class="header-row">
+        <div class="site-branding site-branding-<?php echo $position; ?>">
+            <h1>
+                <a class="site-title" href="<?php echo $escapeAttr($site->url()); ?>">
+                    <?php if ($logo): ?>
+                    <img src="<?php echo $escapeAttr($logo); ?>" alt="<?php echo $escapeAttr($site->title()); ?>">
+                    <?php else: ?>
+                    <?php echo $escape($site->title()); ?>
+                    <?php endif; ?>
+                </a>
+            </h1>
+            <?php if ($subtitle !== ''): ?>
+            <p class="site-subtitle"><?php echo $escape($subtitle); ?></p>
+            <?php endif; ?>
+        </div>
+        <?php echo $site->publicNav()->menu()->setPartial('common/accessible-mega-menu.phtml')->renderPartial(); ?>
+        <div class="header-controls">
+            <button class="menu-button" type="button" aria-controls="site-navigation" aria-expanded="false" hidden>
+                <span class="fas fa-bars" aria-hidden="true"></span>
+                <?php echo $escape($translate('Menu')); ?>
+            </button>
+            <?php if ($searchMode === 'link'): ?>
+            <a class="header-search-link" href="<?php echo $escapeAttr($this->url('site/resource', ['site-slug' => $site->slug(), 'controller' => 'item', 'action' => 'search'], [], true)); ?>">
+                <span class="o-icon-search" aria-hidden="true"></span>
+                <span class="sr-only"><?php echo $escape($translate('Advanced search')); ?></span>
+            </a>
+            <?php elseif ($searchMode !== 'hidden'): ?>
+            <div id="search-container">
+                <button class="search-toggle" type="button" aria-controls="header-search-panel" aria-expanded="false" title="<?php echo $escapeAttr($translate('Search')); ?>" hidden>
+                    <span class="o-icon-search" aria-hidden="true"></span>
+                    <span class="sr-only"><?php echo $escape($translate('Search')); ?></span>
+                </button>
+                <div id="header-search-panel">
+                    <?php echo $this->partial('common/search-form'); ?>
+                </div>
+            </div>
+            <?php endif; ?>
+        </div>
+    </div>
+    <?php if ($banner): ?>
+    <div class="banner" style="<?php echo $escapeAttr($banner['style']); ?>">
+        <img src="<?php echo $escapeAttr($banner['url']); ?>" alt="<?php echo $escapeAttr($banner['alt']); ?>">
+    </div>
+    <?php endif; ?>
+</header>

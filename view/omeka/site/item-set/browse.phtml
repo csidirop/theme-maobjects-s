@@ -1,7 +1,6 @@
 <?php
 $translate = $this->plugin('translate');
 $escape = $this->plugin('escapeHtml');
-$thumbnail = $this->plugin('thumbnail');
 
 $this->headScript()->appendFile($this->assetUrl('js/browse.js'));
 $filterLocale = (bool) $this->siteSetting('filter_locale_values');
@@ -15,21 +14,22 @@ $this->htmlElement('body')->appendAttribute('class', 'item-set resource browse')
 
 <?php echo $this->searchFilters(); ?>
 
-<?php 
-    $layoutSetting = $this->themeSetting('browse_layout', 'grid');
-    $gridState = ($layoutSetting == 'togglegrid') ? 'disabled' : '';
-    $listState = ($layoutSetting == 'togglelist') ? 'disabled': '';
-    $currentLayout = (strpos($layoutSetting, 'grid') !== false) ? 'grid' : 'list';
+<?php
+$browseLayout = $this->plugin('BrowseLayout');
+$layout = $browseLayout();
+$currentLayout = $layout['layout'];
 ?>
+<div class="browse-results" data-browse-results>
 <div class="browse-controls">
-    <?php if (strpos($layoutSetting, 'toggle') !== false): ?>
-    <div class="layout-toggle">
-        <button type="button" aria-label="<?php echo $translate('Grid'); ?>" title="<?php echo $translate('Grid'); ?>" class="grid o-icon-grid" <?php echo $gridState; ?>></button>
-        <button type="button" aria-label="<?php echo $translate('List'); ?>" title="<?php echo $translate('List'); ?>" class="list o-icon-list" <?php echo $listState; ?>></button>        
-    </div>
-    <?php endif; ?>
-    <?php echo $this->hyperlink($translate('Advanced search'), $this->url(null, ['action' => 'search'], true), ['class' => 'advanced-search']); ?>
+    <?php if ($layout['toggle']) echo $this->partial('common/browse-layout-toggle', ['layout' => $currentLayout]); ?>
+    <?php echo $this->hyperlink($translate('Advanced search'), $this->url('site/resource', ['controller' => 'item-set', 'action' => 'search'], ['query' => $this->params()->fromQuery()], true), ['class' => 'advanced-search']); ?>
     <?php echo $this->pagination(); ?>
+    <?php echo $this->browse()->renderSortSelector([
+        'id' => 'ID',
+        'dcterms:title' => 'Title',
+        'created' => 'Created',
+        'modified' => 'Modified',
+    ]); ?>
 </div>
 
 <?php $this->trigger('view.browse.before'); ?>
@@ -40,17 +40,13 @@ $bodyTerm = $this->siteSetting('browse_body_property_term');
 foreach ($itemSets as $itemSet):
     $heading = $headingTerm ? $itemSet->value($headingTerm, ['default' => $translate('[Untitled]'), 'lang' => $valueLang]) : $itemSet->displayTitle(null, $valueLang);
     $body = $bodyTerm ? $itemSet->value($bodyTerm, ['lang' => $valueLang]) : $itemSet->displayDescription(null, $valueLang);
-    $linkContent = sprintf('%s<span class="resource-name">%s</span>',
-        $thumbnail($itemSet, 'medium'),
-        $escape($heading));
+    echo $this->partial('common/browse-card', ['resource' => $itemSet, 'heading' => $heading, 'body' => $body]);
 ?>
-    <li class="item-set resource">
-        <?php echo $itemSet->linkRaw($linkContent, null, ['class' => 'resource-link']); ?>
-        <?php if ($body): ?>
-        <div class="description"><?php echo $escape($body); ?></div>
-        <?php endif; ?>
-    </li>
 <?php endforeach; ?>
 </ul>
 <?php $this->trigger('view.browse.after'); ?>
-<?php echo $this->pagination(); ?>
+<div class="browse-controls">
+    <?php echo $this->pagination(); ?>
+</div>
+<?php echo $this->partial('common/metadata-formats', ['resources' => $itemSets]); ?>
+</div>

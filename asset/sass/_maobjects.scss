@@ -1,208 +1,1217 @@
 // Custom styling for the MAObjects S theme.
 
-// Colors: Uni Mannheim
-$uni-blau: #232e58;
+// Current Classic Mannheim palette and shared interface sizes.
+$uni-blau: #00325d;
 $uni-blau-hell: #abb8ca;
+$surface-muted: #f6f6f6;
+$control-border: mix($uni-blau, $uni-blau-hell, 35%);
+$control-height: 2.5rem;
+$font-family-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
 
 @mixin button_blau {
-    border: 0.1875rem solid $uni-blau;
+    border: .1875rem solid $uni-blau;
     color: white;
     background: $uni-blau;
     border-radius: .5rem;
-    transition: all .2s ease-out;
+    transition: background-color .2s ease-out, border-color .2s ease-out,
+        color .2s ease-out;
 }
 
 @mixin button_blau_hover {
-    border: 0.1875rem solid $uni-blau-hell;
+    border-color: $uni-blau-hell;
     color: $uni-blau;
     background: white;
-    border-radius: .5rem;
 }
 
-// BASIC STYLING:
-form input,
-select {
-  border-radius: .625rem;
-  background-color: #f6f6f6;
-  box-shadow: none;
-  font-weight: 400;
-}
-
-// Center Row uses an inset shadow for select borders; retain a visible border
-// because the Mannheim form styling removes that shadow.
-select {
-    border: 1px solid $gray;
-}
-
-button,
-.button {
-     @include button_blau;
-
-     &:hover {
-        @include button_blau_hover;
-     }
-}
-
-// Navigation (Item, Browse, Collection?):
-nav.pagination .button {
-    @include button_blau;
-    box-shadow: unset;
-    line-height: 30px;
-
-    &:hover {
-        @include button_blau_hover;
-    }
-
-    &.inactive {
-        cursor: not-allowed;
-        pointer-events: none;
-        background: #f6f6f6;
-        border-color: $gray;
-    }
+// TYPOGRAPHY AND LINKS:
+html {
+    font-family: $font-family-sans;
 }
 
 body {
-    // Font styling:
-    font-family: myriad-pro, sans-serif !important;
+    font-family: inherit;
     color: $uni-blau;
+    line-height: 1.5;
 
     a {
         color: $uni-blau;
-        text-decoration: underline solid lightgray .1875rem;
-        text-underline-offset: .3em;
+        text-decoration: underline solid $uni-blau-hell 2px;
+        text-underline-offset: .2em;
 
         &:hover {
             color: $uni-blau;
-            text-decoration: underline solid $uni-blau-hell .1875rem;
+            text-decoration-color: $uni-blau;
+            text-decoration-style: solid;
         }
-    }
 
-    #wrap {
-        padding-bottom: unset;
+        &:focus {
+            outline-color: $uni-blau;
+        }
     }
 }
 
+h1, h2, h3, h4, h5, h6 {
+    color: $uni-blau;
+    line-height: 1.25;
+}
+
+#content {
+    h1, h2, h3, h4, h5, h6 {
+        margin: 1.5rem 0 .75rem;
+        overflow-wrap: anywhere;
+
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+    h1 {
+        font-size: 2rem;
+        text-align: left;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    h3 {
+        font-size: 1.25rem;
+    }
+
+    h4 {
+        font-size: 1.125rem;
+    }
+
+    h5 {
+        font-size: 1rem;
+    }
+
+    h6 {
+        font-size: .9375rem;
+    }
+
+    p {
+        margin: 1.25rem 0;
+
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+    .property > dt,
+    .media-list > dt {
+        color: $uni-blau;
+    }
+}
+
+body .secondary-nav .active a {
+    color: $uni-blau;
+    text-decoration-color: $uni-blau;
+}
+
+// Keep keyboard focus visible, including links outside the header/footer.
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+    outline: 2px solid $uni-blau;
+    outline-offset: 3px;
+}
+
+// FORM CONTROLS:
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+input:not([type]),
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="url"],
+input[type="tel"],
+input[type="search"],
+input[type="number"],
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"],
+input[type="month"],
+input[type="week"],
+select,
+textarea {
+    max-width: 100%;
+    min-width: 0;
+    min-height: $control-height;
+    height: $control-height;
+    padding: .5rem .75rem;
+    border: 1px solid $control-border;
+    border-radius: .5rem;
+    background-color: $surface-muted;
+    box-shadow: none;
+    color: $uni-blau;
+    line-height: 1.25;
+
+    &:focus {
+        border-color: $uni-blau;
+        background-color: white;
+    }
+
+    &:disabled {
+        color: $dark-gray;
+        cursor: not-allowed;
+    }
+}
+
+select {
+    padding-right: 2rem;
+    background-position: right .75rem center;
+}
+
+select[multiple],
+textarea {
+    height: auto;
+    min-height: 6rem;
+    line-height: 1.5;
+}
+
+select[multiple] {
+    padding-right: .75rem;
+    background-image: none;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    accent-color: $uni-blau;
+}
+
+button,
+.button,
+a.button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+    @include button_blau;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .375rem;
+    min-height: $control-height;
+    padding: .375rem .75rem;
+    line-height: 1.25;
+    vertical-align: middle;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+        @include button_blau_hover;
+        text-decoration: none;
+    }
+
+    &:disabled,
+    &.inactive,
+    &[aria-disabled="true"] {
+        background: $surface-muted;
+        color: $dark-gray;
+        border-color: $gray;
+        box-shadow: none;
+        cursor: default;
+        pointer-events: none;
+    }
+}
+
+nav.pagination .button {
+    min-height: $control-height;
+    padding: .375rem .75rem;
+    line-height: 1.25;
+    box-shadow: none;
+}
+
+.pagination form {
+    vertical-align: middle;
+}
+
+.pagination .row-count {
+    line-height: $control-height;
+}
+
+.layout-toggle button {
+    width: $control-height;
+    padding: .375rem;
+}
+
+.sitewide-search-form {
+    align-items: center;
+    gap: .5rem;
+}
+
+// LightGallery has a dark background and its own icon font and controls.
+.lg-outer :focus-visible {
+    outline-color: white;
+}
+
 // HEADER:
-header {
-    display: flex;
+.site-header {
+    display: block;
+    padding: 1.5rem 0;
 
-    nav {
-        margin-left: auto;
+    [hidden] {
+        display: none !important;
+    }
 
-        .navigation.nav-menu {
-            border: none;
+    a,
+    button {
+        &:focus-visible {
+            outline: 2px solid $uni-blau;
+            outline-offset: 3px;
+        }
+    }
+
+    .header-row {
+        display: grid;
+        grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 1rem 1.5rem;
+    }
+
+    .site-branding {
+        min-width: 0;
+        max-width: 24rem;
+        overflow-wrap: anywhere;
+
+        h1 {
+            margin: 0;
+            line-height: 1.2;
+        }
+    }
+
+    .site-title {
+        display: block;
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: normal;
+        text-align: left;
+        text-transform: none;
+        letter-spacing: normal;
+        text-decoration: none;
+
+        img {
+            display: block;
+            width: auto;
+            max-width: 100%;
+            max-height: 5rem;
+        }
+    }
+
+    .site-subtitle {
+        font-size: .875rem;
+        line-height: 1.35;
+        margin: .5rem 0 0;
+    }
+
+    .site-branding-beside {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        h1,
+        .site-subtitle {
+            min-width: 0;
+            flex: 1 1 auto;
         }
 
-        .nav-item > a {
-            border: none;
-            text-decoration: none;
+        .site-subtitle {
+            margin: 0;
+        }
+    }
 
-            &:hover {
+    .site-navigation {
+        position: relative;
+        min-width: 0;
+
+        .navigation {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            align-items: stretch;
+            position: static;
+            gap: .25rem .5rem;
+            margin: 0;
+            border: 0;
+        }
+
+        li {
+            min-width: 0;
+            margin: 0;
+            padding: 0;
+            position: static;
+        }
+
+        a {
+            display: block;
+            margin: 0;
+            padding: .5rem;
+            font-size: .875rem;
+            line-height: 1.35;
+            text-decoration: none;
+            overflow-wrap: anywhere;
+        }
+
+        .navigation > li > a {
+            height: 100%;
+            border: 0;
+            border-bottom: 3px solid transparent;
+            background: transparent;
+
+            &:hover,
+            &:focus-visible,
+            &.open {
+                border-bottom-color: $uni-blau;
                 text-decoration: none;
-                border-bottom: 0.1875rem solid $uni-blau;
             }
         }
+
+        .navigation > .active > a {
+            border-bottom-color: $uni-blau-hell;
+        }
+
+        // Visible nested links are the fallback when JavaScript is unavailable.
+        .sub-nav {
+            display: block;
+            position: static;
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            padding: .75rem;
+            border: 0;
+            background: $uni-blau;
+            color: white;
+            box-shadow: 0 .25rem .5rem rgba(black, .15);
+
+            ul {
+                display: block;
+                position: static;
+                width: auto;
+                margin: 0;
+                padding: 0;
+                border: 0;
+
+                ul {
+                    margin-left: .5rem;
+                    padding-left: .75rem;
+                    border-left: 1px solid rgba(white, .35);
+                }
+            }
+
+            &.first li {
+                width: auto;
+                padding: 0;
+            }
+
+            a,
+            li a:not(.parent) {
+                display: block;
+                color: white;
+                padding: .5rem;
+                text-indent: 0;
+
+                &::before,
+                &.parent::after {
+                    content: none;
+                }
+
+                &:hover,
+                &:focus-visible {
+                    color: white;
+                    background: rgba(white, .12);
+                }
+
+                &:focus-visible {
+                    outline-color: white;
+                    outline-offset: -2px;
+                }
+            }
+
+            .active > a {
+                text-decoration: underline;
+                text-underline-offset: .2em;
+            }
+
+            .parent {
+                padding-bottom: .75rem;
+                margin-bottom: .25rem;
+                border-bottom: 1px solid rgba(white, .35);
+            }
+
+            .divider {
+                margin: .5rem 0;
+                border-top: 1px solid rgba(white, .35);
+            }
+        }
+    }
+
+    &.menu-enhanced .sub-nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        left: auto;
+        width: 28rem;
+        max-height: 70vh;
+        overflow-y: auto;
+        z-index: 999;
+
+        &.open {
+            display: block;
+        }
+    }
+
+    .header-controls {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        min-width: 0;
+    }
+
+    .menu-button,
+    .search-toggle,
+    .header-search-link {
+        align-items: center;
+        justify-content: center;
+        gap: .5rem;
+        min-width: 44px;
+        min-height: 44px;
+        padding: .5rem;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        color: $uni-blau;
+        line-height: 1;
+        text-decoration: none;
+        cursor: pointer;
+
+        &:hover,
+        &[aria-expanded="true"] {
+            color: $uni-blau;
+            background: rgba($uni-blau-hell, .25);
+        }
+    }
+
+    .menu-button {
+        display: none;
+    }
+
+    .search-toggle,
+    .header-search-link {
+        display: inline-flex;
+    }
+
+    #search-container {
+        position: relative;
+        top: auto;
+        right: auto;
+        min-width: 0;
+
+        .search-toggle {
+            display: inline-flex;
+            height: auto;
+            color: $uni-blau;
+            border: 0;
+            border-radius: 50%;
+        }
+    }
+
+    #header-search-panel {
+        max-width: 100%;
+        padding: .4rem .65rem;
+        background: white;
+        border: 1px solid $uni-blau;
+        border-radius: 999px;
+    }
+
+    .search-enhanced #header-search-panel {
+        position: absolute;
+        top: calc(100% + .5rem);
+        right: 0;
+        width: min(22rem, calc(100vw - 48px));
+        max-width: none;
+        z-index: 1000;
+        box-shadow: 0 .5rem 1.5rem rgba($uni-blau, .15);
+    }
+
+    #search-form {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+
+        input[type="text"],
+        input[type="search"] {
+            width: 100%;
+            min-width: 0;
+            height: 44px;
+            min-height: 44px;
+            border: 1px solid $uni-blau;
+            border-radius: 999px;
+            padding: .5rem .75rem;
+            background: white;
+            color: $uni-blau;
+            font: inherit;
+            line-height: 1.25;
+
+            &:focus-visible {
+                outline: 2px solid $uni-blau;
+                outline-offset: 2px;
+            }
+        }
+
+        button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 44px;
+            width: 44px;
+            height: 44px;
+            min-height: 44px;
+            padding: .5rem;
+            border: 0;
+            border-radius: 50%;
+            background: $uni-blau;
+            color: white;
+            text-indent: 0;
+            overflow: visible;
+            line-height: 1;
+
+            &:hover {
+                background: $uni-blau-hell;
+                color: $uni-blau;
+            }
+
+            [class*="o-icon-"] {
+                display: flex;
+                line-height: 1;
+            }
+
+            &::after {
+                content: none;
+            }
+        }
+    }
+
+    .banner {
+        display: block;
+        margin-top: 1.5rem;
+        height: var(--banner-height, auto);
+
+        img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center var(--banner-position, center);
+        }
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .site-header {
+        .header-row {
+            grid-template-columns: minmax(0, 1fr);
+            gap: .75rem;
+        }
+
+        .site-branding {
+            max-width: none;
+        }
+
+        .site-title {
+            font-size: 1.25rem;
+        }
+
+        .header-controls {
+            position: relative;
+            grid-column: 1;
+            grid-row: 2;
+            justify-content: space-between;
+
+            #search-container:not(.search-enhanced) {
+                flex: 1;
+            }
+
+            #search-container.search-enhanced {
+                position: static;
+
+                #header-search-panel {
+                    width: 100%;
+                    max-width: 22rem;
+                }
+            }
+        }
+
+        .site-navigation {
+            grid-column: 1 / -1;
+            grid-row: 3;
+
+            .navigation {
+                display: block;
+
+                > li {
+                    display: block;
+                }
+            }
+
+            .sub-nav {
+                position: static;
+                width: 100%;
+                max-height: none;
+            }
+        }
+
+        &.menu-enhanced {
+            .menu-button {
+                display: inline-flex;
+            }
+
+            .site-navigation {
+                display: none;
+            }
+
+            &.menu-open .site-navigation {
+                display: block;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 640px) {
+    .site-header .banner {
+        height: var(--banner-height-mobile, var(--banner-height, auto));
+    }
+}
+
+// Keep the footer below short pages while retaining Center Row's content width.
+body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+
+    #wrap {
+        flex: 1 0 auto;
+        width: 100%;
+        margin: 0 auto;
+        padding-bottom: 3rem;
     }
 }
 
 // FOOTER:
-footer {
-    background: $uni-blau;
-    color: $uni-blau-hell;
-    padding: 2rem;
-    margin-top: 48px;
+body > .uma-footer {
+    // Match Classic's 16px rem scale within this theme's 18px root size.
+    $footer-rem: calc(16px / $base-font-size * 1rem);
 
-    a {
-        border-bottom: none;
-        text-decoration: none;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0;
+    background: $uni-blau;
+    color: white;
+    font-size: .9375 * $footer-rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+
+    h1, h2, h3, h4, h5, h6 {
+        color: white;
     }
 
-    li {
-        float: left;
-        list-style-type: none;
-        margin-right: .75rem;
+    :focus-visible {
+        outline-color: white;
+    }
+
+    &.uma-footer-gradient {
+        background: linear-gradient(180deg, #0a4479 0%, $uni-blau 100%);
+    }
+
+    .footer-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 3rem $spacing-l 2rem;
+    }
+
+    .footer-main {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+        gap: 2rem;
+    }
+
+    .footer-main > * {
+        min-width: 0;
+    }
+
+    .footer-branding {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+
+    .footer-branding-label {
+        display: block;
+        margin-bottom: .5rem;
+    }
+
+    .footer-branding-item {
+        max-width: 100%;
 
         a {
-            text-decoration: none;
-            color: $uni-blau-hell;
-
-            &:hover {
-                color: #fff;
-                text-decoration: none;
-                border-bottom: .1875rem solid $uni-blau-hell;
-            }
-        }
-    }
-
-    .logos {
-        text-align: right;
-
-        .logo1,
-        .logo2 {
             display: inline-block;
         }
 
-        .logo2 {
-            .hosted {
-                display: block;
-                text-align: left;
+        img {
+            display: block;
+            width: 10rem;
+            max-width: 100%;
+            height: auto;
+        }
+    }
+
+    h2 {
+        color: white;
+        font-size: 1.125 * $footer-rem;
+        font-weight: normal;
+        line-height: 1.2;
+        margin: 0 0 $footer-rem;
+    }
+
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    li {
+        margin: 0;
+        padding: 0;
+    }
+
+    .footer-links {
+        line-height: 1.2;
+    }
+
+    .footer-links li + li {
+        margin-top: .625rem;
+    }
+
+    a {
+        color: white;
+        border: 0;
+        text-decoration: none;
+
+        &:hover {
+            color: white;
+            text-decoration: underline;
+            text-underline-offset: .2em;
+        }
+
+        &:focus-visible {
+            outline: 2px solid white;
+            outline-offset: 4px;
+        }
+    }
+
+    .footer-text {
+        margin-top: 2rem;
+
+        &:first-child {
+            margin-top: 0;
+        }
+
+        > :first-child {
+            margin-top: 0;
+        }
+
+        > :last-child {
+            margin-bottom: 0;
+        }
+
+        a {
+            text-decoration: underline;
+        }
+    }
+
+    .footer-legal {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem 2rem;
+
+        > .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .625rem 1.25rem;
+
+            li {
+                margin: 0;
             }
         }
+    }
 
-        .ub-logo {
-            height: 50px;
+    .footer-legal-separated {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(white, .2);
+    }
+
+    .footer-social {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .25rem;
+        margin-left: auto;
+
+        a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.75rem;
+            height: 2.75rem;
         }
 
-        .uni-logo {
-            height: 50px;
-            margin-right: 20px;
+        img {
+            display: block;
+            width: 1.25rem;
+            height: 1.25rem;
+            filter: brightness(0) invert(1);
         }
     }
 }
 
-// BROWSE ITEM:
-.browse {
-    // List view styling:
-    .resource-list.list > li.item {
-        border: unset;
-        padding: 1.2rem;
-
-        .resource-name {
-            margin-bottom: 1.2rem;
-            font-weight: normal;
+@media screen and (max-width:640px) {
+    body > .uma-footer {
+        .footer-inner {
+            padding-top: 2rem;
         }
 
-        // Alternating row colors:
-        &:nth-of-type(odd) {
-            background-color: #f6f6f6;
+        .footer-main {
+            grid-template-columns: 1fr;
         }
 
-        &:nth-of-type(even) {
-            background-color: white;
+        .footer-section {
+            border-top: 1px solid rgba(white, .2);
+            padding-top: 1.5rem;
+
+            &:first-child {
+                border-top: 0;
+                padding-top: 0;
+            }
+        }
+
+        .footer-social {
+            margin-left: 0;
+        }
+    }
+}
+
+// ITEM PAGE TYPOGRAPHY:
+.item.resource.show #content {
+    // Classic uses a 16px root; retain S's root for the shared shell.
+    $item-rem: calc(16px / $base-font-size * 1rem);
+
+    > h2:first-child {
+        font-size: 2 * $item-rem;
+        padding-bottom: calc(.5 * $base-line-height - 1px);
+        border-bottom: 1px solid $gray;
+
+        @media screen and (min-width: 1025px) {
+            font-size: 3 * $item-rem;
         }
     }
 
-    // List specific styles:
-    .item-meta.hentry.list {
-        .item-meta-content {
-            display: flex;
+    .property > dt {
+        font-size: $item-rem;
+        line-height: 1.25;
+    }
+
+    .property dl dt {
+        // Override Center Row's explicit size for value annotations.
+        font-size: $item-rem !important;
+    }
+
+    .property .field-term {
+        font-size: $item-rem;
+    }
+
+    .property .value {
+        font-size: $item-rem;
+        line-height: 1.5;
+
+        p {
+            font-size: $item-rem;
+            line-height: 1.75;
+
+            @media screen and (min-width: 768px) {
+                font-size: 1.125 * $item-rem;
+                line-height: calc(32 / 18);
+            }
+        }
+    }
+}
+
+// BROWSE RESULTS: shared by items, item sets, Hierarchy, and page previews.
+.browse-results {
+    min-width: 0;
+
+    [hidden] {
+        display: none !important;
+    }
+
+    > .browse-controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: .75rem 1.25rem;
+        margin: 1rem 0;
+
+        > * {
+            min-width: 0;
+            margin: 0;
+        }
+    }
+
+    .layout-toggle,
+    .sorting {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: .5rem;
+        margin: 0;
+
+        > * {
+            margin: 0;
+        }
+    }
+
+    .layout-toggle button {
+        &[aria-pressed="false"] {
+            background: white;
+            color: $uni-blau;
+            border-color: $uni-blau-hell;
         }
 
-        .item-img {
-            margin-right: 3%;
-            max-width: 120px;
+        &[aria-pressed="true"] {
+            background: $uni-blau;
+            color: white;
+            border-color: $uni-blau;
+        }
+
+        &:hover {
+            border-color: $uni-blau;
+        }
+    }
+
+    .sorting {
+        margin-left: auto;
+
+        select {
+            width: auto;
+            max-width: 12rem;
+        }
+    }
+
+    .pagination {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: .5rem;
+        margin: 0;
+        text-align: left;
+
+        > *,
+        .next.button {
+            margin: 0;
+        }
+
+        form,
+        .pagination-buttons {
+            display: flex;
+            align-items: center;
+            gap: .375rem;
+        }
+
+        form {
+            margin: 0;
+        }
+
+        [name="page"] {
+            width: 3.5rem;
+            margin: 0;
+        }
+
+        .page-count,
+        .row-count {
+            white-space: nowrap;
+            line-height: 1.5;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: $control-height;
+            padding: .375rem;
+        }
+    }
+
+    > .resource-list {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        list-style: none;
+        clear: both;
+
+        > .resource {
+            min-width: 0;
+            width: auto;
+            margin: 0;
+            padding: 1.25rem;
+            font-size: 1rem;
+            overflow-wrap: anywhere;
+        }
+
+        .resource-link {
+            display: block;
+            font-weight: 400;
+            text-decoration: none;
+
+            &:hover .resource-name,
+            &:focus .resource-name {
+                text-decoration-color: $uni-blau-hell;
+            }
+        }
+
+        .resource-name {
+            display: block;
+            margin: 0;
+            text-decoration: underline solid #d1d7df .1875rem;
+            text-decoration-skip-ink: none;
+        }
+
+        .description {
+            display: flow-root;
+            margin-top: .5rem;
+            line-height: 1.5;
+        }
+
+        .resource-thumbnail {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            overflow: hidden;
 
             img {
+                display: block;
+                float: none;
+                width: auto;
+                max-width: 100%;
+                max-height: 100%;
+                margin: 0;
+                object-fit: contain;
+            }
+        }
+
+        &.grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+            gap: 1.25rem;
+            margin: 0;
+
+            > .resource {
+                display: block;
+                width: auto;
+                border: 1px solid $gray;
+                border-radius: .5rem;
+                background: white;
+                font-size: .9375rem;
+            }
+
+            .resource-thumbnail {
+                width: 100%;
+                height: 11rem;
+                margin-bottom: 1rem;
+            }
+        }
+
+        &.list {
+            display: block;
+
+            > .resource {
+                display: flow-root;
+                width: auto;
+                border: 0;
+
+                &:nth-child(odd) {
+                    background: lighten($uni-blau, 79%);
+                }
+
+                &:nth-child(even) {
+                    background: white;
+                }
+            }
+
+            .resource-thumbnail {
+                float: left;
+                width: 7rem;
+                height: 7rem;
+                max-width: 35%;
+                margin: 0 1.25rem .5rem 0;
+            }
+        }
+    }
+}
+
+.metadata-formats {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .5rem 1rem;
+    clear: both;
+    margin: 1.5rem 0;
+    padding-top: .75rem;
+    border-top: 1px solid $gray;
+    font-size: .875rem;
+
+    ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5rem 1rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+}
+
+@media screen and (max-width: 640px) {
+    .browse-results {
+        .sorting {
+            flex: 1 1 100%;
+            margin-left: 0;
+
+            select {
+                flex: 1 1 8rem;
                 max-width: 100%;
             }
         }
-    }
-}
 
-// Preserve the mobile footer spacing when loaded after Center Row's styles.
-@media screen and (max-width:640px) {
-    footer {
-        margin-top: $spacing-l;
-        padding: 0;
+        > .resource-list.list .resource-thumbnail {
+            width: 5rem;
+            height: 5rem;
+            margin-right: 1rem;
+        }
     }
 }

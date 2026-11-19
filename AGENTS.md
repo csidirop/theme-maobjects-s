@@ -38,11 +38,10 @@ the task explicitly includes the surrounding Omeka installation or modules.
 Inspect the working tree first and preserve existing user changes.
 
 Install the declared JavaScript development dependencies with `npm ci`. The
-Gulp build also requires the `sass` package, which is currently absent from
-`package.json` and `package-lock.json`. Check its availability with
-`node -p "require.resolve('sass')"`. If missing, report the setup issue or make
-an explicit dependency fix when that is part of the task; do not silently
-rewrite dependency files during unrelated work.
+Gulp build uses the declared `sass` development dependency. Check its
+availability with `node -p "require.resolve('sass')"`. If missing after
+installation, report the setup issue; do not silently rewrite dependency
+files during unrelated work.
 
 Use the local Gulp CLI through Node so commands do not depend on a global
 installation, executable npm shims, or implicitly downloaded tooling:
